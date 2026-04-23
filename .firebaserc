@@ -4,7 +4,7 @@
     "hostelpass-90da9": {
       "hosting": {
         "student": [
-          "hostelpass-90da9"
+          "hostelpass-student"
         ],
         "admin": [
           "hostelpass-admin"
