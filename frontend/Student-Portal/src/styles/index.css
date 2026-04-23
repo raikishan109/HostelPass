@@ -7,10 +7,11 @@
 
 /* ── CSS Variables ── */
 :root {
-  --primary: #EE2E24;
-  --primary-dark: #D11F17;
-  --primary-light: #FF5A52;
-  --primary-bg: #FFF1F0;
+  --primary: #E60000;
+  --primary-dark: #B30000;
+  --primary-light: #FF3333;
+  --primary-bg: #FFF0F0;
+  --primary-gradient: linear-gradient(135deg, #E60000 0%, #990000 100%);
   --white: #ffffff;
   --bg: #F3F3F3;
   --bg-card: #ffffff;
@@ -42,6 +43,7 @@ body {
   color: var(--text-dark);
   line-height: 1.6;
   -webkit-font-smoothing: antialiased;
+  overflow-x: hidden;
 }
 a { text-decoration: none; color: inherit; }
 img { max-width: 100%; display: block; }
@@ -600,7 +602,24 @@ ul, ol { list-style: none; }
   .container { padding: 0 16px; }
   .page-content { padding: 16px; }
   .topbar { padding: 0 16px; }
+  
+  /* Landing Page Responsive Utilities */
+  .landing-nav { padding: 0 20px !important; }
+  .landing-hero { padding: 40px 16px 0 !important; }
+  .landing-title { font-size: 36px !important; letter-spacing: -1px !important; }
+  .landing-search-bar { 
+    flex-direction: column; 
+    border-radius: 20px !important; 
+    padding: 16px !important; 
+    gap: 12px;
+  }
+  .landing-search-bar input { width: 100%; padding: 8px 0 !important; }
+  .landing-search-bar button { width: 100%; justify-content: center; }
+  .stats-bar-grid { gap: 40px !important; }
+  .section-padding { padding: 60px 20px !important; }
 }
+
 @media (max-width: 480px) {
   .btn-lg { padding: 14px 24px; font-size: 15px; }
+  .landing-title { font-size: 32px !important; }
 }

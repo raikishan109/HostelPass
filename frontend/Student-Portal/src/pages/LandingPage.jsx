@@ -23,106 +23,113 @@ const LandingPage = () => {
   ];
 
   return (
-    <div style={{ background: '#fcfcfc', minHeight: '100vh', fontFamily: "'Inter', sans-serif" }}>
+    <div style={{ background: '#fcfcfc', minHeight: '100vh', fontFamily: "'Inter', sans-serif", overflowX: 'hidden' }}>
       {/* ── Navbar ── */}
-      <nav style={{
+      <nav className="landing-nav" style={{
         background: 'white', borderBottom: '1px solid #eee', padding: '0 40px',
         height: '72px', display: 'flex', alignItems: 'center', justifyContent: 'space-between',
         position: 'sticky', top: 0, zIndex: 1000
       }}>
         <div style={{ display: 'flex', alignItems: 'center', gap: '8px' }}>
           <div style={{
-            width: 32, height: 32, background: '#EE2E24', borderRadius: '4px',
+            width: 32, height: 32, background: 'var(--primary-gradient)', borderRadius: '4px',
             display: 'flex', alignItems: 'center', justifyContent: 'center',
             fontWeight: 900, fontSize: '16px', color: 'white',
           }}>HP</div>
-          <span style={{ fontWeight: 800, fontSize: '22px', color: '#333', letterSpacing: '-0.5px' }}>
-            Hostel<span style={{ color: '#EE2E24' }}>Pass</span>
+          <span style={{ fontWeight: 800, fontSize: '20px', color: '#333', letterSpacing: '-0.5px' }}>
+            Hostel<span style={{ color: 'var(--primary)' }}>Pass</span>
           </span>
         </div>
-        <div style={{ display: 'flex', gap: '12px', alignItems: 'center' }}>
+        <div style={{ display: 'flex', gap: '8px', alignItems: 'center' }}>
           {user ? (
             <Link to={`/${userRole}`} style={{ 
-              background: '#EE2E24', color: 'white', padding: '10px 20px', 
-              borderRadius: '4px', fontWeight: 700, fontSize: '14px', textDecoration: 'none'
-            }}>Go to Dashboard</Link>
+              background: 'var(--primary-gradient)', color: 'white', padding: '8px 16px', 
+              borderRadius: '6px', fontWeight: 700, fontSize: '13px', textDecoration: 'none',
+              boxShadow: '0 4px 10px rgba(230, 0, 0, 0.2)'
+            }}>Dashboard</Link>
           ) : (
             <>
               <Link to="/login" style={{ 
-                fontWeight: 600, color: '#333', fontSize: '14px', textDecoration: 'none',
-                padding: '8px 16px', borderRadius: '4px', border: '1px solid #eee'
+                fontWeight: 600, color: '#333', fontSize: '13px', textDecoration: 'none',
+                padding: '8px 12px', borderRadius: '6px', border: '1px solid #eee'
               }}>Login</Link>
               <Link to="/register" style={{ 
-                background: '#EE2E24', color: 'white', padding: '10px 20px', 
-                borderRadius: '4px', fontWeight: 700, fontSize: '14px', textDecoration: 'none'
-              }}>Get Started</Link>
+                background: 'var(--primary-gradient)', color: 'white', padding: '8px 16px', 
+                borderRadius: '6px', fontWeight: 700, fontSize: '13px', textDecoration: 'none',
+                boxShadow: '0 4px 10px rgba(230, 0, 0, 0.2)'
+              }}>Join</Link>
             </>
           )}
         </div>
       </nav>
 
       {/* ── Hero Section ── */}
-      <section style={{ padding: '80px 20px 0', textAlign: 'center', background: 'white' }}>
+      <section className="landing-hero" style={{ padding: '60px 24px 0', textAlign: 'center', background: 'white' }}>
         <div style={{ maxWidth: '1000px', margin: '0 auto' }}>
-          <div style={{ display: 'inline-block', background: '#fff1f0', color: '#EE2E24', padding: '6px 16px', borderRadius: '20px', fontSize: '11px', fontWeight: 800, letterSpacing: '1px', marginBottom: '24px', border: '1px solid #ffccc7' }}>
-            🏢 REAL REVIEWS. REAL MESS SCORES. REAL CHOICES.
-          </div>
-          <h1 style={{ fontSize: 'clamp(40px, 8vw, 68px)', fontWeight: 900, color: '#1a1a1a', lineHeight: 1.1, marginBottom: '24px', letterSpacing: '-2px' }}>
-            Find Your Perfect PG<br /><span style={{ color: '#EE2E24' }}>With Honest Reviews</span>
+          <h1 className="landing-title" style={{ fontSize: 'clamp(36px, 8vw, 68px)', fontWeight: 900, color: '#1a1a1a', lineHeight: 1.1, marginBottom: '24px', letterSpacing: '-2px' }}>
+            Find Your Perfect PG<br />
+            <span style={{ 
+              background: 'var(--primary-gradient)', 
+              WebkitBackgroundClip: 'text', 
+              WebkitTextFillColor: 'transparent',
+              display: 'inline-block'
+            }}>With Honest Reviews</span>
           </h1>
-          <p style={{ fontSize: '18px', color: '#666', marginBottom: '48px', maxWidth: '700px', margin: '0 auto 48px', lineHeight: 1.6 }}>
+          <p style={{ fontSize: '17px', color: '#666', marginBottom: '40px', maxWidth: '700px', margin: '0 auto 40px', lineHeight: 1.6 }}>
             Don't just pick a PG based on photos. Read real student experiences, check the mess quality score, and choose where you truly belong.
           </p>
-          <div style={{ background: 'white', borderRadius: '50px', padding: '8px 8px 8px 24px', display: 'flex', alignItems: 'center', boxShadow: '0 10px 30px rgba(0,0,0,0.08)', maxWidth: '650px', margin: '0 auto 32px', border: '1px solid #eee' }}>
-            <MdLocationOn size={24} color="#999" />
-            <input style={{ flex: 1, border: 'none', padding: '12px 16px', fontSize: '16px', outline: 'none' }} placeholder="Search by location, college or PG name..." />
-            <button style={{ background: '#EE2E24', color: 'white', border: 'none', padding: '12px 32px', borderRadius: '40px', fontWeight: 700, display: 'flex', alignItems: 'center', gap: '8px', cursor: 'pointer' }}>
+          <div className="landing-search-bar" style={{ background: 'white', borderRadius: '50px', padding: '8px 8px 8px 24px', display: 'flex', alignItems: 'center', boxShadow: '0 10px 30px rgba(0,0,0,0.08)', maxWidth: '650px', margin: '0 auto 32px', border: '1px solid #eee' }}>
+            <div style={{ display: 'flex', alignItems: 'center', flex: 1 }}>
+              <MdLocationOn size={24} color="#999" />
+              <input style={{ flex: 1, border: 'none', padding: '12px 12px', fontSize: '16px', outline: 'none', width: '100%' }} placeholder="Search location or PG name..." />
+            </div>
+            <button style={{ background: 'var(--primary-gradient)', color: 'white', border: 'none', padding: '12px 32px', borderRadius: '40px', fontWeight: 700, display: 'flex', alignItems: 'center', gap: '8px', cursor: 'pointer', boxShadow: '0 4px 10px rgba(230, 0, 0, 0.2)' }}>
               <MdSearch size={20} /> Search
             </button>
           </div>
-          <div style={{ display: 'flex', gap: '12px', justifyContent: 'center', flexWrap: 'wrap', marginBottom: '60px' }}>
-            {['Bangalore', 'Mumbai', 'Hyderabad', 'Delhi', 'Pune'].map(city => (
-              <button key={city} style={{ background: 'white', border: '1px solid #eee', padding: '8px 20px', borderRadius: '20px', fontSize: '13px', fontWeight: 600, color: '#555', cursor: 'pointer' }}>{city}</button>
+          <div style={{ display: 'flex', gap: '8px', justifyContent: 'center', flexWrap: 'wrap', marginBottom: '60px' }}>
+            {['Bangalore', 'Mumbai', 'Delhi', 'Pune'].map(city => (
+              <button key={city} style={{ background: 'white', border: '1px solid #eee', padding: '6px 16px', borderRadius: '20px', fontSize: '12px', fontWeight: 600, color: '#555', cursor: 'pointer' }}>{city}</button>
             ))}
           </div>
         </div>
 
-        {/* ── Stats Bar (Directly below hero content) ── */}
-        <div style={{ background: '#EE2E24', padding: '40px 0', color: 'white', width: '100vw', marginLeft: 'calc(-50vw + 50%)' }}>
-          <div style={{ maxWidth: '1100px', margin: '0 auto', display: 'flex', justifyContent: 'space-around', textAlign: 'center', flexWrap: 'wrap', gap: '20px' }}>
+        {/* ── Stats Bar ── */}
+        <div style={{ background: 'var(--primary-gradient)', padding: '40px 24px', color: 'white' }}>
+          <div className="stats-bar-grid" style={{ maxWidth: '1100px', margin: '0 auto', display: 'grid', gridTemplateColumns: 'repeat(auto-fit, minmax(150px, 1fr))', justifyContent: 'center', textAlign: 'center', gap: '20px' }}>
             <div>
-              <div style={{ fontSize: '32px', fontWeight: 900 }}>1,200+</div>
-              <div style={{ fontSize: '14px', opacity: 0.9 }}>PGs Listed</div>
+              <div style={{ fontSize: '28px', fontWeight: 900 }}>1,200+</div>
+              <div style={{ fontSize: '13px', opacity: 0.8 }}>PGs Listed</div>
             </div>
             <div>
-              <div style={{ fontSize: '32px', fontWeight: 900 }}>15,000+</div>
-              <div style={{ fontSize: '14px', opacity: 0.9 }}>Happy Students</div>
+              <div style={{ fontSize: '28px', fontWeight: 900 }}>15,000+</div>
+              <div style={{ fontSize: '13px', opacity: 0.8 }}>Students</div>
             </div>
             <div>
-              <div style={{ fontSize: '32px', fontWeight: 900 }}>45,000+</div>
-              <div style={{ fontSize: '14px', opacity: 0.9 }}>Honest Reviews</div>
+              <div style={{ fontSize: '28px', fontWeight: 900 }}>45,000+</div>
+              <div style={{ fontSize: '13px', opacity: 0.8 }}>Reviews</div>
             </div>
             <div>
-              <div style={{ fontSize: '32px', fontWeight: 900 }}>320+</div>
-              <div style={{ fontSize: '14px', opacity: 0.9 }}>Verified PGs</div>
+              <div style={{ fontSize: '28px', fontWeight: 900 }}>320+</div>
+              <div style={{ fontSize: '13px', opacity: 0.8 }}>Verified</div>
             </div>
           </div>
         </div>
       </section>
 
       {/* ── Why Choose Us ── */}
-      <section style={{ padding: '100px 24px', background: 'white' }}>
+      <section className="section-padding" style={{ padding: '100px 24px', background: 'white' }}>
         <div style={{ maxWidth: '1100px', margin: '0 auto' }}>
           <div style={{ textAlign: 'center', marginBottom: '60px' }}>
-            <h2 style={{ fontSize: '36px', fontWeight: 800, color: '#1a1a1a', marginBottom: '16px' }}>Why Students Choose Hostel-Pass</h2>
-            <p style={{ fontSize: '18px', color: '#666', maxWidth: '600px', margin: '0 auto' }}>We put transparency at the center — every review, every mess score, every complaint is real.</p>
+            <h2 style={{ fontSize: '32px', fontWeight: 800, color: '#1a1a1a', marginBottom: '16px' }}>Why Hostel-Pass?</h2>
+            <p style={{ fontSize: '17px', color: '#666', maxWidth: '600px', margin: '0 auto' }}>We put transparency at the center — every review, every mess score is real.</p>
           </div>
-          <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fit, minmax(300px, 1fr))', gap: '32px' }}>
+          <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fit, minmax(280px, 1fr))', gap: '24px' }}>
             {features.map((f, i) => (
-              <div key={i} style={{ padding: '32px', borderRadius: '16px', background: '#fcfcfc', border: '1px solid #eee' }}>
-                <div style={{ fontSize: '32px', color: '#EE2E24', marginBottom: '20px' }}>{f.icon}</div>
-                <h3 style={{ fontSize: '20px', fontWeight: 800, marginBottom: '12px' }}>{f.title}</h3>
-                <p style={{ fontSize: '15px', color: '#666', lineHeight: 1.6 }}>{f.desc}</p>
+              <div key={i} style={{ padding: '24px', borderRadius: '16px', background: '#fcfcfc', border: '1px solid #eee' }}>
+                <div style={{ fontSize: '28px', color: 'var(--primary)', marginBottom: '16px' }}>{f.icon}</div>
+                <h3 style={{ fontSize: '18px', fontWeight: 800, marginBottom: '10px' }}>{f.title}</h3>
+                <p style={{ fontSize: '14px', color: '#666', lineHeight: 1.6 }}>{f.desc}</p>
               </div>
             ))}
           </div>
@@ -130,32 +137,32 @@ const LandingPage = () => {
       </section>
 
       {/* ── Top PGs ── */}
-      <section style={{ padding: '100px 24px', background: '#f9f9f9' }}>
+      <section className="section-padding" style={{ padding: '80px 24px', background: '#f9f9f9' }}>
         <div style={{ maxWidth: '1100px', margin: '0 auto' }}>
-          <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'flex-end', marginBottom: '40px' }}>
+          <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'flex-end', marginBottom: '40px', flexWrap: 'wrap', gap: '16px' }}>
             <div>
-              <h2 style={{ fontSize: '32px', fontWeight: 800, color: '#1a1a1a', marginBottom: '8px' }}>Top Rated PGs</h2>
-              <p style={{ color: '#666' }}>Highest rated PGs based on student reviews</p>
+              <h2 style={{ fontSize: '28px', fontWeight: 800, color: '#1a1a1a', marginBottom: '4px' }}>Top Rated PGs</h2>
+              <p style={{ color: '#666', fontSize: '14px' }}>Highest rated by students</p>
             </div>
-            <Link to="/login" style={{ color: '#EE2E24', fontWeight: 700, textDecoration: 'none', display: 'flex', alignItems: 'center', gap: '4px' }}>View All <MdArrowForward /></Link>
+            <Link to="/login" style={{ color: 'var(--primary)', fontWeight: 700, fontSize: '14px', textDecoration: 'none', display: 'flex', alignItems: 'center', gap: '4px' }}>View All <MdArrowForward /></Link>
           </div>
-          <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fit, minmax(320px, 1fr))', gap: '24px' }}>
+          <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fit, minmax(300px, 1fr))', gap: '24px' }}>
             {topPGs.map(pg => (
-              <div key={pg.id} style={{ background: 'white', borderRadius: '16px', overflow: 'hidden', border: '1px solid #eee', boxShadow: '0 4px 12px rgba(0,0,0,0.03)' }}>
-                <div style={{ height: '200px', position: 'relative' }}>
+              <div key={pg.id} style={{ background: 'white', borderRadius: '16px', overflow: 'hidden', border: '1px solid #eee' }}>
+                <div style={{ height: '180px', position: 'relative' }}>
                   <img src={pg.images[0]} alt={pg.name} style={{ width: '100%', height: '100%', objectFit: 'cover' }} />
-                  {pg.verified && <div style={{ position: 'absolute', top: '16px', left: '16px', background: 'white', padding: '4px 12px', borderRadius: '4px', fontSize: '11px', fontWeight: 800, color: '#059669', display: 'flex', alignItems: 'center', gap: '4px', boxShadow: '0 2px 4px rgba(0,0,0,0.1)' }}><MdVerified size={14} /> VERIFIED</div>}
+                  {pg.verified && <div style={{ position: 'absolute', top: '12px', left: '12px', background: 'white', padding: '4px 10px', borderRadius: '4px', fontSize: '10px', fontWeight: 800, color: '#059669', display: 'flex', alignItems: 'center', gap: '4px' }}><MdVerified size={12} /> VERIFIED</div>}
                 </div>
-                <div style={{ padding: '24px' }}>
-                  <h3 style={{ fontSize: '20px', fontWeight: 800, marginBottom: '4px' }}>{pg.name}</h3>
-                  <p style={{ fontSize: '14px', color: '#666', marginBottom: '16px', display: 'flex', alignItems: 'center', gap: '4px' }}><MdLocationOn size={16} /> {pg.location}</p>
-                  <div style={{ display: 'flex', gap: '12px', marginBottom: '24px' }}>
-                    <span style={{ background: '#f0fdf4', color: '#166534', padding: '4px 10px', borderRadius: '4px', fontSize: '12px', fontWeight: 700, display: 'flex', alignItems: 'center', gap: '4px' }}><MdStar size={14} /> {pg.rating}</span>
-                    <span style={{ background: '#fff7ed', color: '#c2410c', padding: '4px 10px', borderRadius: '4px', fontSize: '12px', fontWeight: 700, display: 'flex', alignItems: 'center', gap: '4px' }}><MdRestaurant size={14} /> Mess {pg.messRating}</span>
+                <div style={{ padding: '20px' }}>
+                  <h3 style={{ fontSize: '18px', fontWeight: 800, marginBottom: '4px' }}>{pg.name}</h3>
+                  <p style={{ fontSize: '13px', color: '#666', marginBottom: '16px', display: 'flex', alignItems: 'center', gap: '4px' }}><MdLocationOn size={16} /> {pg.location}</p>
+                  <div style={{ display: 'flex', gap: '8px', marginBottom: '20px' }}>
+                    <span style={{ background: '#f0fdf4', color: '#166534', padding: '3px 8px', borderRadius: '4px', fontSize: '11px', fontWeight: 700, display: 'flex', alignItems: 'center', gap: '4px' }}><MdStar size={12} /> {pg.rating}</span>
+                    <span style={{ background: '#fff7ed', color: '#c2410c', padding: '3px 8px', borderRadius: '4px', fontSize: '11px', fontWeight: 700, display: 'flex', alignItems: 'center', gap: '4px' }}><MdRestaurant size={12} /> Mess {pg.messRating}</span>
                   </div>
                   <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
-                    <div style={{ fontSize: '24px', fontWeight: 900, color: '#1a1a1a' }}>₹{pg.rent.toLocaleString()}<span style={{ fontSize: '14px', fontWeight: 400, color: '#666' }}>/mo</span></div>
-                    <Link to="/login" className="btn btn-primary" style={{ padding: '10px 24px', borderRadius: '8px' }}>View Details</Link>
+                    <div style={{ fontSize: '20px', fontWeight: 900 }}>₹{pg.rent.toLocaleString()}<span style={{ fontSize: '12px', fontWeight: 400, color: '#666' }}>/mo</span></div>
+                    <Link to="/login" className="btn btn-primary btn-sm" style={{ background: 'var(--primary-gradient)', border: 'none' }}>Details</Link>
                   </div>
                 </div>
               </div>
@@ -165,25 +172,25 @@ const LandingPage = () => {
       </section>
 
       {/* ── CTA Section ── */}
-      <section style={{ background: '#EE2E24', padding: '80px 24px', textAlign: 'center', color: 'white' }}>
+      <section style={{ background: 'var(--primary-gradient)', padding: '60px 24px', textAlign: 'center', color: 'white' }}>
         <div style={{ maxWidth: '800px', margin: '0 auto' }}>
-          <h2 style={{ fontSize: '40px', fontWeight: 900, marginBottom: '20px' }}>Ready to Find Your Perfect PG?</h2>
-          <p style={{ fontSize: '20px', opacity: 0.9, marginBottom: '40px' }}>Join 15,000+ students who found their home through Hostel-Pass.</p>
-          <Link to="/register" style={{ background: 'white', color: '#EE2E24', padding: '16px 40px', borderRadius: '8px', fontWeight: 800, fontSize: '18px', textDecoration: 'none', display: 'inline-block' }}>Get Started Now</Link>
+          <h2 style={{ fontSize: '32px', fontWeight: 900, marginBottom: '16px' }}>Ready to find your home?</h2>
+          <p style={{ fontSize: '17px', opacity: 0.9, marginBottom: '32px' }}>Join 15,000+ students today.</p>
+          <Link to="/register" style={{ background: 'white', color: 'var(--primary)', padding: '14px 32px', borderRadius: '8px', fontWeight: 800, fontSize: '16px', textDecoration: 'none', display: 'inline-block', boxShadow: '0 4px 15px rgba(0,0,0,0.1)' }}>Get Started</Link>
         </div>
       </section>
 
       {/* ── Footer ── */}
-      <footer style={{ padding: '60px 40px', background: 'white', borderTop: '1px solid #eee' }}>
-        <div style={{ maxWidth: '1100px', margin: '0 auto', display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
+      <footer style={{ padding: '40px 24px', background: 'white', borderTop: '1px solid #eee' }}>
+        <div style={{ maxWidth: '1100px', margin: '0 auto', display: 'flex', justifyContent: 'space-between', alignItems: 'center', flexWrap: 'wrap', gap: '20px' }}>
           <div>
-            <div style={{ display: 'flex', alignItems: 'center', gap: '8px', marginBottom: '12px' }}>
-              <div style={{ width: 24, height: 24, background: '#EE2E24', borderRadius: '3px', display: 'flex', alignItems: 'center', justifyContent: 'center', fontWeight: 900, fontSize: '12px', color: 'white' }}>HP</div>
-              <span style={{ fontWeight: 800, fontSize: '18px', color: '#333' }}>Hostel<span style={{ color: '#EE2E24' }}>Pass</span></span>
+            <div style={{ display: 'flex', alignItems: 'center', gap: '8px', marginBottom: '8px' }}>
+              <div style={{ width: 24, height: 24, background: 'var(--primary)', borderRadius: '3px', display: 'flex', alignItems: 'center', justifyContent: 'center', fontWeight: 900, fontSize: '12px', color: 'white' }}>HP</div>
+              <span style={{ fontWeight: 800, fontSize: '16px', color: '#333' }}>Hostel<span style={{ color: 'var(--primary)' }}>Pass</span></span>
             </div>
-            <p style={{ color: '#666', fontSize: '14px' }}>Transparent reviews for better student living.</p>
+            <p style={{ color: '#666', fontSize: '13px' }}>Real reviews for better living.</p>
           </div>
-          <div style={{ color: '#999', fontSize: '14px' }}>© 2025 Hostel-Pass. All rights reserved.</div>
+          <div style={{ color: '#999', fontSize: '12px' }}>© 2026 HostelPass. All rights reserved</div>
         </div>
       </footer>
     </div>
