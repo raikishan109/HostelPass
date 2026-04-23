@@ -1,0 +1,19 @@
+{
+  "projects": {},
+  "targets": {
+    "hostelpass-90da9": {
+      "hosting": {
+        "student": [
+          "hostelpass-90da9"
+        ],
+        "admin": [
+          "hostelpass-admin"
+        ],
+        "partner": [
+          "hostelpass-partner"
+        ]
+      }
+    }
+  },
+  "etags": {}
+}
