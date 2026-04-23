@@ -1,0 +1,39 @@
+name: Deploy to Firebase Hosting
+on:
+  push:
+    branches:
+      - main
+jobs:
+  build_and_deploy:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+
+      - name: Setup Node
+        uses: actions/setup-node@v4
+        with:
+          node-version: 18
+
+      - name: Install & Build Student Portal
+        run: |
+          cd frontend/Student-Portal
+          npm install
+          npm run build
+
+      - name: Install & Build Partner Portal
+        run: |
+          cd frontend/Partner-Portal
+          npm install
+          npm run build
+
+      - name: Install & Build Admin Portal
+        run: |
+          cd frontend/Admin-Portal
+          npm install
+          npm run build
+
+      - name: Install Firebase CLI
+        run: npm install -g firebase-tools
+
+      - name: Deploy to Firebase
+        run: firebase deploy --only hosting --token "${{ secrets.FIREBASE_TOKEN }}"
