@@ -61,50 +61,59 @@ const RegisterPage = () => {
       </div>
 
       {/* Right Panel */}
-      <div style={{ width: '500px', display: 'flex', flexDirection: 'column', justifyContent: 'center', padding: '48px', background: 'white', overflowY: 'auto' }}>
-        <div style={{ marginBottom: '28px' }}>
-          <h2 style={{ fontSize: '24px', fontWeight: 800, color: 'var(--text-dark)', marginBottom: '6px' }}>Student Registration</h2>
-          <p style={{ color: 'var(--text-light)', fontSize: '14px' }}>
-            Already have an account? <Link to="/login" style={{ color: 'var(--primary)', fontWeight: 600 }}>Sign in</Link>
+      <div style={{ flex: 1, display: 'flex', alignItems: 'center', justifyContent: 'center', padding: '24px', background: 'white' }}>
+        <div className="animate-fadeIn" style={{ 
+          width: '100%', 
+          maxWidth: '400px', 
+          padding: '32px', 
+          borderRadius: '24px', 
+          boxShadow: '0 10px 30px rgba(0,0,0,0.04)',
+          border: '1px solid #f1f5f9'
+        }}>
+          <div style={{ marginBottom: '28px', textAlign: 'center' }}>
+            <h2 style={{ fontSize: '24px', fontWeight: 800, color: 'var(--text-dark)', marginBottom: '6px' }}>Student Registration</h2>
+            <p style={{ color: 'var(--text-light)', fontSize: '14px' }}>
+              Already have an account? <Link to="/login" style={{ color: 'var(--primary)', fontWeight: 600 }}>Sign in</Link>
+            </p>
+          </div>
+
+          <form onSubmit={handleSubmit}>
+            <div className="form-group" style={{ marginBottom: '16px' }}>
+              <label className="form-label" style={{ fontSize: '13px', fontWeight: 700 }}>Full Name *</label>
+              <input name="name" type="text" className="form-input" style={{ padding: '10px 14px', fontSize: '14px' }} placeholder="Your full name" value={form.name} onChange={handleChange} required />
+            </div>
+            <div className="form-group" style={{ marginBottom: '16px' }}>
+              <label className="form-label" style={{ fontSize: '13px', fontWeight: 700 }}>Email Address *</label>
+              <input name="email" type="email" className="form-input" style={{ padding: '10px 14px', fontSize: '14px' }} placeholder="you@example.com" value={form.email} onChange={handleChange} required />
+            </div>
+            <div className="form-group" style={{ marginBottom: '16px' }}>
+              <label className="form-label" style={{ fontSize: '13px', fontWeight: 700 }}>Phone Number</label>
+              <input name="phone" type="tel" className="form-input" style={{ padding: '10px 14px', fontSize: '14px' }} placeholder="+91 9876543210" value={form.phone} onChange={handleChange} />
+            </div>
+            
+            <div className="form-group" style={{ marginBottom: '16px' }}>
+              <label className="form-label" style={{ fontSize: '13px', fontWeight: 700 }}>Password *</label>
+              <div style={{ position: 'relative' }}>
+                <input name="password" type={showPw ? 'text' : 'password'} className="form-input" style={{ padding: '10px 14px', fontSize: '14px', paddingRight: '40px' }} placeholder="Min 6 characters" value={form.password} onChange={handleChange} required />
+                <button type="button" onClick={() => setShowPw(!showPw)} style={{ position: 'absolute', right: 12, top: '50%', transform: 'translateY(-50%)', background: 'none', border: 'none', color: 'var(--text-light)', cursor: 'pointer' }}>
+                  {showPw ? <MdVisibilityOff size={18} /> : <MdVisibility size={18} />}
+                </button>
+              </div>
+            </div>
+
+            <div className="form-group" style={{ marginBottom: '20px' }}>
+              <label className="form-label" style={{ fontSize: '13px', fontWeight: 700 }}>Confirm Password *</label>
+              <input name="confirm" type="password" className="form-input" style={{ padding: '10px 14px', fontSize: '14px' }} placeholder="Re-enter password" value={form.confirm} onChange={handleChange} required />
+            </div>
+
+            <button type="submit" className="btn btn-primary w-full" style={{ height: '46px', borderRadius: '12px', fontWeight: 800 }} disabled={loading}>
+              {loading ? 'Creating Account...' : 'Register as Student'}
+            </button>
+          </form>
+          <p style={{ fontSize: '11px', color: 'var(--text-light)', textAlign: 'center', marginTop: '20px' }}>
+            By creating an account you agree to our <Link to="/terms">Terms</Link> and <Link to="/privacy">Privacy Policy</Link>.
           </p>
         </div>
-
-        <form onSubmit={handleSubmit}>
-          <div className="form-group">
-            <label className="form-label">Full Name *</label>
-            <input name="name" type="text" className="form-input" placeholder="Your full name" value={form.name} onChange={handleChange} required />
-          </div>
-          <div className="form-group">
-            <label className="form-label">Email Address *</label>
-            <input name="email" type="email" className="form-input" placeholder="you@example.com" value={form.email} onChange={handleChange} required />
-          </div>
-          <div className="form-group">
-            <label className="form-label">Phone Number</label>
-            <input name="phone" type="tel" className="form-input" placeholder="+91 9876543210" value={form.phone} onChange={handleChange} />
-          </div>
-          
-          <div className="form-group">
-            <label className="form-label">Password *</label>
-            <div style={{ position: 'relative' }}>
-              <input name="password" type={showPw ? 'text' : 'password'} className="form-input" placeholder="Min 6 characters" value={form.password} onChange={handleChange} style={{ paddingRight: '40px' }} required />
-              <button type="button" onClick={() => setShowPw(!showPw)} style={{ position: 'absolute', right: 12, top: '50%', transform: 'translateY(-50%)', background: 'none', border: 'none', color: 'var(--text-light)', cursor: 'pointer' }}>
-                {showPw ? <MdVisibilityOff /> : <MdVisibility />}
-              </button>
-            </div>
-          </div>
-
-          <div className="form-group">
-            <label className="form-label">Confirm Password *</label>
-            <input name="confirm" type="password" className="form-input" placeholder="Re-enter password" value={form.confirm} onChange={handleChange} required />
-          </div>
-
-          <button type="submit" className="btn btn-primary w-full btn-lg" style={{ marginTop: '8px' }} disabled={loading}>
-            {loading ? 'Creating Account...' : 'Register as Student'}
-          </button>
-        </form>
-        <p style={{ fontSize: '12px', color: 'var(--text-light)', textAlign: 'center', marginTop: '20px' }}>
-          By creating an account you agree to our Terms of Service and Privacy Policy.
-        </p>
       </div>
     </div>
   );
