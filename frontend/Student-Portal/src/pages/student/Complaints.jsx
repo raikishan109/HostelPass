@@ -1,6 +1,5 @@
 import React, { useState } from 'react';
-import StudentSidebar from '../../components/layout/StudentSidebar';
-import Topbar from '../../components/layout/Topbar';
+import StudentLayout from '../../components/layout/StudentLayout';
 import { MOCK_PGS } from '../../data/mockData';
 import toast from 'react-hot-toast';
 import { MdReport, MdCheckCircle, MdHourglassEmpty, MdAdd } from 'react-icons/md';
@@ -31,11 +30,8 @@ const Complaints = () => {
   };
 
   return (
-    <div className="dashboard-layout">
-      <StudentSidebar />
-      <div className="main-content">
-        <Topbar title="Complaints" subtitle="Track your reported issues" />
-        <div className="page-content animate-fadeIn">
+    <StudentLayout title="Complaints" subtitle="Track your reported issues">
+      <div className="animate-fadeIn">
           <div style={{ display: 'flex', justifyContent: 'flex-end', marginBottom: '20px' }}>
             <button className="btn btn-primary btn-sm" onClick={() => setShowForm(!showForm)}>
               <MdAdd /> File New Complaint
@@ -97,9 +93,8 @@ const Complaints = () => {
               })}
             </div>
           )}
-        </div>
       </div>
-    </div>
+    </StudentLayout>
   );
 };
 

@@ -37,7 +37,7 @@ const LoginPage = () => {
       <div className="auth-card animate-fadeIn" style={{ maxWidth: '600px' }}>
         <Link to="/" className="back-link"><MdArrowBack /> Back to Home</Link>
         <div className="auth-header">
-          <h2>Welcome to Hostel-Pass</h2>
+          <h2>Welcome to Hostel<span style={{ color: 'var(--primary)' }}>Pass</span></h2>
           <p>Please select your login portal to continue</p>
         </div>
 
@@ -69,7 +69,7 @@ const LoginPage = () => {
         </div>
 
         <p className="auth-footer" style={{ marginTop: '32px' }}>
-          New to Hostel-Pass? <Link to="/register">Create an account</Link>
+          New to HostelPass? <Link to="/register">Create an account</Link>
         </p>
       </div>
     </div>

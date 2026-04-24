@@ -1,6 +1,5 @@
 import React, { useState } from 'react';
-import StudentSidebar from '../../components/layout/StudentSidebar';
-import Topbar from '../../components/layout/Topbar';
+import StudentLayout from '../../components/layout/StudentLayout';
 import { useAuth } from '../../context/AuthContext';
 import toast from 'react-hot-toast';
 import { MdEdit, MdSave, MdPerson, MdEmail, MdPhone } from 'react-icons/md';
@@ -12,11 +11,8 @@ const StudentProfile = () => {
   const save = () => { toast.success('Profile updated!'); setEditing(false); };
 
   return (
-    <div className="dashboard-layout">
-      <StudentSidebar />
-      <div className="main-content">
-        <Topbar title="My Profile" />
-        <div className="page-content animate-fadeIn" style={{ maxWidth: '640px' }}>
+    <StudentLayout title="My Profile">
+      <div className="animate-fadeIn" style={{ maxWidth: '640px' }}>
           <div style={{ background: 'white', borderRadius: '20px', border: '1px solid var(--border)', overflow: 'hidden' }}>
             <div style={{ background: 'linear-gradient(135deg, var(--primary), var(--primary-dark))', padding: '40px 32px', display: 'flex', alignItems: 'center', gap: '24px' }}>
               <div className="avatar avatar-xl" style={{ background: 'rgba(255,255,255,0.2)', color: 'white', fontSize: '36px', border: '3px solid rgba(255,255,255,0.4)' }}>
@@ -50,9 +46,8 @@ const StudentProfile = () => {
               </div>
             </div>
           </div>
-        </div>
       </div>
-    </div>
+    </StudentLayout>
   );
 };
 

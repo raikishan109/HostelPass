@@ -15,6 +15,7 @@ import PGDetails from './pages/student/PGDetails';
 import Favorites from './pages/student/Favorites';
 import Complaints from './pages/student/Complaints';
 import StudentProfile from './pages/student/Profile';
+import MyReviews from './pages/student/MyReviews';
 
 const ProtectedRoute = ({ children }) => {
   const { user, userRole, loading } = useAuth();
@@ -38,6 +39,7 @@ const AppRoutes = () => {
       <Route path="/student/favorites" element={<ProtectedRoute><Favorites /></ProtectedRoute>} />
       <Route path="/student/complaints" element={<ProtectedRoute><Complaints /></ProtectedRoute>} />
       <Route path="/student/profile" element={<ProtectedRoute><StudentProfile /></ProtectedRoute>} />
+      <Route path="/student/reviews" element={<ProtectedRoute><MyReviews /></ProtectedRoute>} />
 
       <Route path="*" element={<Navigate to="/" replace />} />
     </Routes>

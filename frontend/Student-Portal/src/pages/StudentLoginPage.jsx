@@ -17,7 +17,7 @@ const StudentLoginPage = () => {
     setLoading(true);
     try {
       await login(email, password);
-      toast.success('Welcome to Hostel-Pass!');
+      toast.success('Welcome to HostelPass!');
       navigate('/student');
     } catch (error) {
       toast.error('Invalid credentials or user not found');

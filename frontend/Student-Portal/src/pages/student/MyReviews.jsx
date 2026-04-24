@@ -1,6 +1,5 @@
 import React from 'react';
-import StudentSidebar from '../../components/layout/StudentSidebar';
-import Topbar from '../../components/layout/Topbar';
+import StudentLayout from '../../components/layout/StudentLayout';
 import { MOCK_REVIEWS, MOCK_PGS } from '../../data/mockData';
 import { MdStar, MdRestaurant, MdDelete } from 'react-icons/md';
 import toast from 'react-hot-toast';
@@ -9,11 +8,8 @@ const MyReviews = () => {
   const reviews = MOCK_REVIEWS.slice(0, 2);
 
   return (
-    <div className="dashboard-layout">
-      <StudentSidebar />
-      <div className="main-content">
-        <Topbar title="My Reviews" subtitle={`${reviews.length} reviews written`} />
-        <div className="page-content animate-fadeIn">
+    <StudentLayout title="My Reviews" subtitle={`${reviews.length} reviews written`}>
+      <div className="animate-fadeIn">
           {reviews.length === 0 ? (
             <div className="empty-state">
               <div className="empty-state-icon">✍️</div>
@@ -51,9 +47,8 @@ const MyReviews = () => {
               })}
             </div>
           )}
-        </div>
       </div>
-    </div>
+    </StudentLayout>
   );
 };
 

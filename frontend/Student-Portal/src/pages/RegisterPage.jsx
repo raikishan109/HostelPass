@@ -21,7 +21,7 @@ const RegisterPage = () => {
     setLoading(true);
     try {
       await register(form.email, form.password, form.name, 'student');
-      toast.success('Account created! Welcome to Hostel-Pass 🎉');
+      toast.success('Account created! Welcome to HostelPass 🎉');
       navigate('/student');
     } catch (err) {
       const msg = err.code === 'auth/email-already-in-use' ? 'An account with this email already exists'
@@ -40,7 +40,7 @@ const RegisterPage = () => {
         <div style={{ maxWidth: '380px', width: '100%' }}>
           <Link to="/" style={{ display: 'flex', alignItems: 'center', gap: '10px', marginBottom: '48px' }}>
             <div style={{ width: 42, height: 42, background: 'var(--primary)', borderRadius: '12px', display: 'flex', alignItems: 'center', justifyContent: 'center', fontWeight: 900, fontSize: '18px', color: 'white' }}>HP</div>
-            <span style={{ fontWeight: 800, fontSize: '22px', color: 'white' }}>Hostel<span style={{ color: 'var(--primary-light)' }}>Pass</span></span>
+            <span style={{ fontWeight: 800, fontSize: '22px', color: 'white' }}>Hostel<span style={{ color: 'var(--primary)' }}>Pass</span></span>
           </Link>
           <h1 style={{ fontSize: '34px', fontWeight: 900, color: 'white', marginBottom: '16px', lineHeight: 1.2 }}>Join thousands of students</h1>
           <p style={{ color: 'rgba(255,255,255,0.65)', fontSize: '15px', lineHeight: 1.8, marginBottom: '36px' }}>
