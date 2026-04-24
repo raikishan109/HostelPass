@@ -7,6 +7,7 @@ const Logo = ({ color = 'var(--text-dark)' }) => (
       src="/pwa-192x192.png" 
       alt="HostelPass" 
       className="logo-img"
+      style={{ width: '32px', height: '32px', objectFit: 'contain', background: 'transparent' }}
     />
     <span className="logo-text" style={{ color }}>
       Hostel<span style={{ color: 'var(--primary)' }}>Pass</span>

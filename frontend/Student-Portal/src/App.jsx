@@ -16,6 +16,7 @@ import Favorites from './pages/student/Favorites';
 import Complaints from './pages/student/Complaints';
 import StudentProfile from './pages/student/Profile';
 import MyReviews from './pages/student/MyReviews';
+import PWAInstall from './components/common/PWAInstall';
 
 const ProtectedRoute = ({ children }) => {
   const { user, userRole, loading } = useAuth();
@@ -34,8 +35,8 @@ const AppRoutes = () => {
 
       {/* Student Routes */}
       <Route path="/student" element={<ProtectedRoute><StudentDashboard /></ProtectedRoute>} />
-      <Route path="/student/search" element={<ProtectedRoute><SearchResults /></ProtectedRoute>} />
-      <Route path="/student/pg/:id" element={<ProtectedRoute><PGDetails /></ProtectedRoute>} />
+      <Route path="/student/search-results" element={<SearchResults />} />
+      <Route path="/student/pg/:id" element={<PGDetails />} />
       <Route path="/student/favorites" element={<ProtectedRoute><Favorites /></ProtectedRoute>} />
       <Route path="/student/complaints" element={<ProtectedRoute><Complaints /></ProtectedRoute>} />
       <Route path="/student/profile" element={<ProtectedRoute><StudentProfile /></ProtectedRoute>} />
@@ -51,6 +52,7 @@ function App() {
     <AuthProvider>
       <BrowserRouter>
         <Toaster position="top-right" />
+        <PWAInstall />
         <AppRoutes />
       </BrowserRouter>
     </AuthProvider>

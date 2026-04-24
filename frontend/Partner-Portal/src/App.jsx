@@ -14,6 +14,7 @@ import ManageListings from './pages/partner/ManageListings';
 import EditListing from './pages/partner/EditListing';
 import PartnerAnalytics from './pages/partner/Analytics';
 import PartnerProfile from './pages/partner/Profile';
+import ManageBookings from './pages/partner/ManageBookings';
 
 const ProtectedRoute = ({ children }) => {
   const { user, userRole, loading } = useAuth();
@@ -34,6 +35,7 @@ const AppRoutes = () => {
       <Route path="/partner" element={<ProtectedRoute><PartnerDashboard /></ProtectedRoute>} />
       <Route path="/partner/add-listing" element={<ProtectedRoute><AddListing /></ProtectedRoute>} />
       <Route path="/partner/listings" element={<ProtectedRoute><ManageListings /></ProtectedRoute>} />
+      <Route path="/partner/bookings" element={<ProtectedRoute><ManageBookings /></ProtectedRoute>} />
       <Route path="/partner/listings/edit/:id" element={<ProtectedRoute><EditListing /></ProtectedRoute>} />
       <Route path="/partner/analytics" element={<ProtectedRoute><PartnerAnalytics /></ProtectedRoute>} />
       <Route path="/partner/profile" element={<ProtectedRoute><PartnerProfile /></ProtectedRoute>} />

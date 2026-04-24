@@ -2,19 +2,54 @@ import React, { useState } from 'react';
 import { useNavigate, Link } from 'react-router-dom';
 import { useAuth } from '../context/AuthContext';
 import {
-  MdLocationOn, MdStar, MdRestaurant, MdVerified, MdSearch,
+  MdLocationOn, MdStar, MdRestaurant, MdVerified, MdSearch, MdMyLocation,
   MdFeedback, MdFavorite, MdArrowForward, MdMenu, MdClose, MdDashboard, MdPerson, MdLogout, MdNotifications
 } from 'react-icons/md';
 import { MOCK_PGS } from '../data/mockData';
 import Logo from '../components/common/Logo';
 import UserActions from '../components/layout/UserActions';
+import StudentSidebar from '../components/layout/StudentSidebar';
+import toast from 'react-hot-toast';
 
 const LandingPage = () => {
   const { user, userRole, logout } = useAuth();
   const navigate = useNavigate();
   const [isMenuOpen, setIsMenuOpen] = useState(false);
+  const [searchQuery, setSearchQuery] = useState('');
+  const [isDetecting, setIsDetecting] = useState(false);
 
   const topPGs = MOCK_PGS.filter(p => p.rating >= 4.3).slice(0, 3);
+
+  const handleSearch = (e) => {
+    e?.preventDefault();
+    if (!searchQuery.trim()) return;
+    navigate(`/student/search-results?q=${encodeURIComponent(searchQuery.trim())}`);
+  };
+
+  const handleCitySearch = (city) => {
+    navigate(`/student/search-results?q=${encodeURIComponent(city)}`);
+  };
+
+  const detectLocation = () => {
+    if (!navigator.geolocation) {
+      toast.error("Geolocation is not supported");
+      return;
+    }
+    setIsDetecting(true);
+    navigator.geolocation.getCurrentPosition(
+      (position) => {
+        setTimeout(() => {
+          setSearchQuery('Electronic City, Bangalore');
+          toast.success("Location detected: Bangalore");
+          setIsDetecting(false);
+        }, 1500);
+      },
+      () => {
+        toast.error("Unable to retrieve location");
+        setIsDetecting(false);
+      }
+    );
+  };
 
   const features = [
     { icon: <MdRestaurant />, title: 'Mess Quality Score', desc: 'Our unique food rating system aggregates real student reviews to give you an honest mess score.' },
@@ -27,214 +62,130 @@ const LandingPage = () => {
 
   return (
     <div className="landing-container" style={{ background: '#fcfcfc', minHeight: '100vh', fontFamily: "'Inter', sans-serif", overflowX: 'hidden', paddingTop: '60px' }}>
+      
       {/* ── Navbar ── */}
-      <nav className="landing-nav">
+      <nav className="landing-nav" style={{ position: 'fixed', top: 0, left: 0, right: 0, height: '60px', background: 'white', borderBottom: '1px solid #eee', display: 'flex', alignItems: 'center', justifyContent: 'space-between', padding: '0 24px', zIndex: 1000 }}>
         <div className="nav-left">
-          {/* Hamburger on Left for Mobile */}
-          <button 
-            className="btn btn-ghost btn-icon pc-only-hidden" 
-            onClick={() => setIsMenuOpen(!isMenuOpen)}
-          >
+          <button className="btn btn-ghost btn-icon pc-only-hidden" onClick={() => setIsMenuOpen(true)}>
             <MdMenu size={24} />
           </button>
-
           <Logo />
         </div>
-
-        {/* User Actions */}
         <div style={{ display: 'flex', alignItems: 'center', gap: '8px' }}>
           {user ? (
-            <>
-              <Link to={`/${userRole}`} className="pc-only" style={{ 
-                background: 'var(--primary-gradient)', color: 'white', padding: '8px 16px', 
-                borderRadius: '6px', fontWeight: 700, fontSize: '13px', textDecoration: 'none',
-                boxShadow: '0 4px 10px rgba(230, 0, 0, 0.2)', marginRight: '4px'
-              }}>Dashboard</Link>
-              <UserActions />
-            </>
+            <><Link to={`/${userRole}`} className="pc-only" style={{ background: 'var(--primary-gradient)', color: 'white', padding: '8px 16px', borderRadius: '6px', fontWeight: 700, fontSize: '13px', textDecoration: 'none', boxShadow: '0 4px 10px rgba(230, 0, 0, 0.2)', marginRight: '4px' }}>Dashboard</Link><UserActions /></>
           ) : (
             <div className="pc-only" style={{ display: 'flex', gap: '8px' }}>
-              <Link to="/login" style={{ 
-                fontWeight: 600, color: '#333', fontSize: '13px', textDecoration: 'none',
-                padding: '8px 12px', borderRadius: '6px', border: '1px solid #eee'
-              }}>Login</Link>
-              <Link to="/register" style={{ 
-                background: 'var(--primary-gradient)', color: 'white', padding: '8px 16px', 
-                borderRadius: '6px', fontWeight: 700, fontSize: '13px', textDecoration: 'none',
-                boxShadow: '0 4px 10px rgba(230, 0, 0, 0.2)'
-              }}>Join Now</Link>
+              <Link to="/login" style={{ fontWeight: 600, color: '#333', fontSize: '13px', textDecoration: 'none', padding: '8px 12px', borderRadius: '6px', border: '1px solid #eee' }}>Login</Link>
+              <Link to="/register" style={{ background: 'var(--primary-gradient)', color: 'white', padding: '8px 16px', borderRadius: '6px', fontWeight: 700, fontSize: '13px', textDecoration: 'none', boxShadow: '0 4px 10px rgba(230, 0, 0, 0.2)' }}>Join Now</Link>
             </div>
           )}
         </div>
       </nav>
 
-      {/* Mobile Sidebar Overlay */}
+      {/* ── Dashboard Sidebar (Unified UI) ── */}
+      <StudentSidebar sidebarOpen={isMenuOpen} setSidebarOpen={setIsMenuOpen} />
+      
+      {/* Mobile Backdrop for Sidebar */}
       {isMenuOpen && (
         <div 
+          className="modal-overlay pc-only-hidden" 
           onClick={() => setIsMenuOpen(false)}
-          style={{
+          style={{ 
             position: 'fixed', top: 0, left: 0, right: 0, bottom: 0,
-            background: 'rgba(0,0,0,0.5)', zIndex: 1100,
+            background: 'rgba(0,0,0,0.6)', zIndex: 999,
             animation: 'fadeIn 0.3s ease'
           }}
-        >
-          <div 
-            onClick={e => e.stopPropagation()}
-            style={{
-              width: '280px', height: '100%', background: 'white',
-              padding: '24px', display: 'flex', flexDirection: 'column',
-              gap: '24px', animation: 'slideIn 0.3s ease'
-            }}
-          >
-            <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', marginBottom: '12px' }}>
-              <div style={{ display: 'flex', alignItems: 'center', gap: '8px' }}>
-                <img src="/pwa-192x192.png" style={{ width: 28, height: 28 }} alt="" />
-                <span style={{ fontWeight: 800, fontSize: '18px' }}>HostelPass</span>
-              </div>
-              <button onClick={() => setIsMenuOpen(false)} style={{ background: 'none', border: 'none', color: '#666' }}><MdClose size={24} /></button>
-            </div>
-
-            <div style={{ display: 'flex', flexDirection: 'column', gap: '8px' }}>
-              {user ? (
-                <>
-                  <Link to={`/${userRole}`} onClick={() => setIsMenuOpen(false)} style={{ display: 'flex', alignItems: 'center', gap: '12px', padding: '12px', borderRadius: '8px', textDecoration: 'none', color: '#333', fontWeight: 600, background: '#f8f9fa' }}>
-                    <MdDashboard color="var(--primary)" /> Dashboard
-                  </Link>
-                  <Link to={`/${userRole}/profile`} onClick={() => setIsMenuOpen(false)} style={{ display: 'flex', alignItems: 'center', gap: '12px', padding: '12px', borderRadius: '8px', textDecoration: 'none', color: '#333', fontWeight: 600 }}>
-                    <MdPerson color="var(--primary)" /> My Profile
-                  </Link>
-                  <div style={{ marginTop: 'auto', paddingTop: '16px', borderTop: '1px solid #eee' }}>
-                    <button onClick={() => { logout(); setIsMenuOpen(false); }} style={{ display: 'flex', alignItems: 'center', gap: '12px', width: '100%', padding: '12px', background: 'none', border: 'none', color: '#ee2e24', fontWeight: 600, cursor: 'pointer', textAlign: 'left' }}>
-                      <MdLogout /> Logout
-                    </button>
-                  </div>
-                </>
-              ) : (
-                <>
-                  <Link to="/login" onClick={() => setIsMenuOpen(false)} style={{ display: 'block', padding: '14px', borderRadius: '12px', border: '1px solid #eee', textDecoration: 'none', color: '#333', fontWeight: 600, textAlign: 'center' }}>Login</Link>
-                  <Link to="/register" onClick={() => setIsMenuOpen(false)} style={{ display: 'block', padding: '14px', borderRadius: '12px', background: 'var(--primary-gradient)', color: 'white', textDecoration: 'none', fontWeight: 700, textAlign: 'center' }}>Join Now</Link>
-                </>
-              )}
-            </div>
-          </div>
-        </div>
+        />
       )}
 
-      {/* ── Hero Section ── */}
-      <section className="landing-hero" style={{ padding: '60px 24px 0', textAlign: 'center', background: 'white' }}>
+      {/* Hero Section */}
+      <section className="landing-hero" style={{ padding: '80px 24px 0', textAlign: 'center', background: 'white' }}>
         <div style={{ maxWidth: '1000px', margin: '0 auto' }}>
-          <h1 className="landing-title" style={{ fontSize: 'clamp(36px, 8vw, 68px)', fontWeight: 900, color: '#1a1a1a', lineHeight: 1.1, marginBottom: '24px', letterSpacing: '-2px' }}>
+          <h1 className="landing-title" style={{ fontSize: 'clamp(36px, 8vw, 72px)', fontWeight: 950, color: '#1a1a1a', lineHeight: 1.2, marginBottom: '24px', letterSpacing: '-1px' }}>
             Find Your Perfect <br className="mobile-only" />
             <span style={{ color: '#1a1a1a' }}>PG/Hostel</span> <br className="pc-only" />
-            <span style={{ 
-              background: 'var(--primary-gradient)', 
-              WebkitBackgroundClip: 'text', 
-              WebkitTextFillColor: 'transparent',
-              display: 'inline-block'
-            }}>with Honest Review</span>
+            <span style={{ background: 'var(--primary-gradient)', WebkitBackgroundClip: 'text', WebkitTextFillColor: 'transparent', display: 'inline-block', paddingBottom: '8px' }}>Near Your College</span>
           </h1>
-          <p style={{ fontSize: '17px', color: '#666', marginBottom: '40px', maxWidth: '700px', margin: '0 auto 40px', lineHeight: 1.6 }}>
-            Don't just pick a PG based on photos. Read real student experiences, check the mess quality score, and choose where you truly belong.
+          <p style={{ fontSize: '18px', color: '#666', marginBottom: '40px', maxWidth: '750px', margin: '0 auto 40px', lineHeight: 1.6 }}>
+            Browse verified listings, read honest student reviews, and book your stay with a single click. No hidden fees, just pure transparency.
           </p>
-          <div className="landing-search-bar" style={{ background: 'white', borderRadius: '50px', padding: '8px 8px 8px 24px', display: 'flex', alignItems: 'center', boxShadow: '0 10px 30px rgba(0,0,0,0.08)', maxWidth: '650px', margin: '0 auto 32px', border: '1px solid #eee' }}>
+
+          <form onSubmit={handleSearch} className="landing-search-bar" style={{ background: 'white', borderRadius: '50px', padding: '8px 8px 8px 24px', display: 'flex', alignItems: 'center', boxShadow: '0 15px 40px rgba(0,0,0,0.08)', maxWidth: '700px', margin: '0 auto 32px', border: '1px solid #eee' }}>
             <div style={{ display: 'flex', alignItems: 'center', flex: 1 }}>
-              <MdLocationOn size={24} color="var(--primary)" />
-              <input style={{ flex: 1, border: 'none', padding: '12px 12px', fontSize: '16px', outline: 'none', width: '100%' }} placeholder="Search location or PG name..." />
+              <MdLocationOn size={26} color="var(--primary)" />
+              <input style={{ flex: 1, border: 'none', padding: '12px 12px', fontSize: '16px', outline: 'none', width: '100%', fontWeight: 500 }} placeholder={isDetecting ? "Detecting..." : "Search city, location or college..."} value={searchQuery} onChange={(e) => setSearchQuery(e.target.value)} />
+              <button type="button" onClick={detectLocation} style={{ background: 'none', border: 'none', cursor: 'pointer', padding: '10px', color: isDetecting ? 'var(--primary)' : '#999' }}><MdMyLocation size={22} /></button>
             </div>
-            <button style={{ 
-              background: 'var(--primary-gradient)', 
-              color: 'white', 
-              border: 'none', 
-              padding: '12px 20px', 
-              borderRadius: '40px', 
-              fontWeight: 700, 
-              display: 'flex', 
-              alignItems: 'center', 
-              justifyContent: 'center',
-              gap: '6px', 
-              cursor: 'pointer', 
-              boxShadow: '0 4px 10px rgba(230, 0, 0, 0.2)' 
-            }}>
-              <MdSearch size={18} />
-              <span>Search</span>
-            </button>
-          </div>
-          <div style={{ display: 'flex', gap: '8px', justifyContent: 'center', flexWrap: 'wrap', marginBottom: '60px' }}>
-            {['Bangalore', 'Mumbai', 'Delhi', 'Pune'].map(city => (
-              <button key={city} style={{ background: 'white', border: '1px solid #eee', padding: '6px 16px', borderRadius: '20px', fontSize: '12px', fontWeight: 600, color: '#555', cursor: 'pointer' }}>{city}</button>
+            <button type="submit" style={{ background: 'var(--primary-gradient)', color: 'white', border: 'none', padding: '14px 28px', borderRadius: '40px', fontWeight: 800, cursor: 'pointer', boxShadow: '0 6px 18px rgba(238,46,36,0.25)', display: 'flex', alignItems: 'center', gap: '8px' }}><MdSearch size={22} /> Search</button>
+          </form>
+
+          <div style={{ display: 'flex', gap: '10px', justifyContent: 'center', flexWrap: 'wrap', marginBottom: '80px' }}>
+            {['Bangalore', 'Mumbai', 'Delhi', 'Pune', 'Lucknow'].map(city => (
+              <button key={city} onClick={() => handleCitySearch(city)} style={{ background: 'white', border: '1px solid #eee', padding: '10px 24px', borderRadius: '30px', fontSize: '14px', fontWeight: 600, color: '#555', cursor: 'pointer' }}>{city}</button>
             ))}
           </div>
         </div>
 
-        {/* ── Stats Bar ── */}
-        <div className="stats-bar" style={{ background: 'var(--primary-gradient)', padding: '40px 24px', color: 'white' }}>
-          <div className="stats-bar-grid" style={{ maxWidth: '1100px', margin: '0 auto', display: 'grid', gridTemplateColumns: 'repeat(auto-fit, minmax(150px, 1fr))', justifyContent: 'center', textAlign: 'center', gap: '20px' }}>
-            <div>
-              <div style={{ fontSize: '28px', fontWeight: 900 }}>1,200+</div>
-              <div style={{ fontSize: '13px', opacity: 0.8 }}>PGs Listed</div>
-            </div>
-            <div>
-              <div style={{ fontSize: '28px', fontWeight: 900 }}>15,000+</div>
-              <div style={{ fontSize: '13px', opacity: 0.8 }}>Students</div>
-            </div>
-            <div>
-              <div style={{ fontSize: '28px', fontWeight: 900 }}>45,000+</div>
-              <div style={{ fontSize: '13px', opacity: 0.8 }}>Reviews</div>
-            </div>
-            <div>
-              <div style={{ fontSize: '28px', fontWeight: 900 }}>320+</div>
-              <div style={{ fontSize: '13px', opacity: 0.8 }}>Verified</div>
-            </div>
+        <div className="stats-bar" style={{ background: 'var(--primary-gradient)', padding: '60px 24px', color: 'white' }}>
+          <div className="stats-bar-grid" style={{ maxWidth: '1100px', margin: '0 auto', display: 'grid', gridTemplateColumns: 'repeat(auto-fit, minmax(180px, 1fr))', justifyContent: 'center', textAlign: 'center', gap: '40px' }}>
+            <div><div style={{ fontSize: '36px', fontWeight: 950 }}>1,200+</div><div style={{ fontSize: '15px', opacity: 0.9 }}>Hostels</div></div>
+            <div><div style={{ fontSize: '36px', fontWeight: 950 }}>15,000+</div><div style={{ fontSize: '15px', opacity: 0.9 }}>Students</div></div>
+            <div><div style={{ fontSize: '36px', fontWeight: 950 }}>45,000+</div><div style={{ fontSize: '15px', opacity: 0.9 }}>Reviews</div></div>
+            <div><div style={{ fontSize: '36px', fontWeight: 950 }}>320+</div><div style={{ fontSize: '15px', opacity: 0.9 }}>Verified</div></div>
           </div>
         </div>
       </section>
 
-      {/* ── Why Choose Us ── */}
-      <section className="section-padding" style={{ padding: '100px 24px', background: 'white' }}>
+      {/* Why Choose Us */}
+      <section className="lp-section" style={{ padding: '100px 24px', background: 'white' }}>
         <div style={{ maxWidth: '1100px', margin: '0 auto' }}>
-          <div style={{ textAlign: 'center', marginBottom: '60px' }}>
-            <h2 className="section-title" style={{ fontSize: '32px', fontWeight: 800, color: '#1a1a1a', marginBottom: '16px' }}>Why Hostel<span style={{ color: 'var(--primary)' }}>Pass</span>?</h2>
-            <p className="section-subtitle" style={{ fontSize: '17px', color: '#666', maxWidth: '600px', margin: '0 auto' }}>We put transparency at the center — every review, every mess score is real.</p>
+          <div style={{ textAlign: 'center', marginBottom: '40px' }}>
+            <h2 className="section-title-sm" style={{ fontSize: '36px', fontWeight: 900, color: '#1a1a1a', marginBottom: '12px' }}>Why Hostel<span style={{ color: 'var(--primary)' }}>Pass</span>?</h2>
+            <p className="section-subtitle-sm" style={{ fontSize: '18px', color: '#666', maxWidth: '600px', margin: '0 auto' }}>We put transparency at the center — every review, every mess score is real.</p>
           </div>
-          <div className="features-grid" style={{ display: 'grid', gridTemplateColumns: 'repeat(2, 1fr)', gap: '24px' }}>
+          <div className="features-grid">
             {features.map((f, i) => (
-              <div key={i} style={{ padding: '24px', borderRadius: '16px', background: '#fcfcfc', border: '1px solid #eee' }}>
-                <div style={{ fontSize: '28px', color: 'var(--primary)', marginBottom: '16px' }}>{f.icon}</div>
-                <h3 style={{ fontSize: '18px', fontWeight: 800, marginBottom: '10px' }}>{f.title}</h3>
-                <p style={{ fontSize: '14px', color: '#666', lineHeight: 1.6 }}>{f.desc}</p>
+              <div key={i} className="feature-card" style={{ padding: '32px', borderRadius: '24px', background: '#fcfcfc', border: '1px solid #eee' }}>
+                <div className="icon" style={{ fontSize: '32px', color: 'var(--primary)', marginBottom: '20px' }}>{f.icon}</div>
+                <h3 style={{ fontSize: '20px', fontWeight: 800, marginBottom: '12px' }}>{f.title}</h3>
+                <p style={{ fontSize: '15px', color: '#666', lineHeight: 1.7 }}>{f.desc}</p>
               </div>
             ))}
           </div>
         </div>
       </section>
 
-      {/* ── Top PGs ── */}
-      <section className="section-padding" style={{ padding: '80px 24px', background: '#f9f9f9' }}>
+      {/* Top PGs */}
+      <section className="lp-section" style={{ padding: '100px 24px', background: '#f9f9f9' }}>
         <div style={{ maxWidth: '1100px', margin: '0 auto' }}>
-          <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'flex-end', marginBottom: '40px', flexWrap: 'wrap', gap: '16px' }}>
+          <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'flex-end', marginBottom: '48px', flexWrap: 'wrap', gap: '20px' }}>
             <div>
-              <h2 className="section-title" style={{ fontSize: '28px', fontWeight: 800, color: '#1a1a1a', marginBottom: '4px' }}>Top Rated PGs</h2>
-              <p className="section-subtitle" style={{ color: '#666', fontSize: '14px' }}>Highest rated by students</p>
+              <h2 className="section-title-sm" style={{ fontSize: '32px', fontWeight: 900, color: '#1a1a1a', marginBottom: '4px' }}>Top Rated Hostels</h2>
+              <p className="section-subtitle-sm" style={{ color: '#666', fontSize: '16px' }}>Verified properties with the best student feedback.</p>
             </div>
-            <Link to="/login" style={{ color: 'var(--primary)', fontWeight: 700, fontSize: '14px', textDecoration: 'none', display: 'flex', alignItems: 'center', gap: '4px' }}>View All <MdArrowForward /></Link>
+            <Link to="/student/search-results" style={{ color: 'var(--primary)', fontWeight: 800, fontSize: '15px', textDecoration: 'none', display: 'flex', alignItems: 'center', gap: '6px' }}>View All Hostels <MdArrowForward /></Link>
           </div>
-          <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fit, minmax(300px, 1fr))', gap: '24px' }}>
+          <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fit, minmax(320px, 1fr))', gap: '32px' }}>
             {topPGs.map(pg => (
-              <div key={pg.id} className="pg-card-landing" style={{ background: 'white', borderRadius: '16px', overflow: 'hidden', border: '1px solid #eee' }}>
-                <div style={{ height: '180px', position: 'relative' }}>
+              <div key={pg.id} style={{ background: 'white', borderRadius: '24px', overflow: 'hidden', border: '1px solid #eee', boxShadow: '0 4px 15px rgba(0,0,0,0.02)' }}>
+                <div style={{ height: '220px', position: 'relative' }}>
                   <img src={pg.images[0]} alt={pg.name} style={{ width: '100%', height: '100%', objectFit: 'cover' }} />
-                  {pg.verified && <div style={{ position: 'absolute', top: '12px', left: '12px', background: 'white', padding: '4px 10px', borderRadius: '4px', fontSize: '10px', fontWeight: 800, color: '#059669', display: 'flex', alignItems: 'center', gap: '4px' }}><MdVerified size={12} /> VERIFIED</div>}
+                  {pg.verified && <div style={{ position: 'absolute', top: '16px', left: '16px', background: 'white', padding: '6px 12px', borderRadius: '8px', fontSize: '11px', fontWeight: 900, color: '#059669', display: 'flex', alignItems: 'center', gap: '6px', boxShadow: '0 4px 10px rgba(0,0,0,0.1)' }}><MdVerified size={14} /> VERIFIED</div>}
                 </div>
-                <div style={{ padding: '20px' }}>
-                  <h3 style={{ fontSize: '18px', fontWeight: 800, marginBottom: '4px' }}>{pg.name}</h3>
-                  <p style={{ fontSize: '13px', color: '#666', marginBottom: '16px', display: 'flex', alignItems: 'center', gap: '4px' }}><MdLocationOn size={16} /> {pg.location}</p>
-                  <div style={{ display: 'flex', gap: '8px', marginBottom: '20px' }}>
-                    <span style={{ background: '#f0fdf4', color: '#166534', padding: '3px 8px', borderRadius: '4px', fontSize: '11px', fontWeight: 700, display: 'flex', alignItems: 'center', gap: '4px' }}><MdStar size={12} /> {pg.rating}</span>
-                    <span style={{ background: '#fff7ed', color: '#c2410c', padding: '3px 8px', borderRadius: '4px', fontSize: '11px', fontWeight: 700, display: 'flex', alignItems: 'center', gap: '4px' }}><MdRestaurant size={12} /> Mess {pg.messRating}</span>
+                <div style={{ padding: '24px' }}>
+                  <h3 style={{ fontSize: '20px', fontWeight: 900, marginBottom: '6px' }}>{pg.name}</h3>
+                  <p style={{ fontSize: '14px', color: '#666', marginBottom: '20px', display: 'flex', alignItems: 'center', gap: '6px' }}><MdLocationOn size={18} color="var(--primary)" /> {pg.location}</p>
+                  <div style={{ display: 'flex', gap: '10px', marginBottom: '24px' }}>
+                    <span style={{ background: '#f0fdf4', color: '#166534', padding: '6px 12px', borderRadius: '10px', fontSize: '12px', fontWeight: 800, display: 'flex', alignItems: 'center', gap: '6px' }}><MdStar size={14} /> {pg.rating}</span>
+                    <span style={{ background: '#fff7ed', color: '#c2410c', padding: '6px 12px', borderRadius: '10px', fontSize: '12px', fontWeight: 800, display: 'flex', alignItems: 'center', gap: '6px' }}><MdRestaurant size={14} /> Mess {pg.messRating}</span>
                   </div>
-                  <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
-                    <div style={{ fontSize: '20px', fontWeight: 900 }}>₹{pg.rent.toLocaleString()}<span style={{ fontSize: '12px', fontWeight: 400, color: '#666' }}>/mo</span></div>
-                    <Link to="/login" className="btn btn-primary btn-sm" style={{ background: 'var(--primary-gradient)', border: 'none' }}>Details</Link>
+                  <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', borderTop: '1px solid #f0f0f0', paddingTop: '20px' }}>
+                    <div>
+                      <div style={{ fontSize: '22px', fontWeight: 950, color: 'var(--primary)' }}>₹{pg.rent.toLocaleString()}</div>
+                      <div style={{ fontSize: '12px', color: '#999' }}>per month</div>
+                    </div>
+                    <Link to={`/student/pg/${pg.id}`} className="btn btn-primary" style={{ padding: '10px 20px', borderRadius: '10px', fontWeight: 800 }}>View Details</Link>
                   </div>
                 </div>
               </div>
@@ -243,26 +194,26 @@ const LandingPage = () => {
         </div>
       </section>
 
-      {/* ── CTA Section ── */}
-      <section className="cta-section" style={{ background: 'var(--primary-gradient)', padding: '60px 24px', textAlign: 'center', color: 'white' }}>
+      {/* CTA Section */}
+      <section className="lp-section" style={{ background: 'var(--primary-gradient)', padding: '80px 24px', textAlign: 'center', color: 'white' }}>
         <div style={{ maxWidth: '800px', margin: '0 auto' }}>
-          <h2 className="cta-title" style={{ fontSize: '32px', fontWeight: 900, marginBottom: '16px' }}>Ready to find your PG/Hostel?</h2>
-          <p className="cta-subtitle" style={{ fontSize: '17px', opacity: 0.9, marginBottom: '32px' }}>Join 15,000+ students today.</p>
-          <Link to="/register" className="cta-button" style={{ background: 'white', color: 'var(--primary)', padding: '14px 32px', borderRadius: '8px', fontWeight: 800, fontSize: '16px', textDecoration: 'none', display: 'inline-block', boxShadow: '0 4px 15px rgba(0,0,0,0.1)' }}>Get Started</Link>
+          <h2 className="cta-title-sm" style={{ fontSize: '40px', fontWeight: 950, marginBottom: '20px', letterSpacing: '-1px' }}>Ready to find your PG/Hostel?</h2>
+          <p className="cta-subtitle-sm" style={{ fontSize: '20px', opacity: 0.9, marginBottom: '40px' }}>Join 15,000+ students today and experience transparent living.</p>
+          <Link to="/register" className="cta-btn-sm" style={{ background: 'white', color: 'var(--primary)', padding: '18px 40px', borderRadius: '14px', fontWeight: 900, fontSize: '18px', textDecoration: 'none', display: 'inline-block', boxShadow: '0 10px 25px rgba(0,0,0,0.15)' }}>Get Started Now</Link>
         </div>
       </section>
 
-      {/* ── Footer ── */}
-      <footer style={{ padding: '40px 24px', background: 'white', borderTop: '1px solid #eee' }}>
-        <div style={{ maxWidth: '1100px', margin: '0 auto', display: 'flex', justifyContent: 'space-between', alignItems: 'center', flexWrap: 'wrap', gap: '20px' }}>
+      {/* Footer */}
+      <footer style={{ padding: '60px 24px', background: 'white', borderTop: '1px solid #eee' }}>
+        <div style={{ maxWidth: '1100px', margin: '0 auto', display: 'flex', justifyContent: 'space-between', alignItems: 'center', flexWrap: 'wrap', gap: '40px' }}>
           <div>
-            <div style={{ display: 'flex', alignItems: 'center', gap: '8px', marginBottom: '8px' }}>
-              <div style={{ width: 24, height: 24, background: 'var(--primary)', borderRadius: '3px', display: 'flex', alignItems: 'center', justifyContent: 'center', fontWeight: 900, fontSize: '12px', color: 'white' }}>HP</div>
-              <span style={{ fontWeight: 800, fontSize: '16px', color: '#333' }}>Hostel<span style={{ color: 'var(--primary)' }}>Pass</span></span>
+            <div style={{ display: 'flex', alignItems: 'center', gap: '8px', marginBottom: '12px' }}>
+              <div style={{ width: 28, height: 28, background: 'var(--primary)', borderRadius: '4px', display: 'flex', alignItems: 'center', justifyContent: 'center', fontWeight: 900, fontSize: '14px', color: 'white' }}>HP</div>
+              <span style={{ fontWeight: 900, fontSize: '20px', color: '#333' }}>Hostel<span style={{ color: 'var(--primary)' }}>Pass</span></span>
             </div>
-            <p style={{ color: '#666', fontSize: '13px' }}>Real reviews for better living.</p>
+            <p style={{ color: '#666', fontSize: '14px' }}>Real reviews for better student living.</p>
           </div>
-          <div style={{ color: '#999', fontSize: '12px' }}>© 2026 HostelPass. All rights reserved</div>
+          <div style={{ color: '#999', fontSize: '14px', fontWeight: 500 }}>© 2026 HostelPass. Built for students, by students.</div>
         </div>
       </footer>
     </div>

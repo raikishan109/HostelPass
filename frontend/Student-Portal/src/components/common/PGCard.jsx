@@ -1,6 +1,6 @@
 import React from 'react';
 import { useNavigate } from 'react-router-dom';
-import { MdLocationOn, MdRestaurant, MdVerified, MdFavorite, MdFavoriteBorder, MdStar } from 'react-icons/md';
+import { MdLocationOn, MdRestaurant, MdVerified, MdFavorite, MdFavoriteBorder, MdStar, MdHotel } from 'react-icons/md';
 
 const StarRating = ({ value, size = 14 }) => {
   return (
@@ -28,8 +28,16 @@ const PGCard = ({ pg, isFavorite, onToggleFavorite, linkPrefix = '/student/pg' }
     }}>
       <div className="pg-card-image" style={{ height: '220px', borderRadius: '4px 4px 0 0' }}>
         {pg.images && pg.images.length > 0
-          ? <img src={pg.images[0]} alt={pg.name} style={{ borderRadius: '4px 4px 0 0' }} />
-          : <span>🏠</span>
+          ? <img 
+              src={pg.images[0]} 
+              alt={pg.name} 
+              onError={(e) => {
+                e.target.style.display = 'none';
+                e.target.parentNode.innerHTML = '<span style="font-size: 48px; opacity: 0.2">🏠</span>';
+              }}
+              style={{ borderRadius: '4px 4px 0 0', width: '100%', height: '100%', objectFit: 'cover' }} 
+            />
+          : <span style={{ fontSize: '48px', opacity: 0.2 }}>🏠</span>
         }
         {pg.verified && (
           <div className="pg-card-badge">
@@ -44,8 +52,11 @@ const PGCard = ({ pg, isFavorite, onToggleFavorite, linkPrefix = '/student/pg' }
         <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'flex-start' }}>
           <div>
             <div className="pg-card-name" style={{ fontSize: '18px', fontWeight: 800 }}>{pg.name}</div>
-            <div className="pg-card-location" style={{ fontSize: '13px', color: 'var(--text-light)', marginTop: '2px' }}>
-              {pg.location}
+            <div className="pg-card-location" style={{ marginBottom: '4px' }}>
+              <MdLocationOn size={14} color="var(--primary)" /> {pg.location}
+            </div>
+            <div style={{ fontSize: '12px', color: 'var(--text-medium)', display: 'flex', alignItems: 'center', gap: '4px', marginBottom: '12px' }}>
+              <MdHotel size={14} color="#666" /> {pg.roomOptions}
             </div>
           </div>
           <div className="rating-chip" style={{ background: 'var(--verified-color)', color: 'white', borderRadius: '4px', padding: '4px 8px' }}>

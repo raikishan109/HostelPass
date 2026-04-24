@@ -1,4 +1,4 @@
-import React, { useState } from 'react';
+import React, { useState, useMemo } from 'react';
 import { useParams, useNavigate } from 'react-router-dom';
 import StudentLayout from '../../components/layout/StudentLayout';
 import ReviewModal from '../../components/common/ReviewModal';
@@ -7,8 +7,11 @@ import { useAuth } from '../../context/AuthContext';
 import toast from 'react-hot-toast';
 import {
   MdLocationOn, MdVerified, MdStar, MdRestaurant, MdWifi, MdFavorite, MdFavoriteBorder,
-  MdPhone, MdReport, MdRateReview, MdArrowBack, MdCheckCircle, MdOutlineBedroomParent
+  MdPhone, MdReport, MdRateReview, MdArrowBack, MdCheckCircle, MdOutlineBedroomParent,
+  MdFlashOn, MdHotel, MdFlag, MdCheck, MdAcUnit, MdFitnessCenter, MdLocalLaundryService
 } from 'react-icons/md';
+import { db } from '../../firebase/config';
+import { collection, query, where, getDocs, addDoc, serverTimestamp } from 'firebase/firestore';
 
 const RatingBar = ({ label, value, color = 'var(--primary)' }) => (
   <div style={{ marginBottom: '10px' }}>
@@ -22,17 +25,136 @@ const RatingBar = ({ label, value, color = 'var(--primary)' }) => (
   </div>
 );
 
+const OptionCard = ({ icon: Icon, label, active, onClick }) => (
+  <div 
+    onClick={onClick}
+    style={{ 
+      flex: 1,
+      padding: '14px', 
+      borderRadius: '14px', 
+      border: `2px solid ${active ? 'var(--primary)' : '#f0f0f0'}`,
+      background: active ? '#FEF2F2' : 'white',
+      cursor: 'pointer',
+      textAlign: 'center',
+      transition: 'all 0.2s ease',
+      display: 'flex',
+      flexDirection: 'column',
+      alignItems: 'center',
+      gap: '8px'
+    }}
+  >
+    <Icon size={20} color={active ? 'var(--primary)' : '#999'} />
+    <span style={{ fontWeight: 700, fontSize: '13px', color: active ? 'var(--primary)' : '#666' }}>{label}</span>
+  </div>
+);
+
 const PGDetails = () => {
   const { id } = useParams();
   const navigate = useNavigate();
   const { userData } = useAuth();
   const pg = MOCK_PGS.find(p => p.id === id) || MOCK_PGS[0];
   const reviews = MOCK_REVIEWS.filter(r => r.pgId === id);
+  
   const [isFav, setIsFav] = useState(false);
   const [activeTab, setActiveTab] = useState('overview');
   const [showReview, setShowReview] = useState(false);
   const [showComplaint, setShowComplaint] = useState(false);
+  const [showBookingModal, setShowBookingModal] = useState(false);
+  
   const [complaint, setComplaint] = useState({ category: '', text: '' });
+  const [isBooking, setIsBooking] = useState(false);
+  const [hasActiveBooking, setHasActiveBooking] = useState(false);
+  
+  // Extended Booking Options
+  const [bookingOptions, setBookingOptions] = useState({
+    roomType: pg.roomOptions?.split(' / ')[0] || 'Triple',
+    food: true,
+    ac: false,
+    gym: false,
+    laundry: false
+  });
+
+  // DYNAMIC RENT CALCULATION
+  const calculatedRent = useMemo(() => {
+    let total = pg.rent; // Base Rent
+
+    // Room Type Adjustments
+    if (bookingOptions.roomType === 'Single') total += 2000;
+    if (bookingOptions.roomType === 'Double') total += 1000;
+    
+    // AC Adjustment
+    if (bookingOptions.ac) total += 1500;
+    
+    // Food Adjustment (Subtract if opted out)
+    if (!bookingOptions.food) total -= 1000;
+    
+    // Extra Facilities
+    if (bookingOptions.gym) total += 500;
+    if (bookingOptions.laundry) total += 500;
+
+    return total;
+  }, [bookingOptions, pg.rent]);
+
+  React.useEffect(() => {
+    const checkActiveBooking = async () => {
+      if (!userData?.uid) return;
+      const q = query(
+        collection(db, 'bookings'),
+        where('userId', '==', userData.uid),
+        where('status', 'in', ['pending', 'confirmed', 'checked-in'])
+      );
+      const snap = await getDocs(q);
+      setHasActiveBooking(!snap.empty);
+    };
+    checkActiveBooking();
+  }, [userData]);
+
+  const handleBookNow = async () => {
+    if (!userData) {
+      toast.error('Please login to book');
+      navigate('/login');
+      return;
+    }
+
+    setIsBooking(true);
+    try {
+      const moveInDate = new Date();
+      moveInDate.setDate(moveInDate.getDate() + 7);
+
+      const nextMonth = new Date();
+      nextMonth.setMonth(nextMonth.getMonth() + 1);
+      nextMonth.setDate(1);
+
+      await addDoc(collection(db, 'bookings'), {
+        userId: userData.uid,
+        hostelId: pg.id,
+        hostelName: pg.name,
+        location: pg.location,
+        rent: calculatedRent, // Save the calculated rent
+        baseRent: pg.rent,
+        roomType: bookingOptions.roomType,
+        foodAvailable: bookingOptions.food,
+        ac: bookingOptions.ac,
+        gym: bookingOptions.gym,
+        laundry: bookingOptions.laundry,
+        status: 'pending',
+        paymentStatus: 'pending',
+        moveInDate: moveInDate.toLocaleDateString('en-IN', { day: 'numeric', month: 'long', year: 'numeric' }),
+        nextDueDate: nextMonth.toLocaleDateString('en-IN', { day: 'numeric', month: 'long', year: 'numeric' }),
+        createdAt: serverTimestamp(),
+        hostelImage: pg.images?.[0] || 'https://images.unsplash.com/photo-1522771739844-6a9f6d5f14af?auto=format&fit=crop&w=800&q=80'
+      });
+
+      toast.success('Booking Request Sent!');
+      setShowBookingModal(false);
+      navigate('/student/dashboard');
+    } catch (error) {
+      console.error("Booking error:", error);
+      toast.error('Failed to process booking');
+    } finally {
+      setIsBooking(false);
+    }
+  };
 
   const handleReviewSubmit = (data) => {
     toast.success('Review submitted successfully!');
@@ -41,7 +163,7 @@ const PGDetails = () => {
 
   const handleComplaint = () => {
     if (!complaint.text.trim()) { toast.error('Please describe the issue'); return; }
-    toast.success('Complaint submitted. We\'ll look into it!');
+    toast.success('Complaint submitted!');
     setShowComplaint(false);
     setComplaint({ category: '', text: '' });
   };
@@ -50,189 +172,216 @@ const PGDetails = () => {
 
   return (
     <StudentLayout title={pg.name}>
-      {/* Back button */}
       <button className="btn btn-ghost btn-sm" onClick={() => navigate(-1)} style={{ marginBottom: '16px' }}>
         <MdArrowBack /> Back to Search
       </button>
 
       {/* Hero Image Area */}
-      <div className="pg-details-hero" style={{ background: 'linear-gradient(135deg, #f0f0f0, #e0e0e0)', borderRadius: '20px', height: '240px', display: 'flex', alignItems: 'center', justifyContent: 'center', marginBottom: '24px', position: 'relative', overflow: 'hidden' }}>
-        <span style={{ fontSize: '72px', opacity: 0.3 }}>🏠</span>
+      <div className="pg-details-hero" style={{ background: 'var(--bg)', borderRadius: '24px', height: '350px', display: 'flex', alignItems: 'center', justifyContent: 'center', marginBottom: '24px', position: 'relative', overflow: 'hidden' }}>
+        {pg.images && pg.images.length > 0 ? (
+          <img src={pg.images[0]} alt={pg.name} style={{ width: '100%', height: '100%', objectFit: 'cover' }} />
+        ) : (
+          <span style={{ fontSize: '72px', opacity: 0.3 }}>🏠</span>
+        )}
         <div style={{ position: 'absolute', top: '16px', left: '16px', display: 'flex', gap: '8px' }}>
-          {pg.verified && <span className="badge badge-verified"><MdVerified size={11} /> Verified PG</span>}
-          <span className="badge badge-grey">{pg.type}</span>
+          {pg.verified && <span className="badge badge-verified" style={{ background: 'white', color: 'var(--verified-color)' }}><MdVerified size={11} /> Verified PG</span>}
+          <span className="badge badge-grey" style={{ background: 'rgba(255,255,255,0.9)' }}>{pg.type}</span>
         </div>
-        <button style={{ position: 'absolute', top: '16px', right: '16px', width: 40, height: 40, borderRadius: '50%', background: 'white', border: 'none', display: 'flex', alignItems: 'center', justifyContent: 'center', cursor: 'pointer', boxShadow: '0 2px 8px rgba(0,0,0,0.15)', fontSize: '18px' }}
+        <button style={{ position: 'absolute', top: '16px', right: '16px', width: 44, height: 44, borderRadius: '50%', background: 'white', border: 'none', display: 'flex', alignItems: 'center', justifyContent: 'center', cursor: 'pointer', boxShadow: '0 4px 12px rgba(0,0,0,0.15)', fontSize: '20px' }}
           onClick={() => setIsFav(!isFav)}>
           {isFav ? <MdFavorite color="var(--primary)" /> : <MdFavoriteBorder />}
         </button>
       </div>
 
-      <div className="pg-details-grid">
-        {/* Main Column */}
-        <div className="pg-details-main">
-          <div style={{ background: 'white', borderRadius: '16px', padding: '24px', border: '1px solid var(--border)', marginBottom: '20px' }}>
-            <div className="pg-header-row" style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'flex-start', marginBottom: '12px', gap: '20px' }}>
-              <div>
-                <h1 style={{ fontSize: '24px', fontWeight: 800, marginBottom: '6px' }}>{pg.name}</h1>
-                <div style={{ display: 'flex', alignItems: 'center', gap: '6px', color: 'var(--text-light)', fontSize: '14px' }}>
-                  <MdLocationOn size={16} />{pg.location}
+      <div className="pg-details-content-container" style={{ width: '100%' }}>
+        
+        {/* Main Info Row */}
+        <div style={{ display: 'flex', gap: '32px', flexWrap: 'wrap', marginBottom: '32px', alignItems: 'stretch' }}>
+          
+          {/* PG Content Column */}
+          <div style={{ flex: '2 1 650px', background: 'white', borderRadius: '24px', padding: '36px', border: '1px solid var(--border)' }}>
+            <div style={{ marginBottom: '28px' }}>
+              <h1 style={{ fontSize: '36px', fontWeight: 900, marginBottom: '10px', color: '#1A1A1A' }}>{pg.name}</h1>
+              <div style={{ display: 'flex', flexDirection: 'column', gap: '10px' }}>
+                <div style={{ display: 'flex', alignItems: 'center', gap: '8px', color: 'var(--text-light)', fontSize: '17px' }}>
+                  <MdLocationOn size={22} color="var(--primary)" />{pg.location}
                 </div>
-              </div>
-              <div style={{ textAlign: 'right', minWidth: 'fit-content' }}>
-                <div style={{ fontSize: '28px', fontWeight: 900, color: 'var(--primary)' }}>₹{pg.rent.toLocaleString()}</div>
-                <div style={{ fontSize: '13px', color: 'var(--text-light)' }}>per month</div>
+                <div style={{ display: 'flex', alignItems: 'center', gap: '8px', color: '#666', fontSize: '16px' }}>
+                  <MdHotel size={22} color="#666" />{pg.roomOptions}
+                </div>
               </div>
             </div>
 
-            {/* Ratings Row */}
-            <div style={{ display: 'flex', gap: '12px', marginBottom: '16px', flexWrap: 'wrap' }}>
-              <div style={{ display: 'flex', alignItems: 'center', gap: '6px', background: '#fffbeb', padding: '8px 14px', borderRadius: '10px' }}>
-                <MdStar color="#f59e0b" /> <span style={{ fontWeight: 700 }}>{pg.rating}</span>
-                <span style={{ color: 'var(--text-light)', fontSize: '13px' }}>({pg.reviewCount} reviews)</span>
+            <div style={{ display: 'flex', gap: '16px', marginBottom: '28px', flexWrap: 'wrap' }}>
+              <div style={{ display: 'flex', alignItems: 'center', gap: '10px', background: '#fffbeb', padding: '12px 20px', borderRadius: '14px' }}>
+                <MdStar color="#f59e0b" size={22} /> <span style={{ fontWeight: 800, fontSize: '18px' }}>{pg.rating}</span>
+                <span style={{ color: 'var(--text-light)', fontSize: '15px' }}>({pg.reviewCount} reviews)</span>
               </div>
-              <div style={{ display: 'flex', alignItems: 'center', gap: '6px', background: '#fff7ed', padding: '8px 14px', borderRadius: '10px' }}>
-                <MdRestaurant color="#ea580c" /> <span style={{ fontWeight: 700 }}>Mess {pg.messRating}</span>
+              <div style={{ display: 'flex', alignItems: 'center', gap: '10px', background: '#fff7ed', padding: '12px 20px', borderRadius: '14px' }}>
+                <MdRestaurant color="#ea580c" size={22} /> <span style={{ fontWeight: 800, fontSize: '18px' }}>Mess {pg.messRating}</span>
               </div>
             </div>
 
-            <p style={{ fontSize: '14px', color: 'var(--text-medium)', lineHeight: 1.8 }}>{pg.description}</p>
+            <div className="divider" style={{ margin: '28px 0', height: '1px', background: '#f0f0f0' }}></div>
+            
+            <h4 style={{ fontWeight: 800, fontSize: '15px', color: '#999', textTransform: 'uppercase', letterSpacing: '1.2px', marginBottom: '16px' }}>Property Overview</h4>
+            <p style={{ fontSize: '17px', color: '#444', lineHeight: 1.9 }}>{pg.description}</p>
           </div>
 
-          {/* Tabs */}
-          <div className="tabs">
-            {['overview', 'reviews', 'amenities'].map(t => (
-              <button key={t} className={`tab-btn ${activeTab === t ? 'active' : ''}`} onClick={() => setActiveTab(t)}>
-                {t.charAt(0).toUpperCase() + t.slice(1)}
-              </button>
-            ))}
-          </div>
-
-          {/* Tab Content */}
-          <div style={{ marginBottom: '24px' }}>
-            {activeTab === 'overview' && (
-              <div className="grid-2" style={{ gap: '20px' }}>
-                <div style={{ background: 'white', borderRadius: '16px', padding: '24px', border: '1px solid var(--border)' }}>
-                  <h3 style={{ fontWeight: 700, marginBottom: '16px' }}>🍽️ Mess Breakdown</h3>
-                  <RatingBar label="Food Variety" value={pg.messRating - 0.1} color="#f59e0b" />
-                  <RatingBar label="Hygiene" value={pg.messRating + 0.1} color="var(--verified-color)" />
-                  <RatingBar label="Timings" value={pg.messRating - 0.2} color="var(--info)" />
+          {/* Sidebar Card */}
+          <div style={{ flex: '1 1 380px' }}>
+            <div style={{ background: 'white', borderRadius: '24px', padding: '0', border: '1px solid var(--border)', overflow: 'hidden', boxShadow: '0 12px 40px rgba(0,0,0,0.04)', position: 'sticky', top: '80px' }}>
+              
+              <div style={{ padding: '32px', borderBottom: '1px solid #f0f0f0' }}>
+                <div style={{ textAlign: 'center', marginBottom: '28px' }}>
+                  <div style={{ fontSize: '14px', color: '#999', fontWeight: 700, textTransform: 'uppercase', letterSpacing: '0.8px', marginBottom: '8px' }}>Base Rent Starts From</div>
+                  <div style={{ fontSize: '44px', fontWeight: 950, color: 'var(--primary)', lineHeight: 1 }}>₹{pg.rent.toLocaleString()}</div>
+                  <div style={{ fontSize: '15px', color: 'var(--verified-color)', fontWeight: 700, marginTop: '10px' }}>Deposit: ₹{pg.deposit?.toLocaleString() || '15,000'}</div>
                 </div>
-                <div style={{ background: 'white', borderRadius: '16px', padding: '24px', border: '1px solid var(--border)' }}>
-                  <h3 style={{ fontWeight: 700, marginBottom: '16px' }}>Overall Stats</h3>
-                  <RatingBar label="Cleanliness" value={4.0} color="var(--verified-color)" />
-                  <RatingBar label="Security" value={4.2} color="var(--info)" />
-                  <RatingBar label="Value" value={3.8} color="#f59e0b" />
+
+                <div style={{ display: 'flex', alignItems: 'center', gap: '16px', background: '#f9f9f9', padding: '18px', borderRadius: '18px' }}>
+                  <div className="avatar avatar-md" style={{ width: '52px', height: '52px' }}>{pg.partnerName.charAt(0)}</div>
+                  <div>
+                    <div style={{ fontWeight: 800, fontSize: '17px', color: '#1A1A1A' }}>{pg.partnerName}</div>
+                    <div style={{ fontSize: '13px', color: 'var(--verified-color)', fontWeight: 700, display: 'flex', alignItems: 'center', gap: '4px' }}>
+                      <MdVerified size={15} /> Verified Owner
+                    </div>
+                  </div>
                 </div>
               </div>
-            )}
 
-            {activeTab === 'reviews' && (
-              <div>
-                <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: '16px' }}>
-                  <h3 style={{ fontWeight: 700 }}>Reviews ({reviews.length})</h3>
-                  <button className="btn btn-primary btn-sm" onClick={() => setShowReview(true)}>
-                    <MdRateReview /> Write Review
+              <div style={{ padding: '28px', display: 'flex', flexDirection: 'column', gap: '14px' }}>
+                <div style={{ display: 'flex', gap: '12px' }}>
+                  <button className="btn btn-primary" style={{ flex: 2, padding: '18px', borderRadius: '14px', fontSize: '16px', fontWeight: 800 }} 
+                    onClick={() => hasActiveBooking ? toast.error('Active booking exists') : setShowBookingModal(true)}>
+                    <MdFlashOn /> BOOK NOW
                   </button>
+                  <a href={`tel:${pg.phone}`} className="btn btn-outline" style={{ flex: 1.2, padding: '18px', borderRadius: '14px' }}>
+                    <MdPhone /> CALL
+                  </a>
                 </div>
-                <div style={{ display: 'flex', flexDirection: 'column', gap: '12px' }}>
-                  {reviews.map(r => (
-                    <div key={r.id} className="review-card">
-                      <div className="review-header">
-                        <div className="review-author">
-                          <div className="avatar avatar-sm">{r.userName.charAt(0)}</div>
-                          <div>
-                            <div style={{ fontWeight: 600, fontSize: '14px' }}>{r.userName}</div>
-                            <div className="review-meta">{new Date(r.createdAt).toLocaleDateString('en-IN', { day: 'numeric', month: 'short' })}</div>
-                          </div>
-                        </div>
-                        <span className="badge badge-primary"><MdStar size={10} /> {r.overallRating}</span>
-                      </div>
-                      <p className="review-text">"{r.text}"</p>
-                    </div>
-                  ))}
-                </div>
+                <button className="btn" style={{ width: '100%', padding: '14px', background: '#FEF2F2', color: '#DC2626', border: '1px solid #FEE2E2', borderRadius: '14px', fontWeight: 700 }} onClick={() => setShowComplaint(true)}>
+                  <MdFlag size={18} /> REPORT LISTING
+                </button>
               </div>
-            )}
-
-            {activeTab === 'amenities' && (
-              <div style={{ background: 'white', borderRadius: '16px', padding: '24px', border: '1px solid var(--border)' }}>
-                <h3 style={{ fontWeight: 700, marginBottom: '20px' }}>Available Amenities</h3>
-                <div className="amenities-grid">
-                  {pg.amenities.map(a => (
-                    <div key={a} style={{ display: 'flex', alignItems: 'center', gap: '8px', padding: '12px 16px', background: 'var(--bg)', borderRadius: '10px' }}>
-                      <MdCheckCircle color="var(--verified-color)" size={16} />
-                      <span style={{ fontSize: '14px', fontWeight: 500 }}>{a}</span>
-                    </div>
-                  ))}
-                </div>
-              </div>
-            )}
+            </div>
           </div>
         </div>
 
-        {/* Sidebar Column */}
-        <div className="pg-details-sidebar">
-          <div style={{ background: 'white', borderRadius: '16px', padding: '20px', border: '1px solid var(--border)', position: 'sticky', top: '80px' }}>
-            <h3 style={{ fontWeight: 700, marginBottom: '16px' }}>Contact PG Owner</h3>
-            <div style={{ display: 'flex', alignItems: 'center', gap: '10px', marginBottom: '16px' }}>
-              <div className="avatar avatar-md">{pg.partnerName.charAt(0)}</div>
-              <div>
-                <div style={{ fontWeight: 600 }}>{pg.partnerName}</div>
-                <div style={{ fontSize: '12px', color: 'var(--text-light)' }}>Verified Owner</div>
+        {/* Tabs area */}
+        <div className="tabs" style={{ marginBottom: '24px' }}>
+          {['overview', 'amenities', 'reviews'].map(t => (
+            <button key={t} className={`tab-btn ${activeTab === t ? 'active' : ''}`} onClick={() => setActiveTab(t)}>{t.charAt(0).toUpperCase() + t.slice(1)}</button>
+          ))}
+        </div>
+
+        <div style={{ marginBottom: '60px' }}>
+          {activeTab === 'overview' && (
+            <div className="grid-2" style={{ gap: '24px' }}>
+              <div style={{ background: 'white', borderRadius: '24px', padding: '32px', border: '1px solid var(--border)' }}>
+                <h3 style={{ fontWeight: 900, marginBottom: '24px', fontSize: '20px' }}>🍽️ Mess & Food</h3>
+                <RatingBar label="Food Variety" value={pg.messRating - 0.1} color="#f59e0b" />
+                <RatingBar label="Hygiene" value={pg.messRating + 0.1} color="var(--verified-color)" />
+                <RatingBar label="Timings" value={pg.messRating - 0.2} color="var(--info)" />
+              </div>
+              <div style={{ background: 'white', borderRadius: '24px', padding: '32px', border: '1px solid var(--border)' }}>
+                <h3 style={{ fontWeight: 900, marginBottom: '24px', fontSize: '20px' }}>Property Stats</h3>
+                <RatingBar label="Cleanliness" value={4.0} color="var(--verified-color)" />
+                <RatingBar label="Security" value={4.2} color="var(--info)" />
+                <RatingBar label="Value for Money" value={3.8} color="#f59e0b" />
               </div>
             </div>
-            <a href={`tel:${pg.phone}`} className="btn btn-primary w-full" style={{ marginBottom: '10px' }}>
-              <MdPhone /> Call Owner
-            </a>
-            <button className="btn btn-outline w-full" onClick={() => setShowReview(true)}>
-              <MdRateReview /> Write Review
-            </button>
-            <div style={{ marginTop: '16px', paddingTop: '16px', borderTop: '1px solid #eee' }}>
-              <button className="btn btn-ghost w-full btn-sm" onClick={() => setShowComplaint(true)}>
-                <MdReport /> Report PG
-              </button>
+          )}
+
+          {activeTab === 'amenities' && (
+            <div style={{ background: 'white', borderRadius: '24px', padding: '32px', border: '1px solid var(--border)' }}>
+              <h3 style={{ fontWeight: 900, marginBottom: '24px', fontSize: '20px' }}>Amenities</h3>
+              <div className="amenities-grid" style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fill, minmax(200px, 1fr))', gap: '18px' }}>
+                {pg.amenities.map(a => (
+                  <div key={a} style={{ display: 'flex', alignItems: 'center', gap: '12px', padding: '18px', background: 'var(--bg)', borderRadius: '16px' }}>
+                    <MdCheckCircle color="var(--verified-color)" size={20} />
+                    <span style={{ fontSize: '15px', fontWeight: 700 }}>{a}</span>
+                  </div>
+                ))}
+              </div>
             </div>
-          </div>
+          )}
         </div>
       </div>
 
-      {/* Modals */}
-      {showReview && <ReviewModal pgName={pg.name} pgId={pg.id} onClose={() => setShowReview(false)} onSubmit={handleReviewSubmit} />}
+      {/* --- BOOKING MODAL (With Dynamic Rent) --- */}
+      {showBookingModal && (
+        <div className="modal-overlay" style={{ zIndex: 2000, padding: '20px', display: 'flex', alignItems: 'center', justifyContent: 'center' }}>
+          <div className="modal" style={{ maxWidth: '500px', width: '100%', borderRadius: '28px', padding: '0', overflowY: 'auto', maxHeight: '95vh', boxShadow: '0 20px 60px rgba(0,0,0,0.2)' }}>
+            <div style={{ background: 'var(--primary-gradient)', padding: '32px', color: 'white', position: 'relative' }}>
+              <h2 style={{ fontSize: '24px', fontWeight: 900, marginBottom: '8px' }}>Price Calculator</h2>
+              <p style={{ opacity: 0.9, fontSize: '15px' }}>Rent adjusts as you select facilities</p>
+              <button onClick={() => setShowBookingModal(false)} style={{ position: 'absolute', top: '24px', right: '24px', background: 'rgba(255,255,255,0.2)', border: 'none', width: '32px', height: '32px', borderRadius: '50%', color: 'white', cursor: 'pointer' }}>✕</button>
+            </div>
+            
+            <div style={{ padding: '32px' }}>
+              {/* Room Occupancy */}
+              <div style={{ marginBottom: '28px' }}>
+                <label style={{ display: 'block', fontSize: '13px', fontWeight: 800, color: '#999', textTransform: 'uppercase', marginBottom: '14px', letterSpacing: '0.5px' }}>Room Occupancy</label>
+                <div style={{ display: 'flex', gap: '10px' }}>
+                  {pg.roomOptions?.split(' / ').map(option => (
+                    <OptionCard 
+                      key={option}
+                      icon={MdHotel}
+                      label={option}
+                      active={bookingOptions.roomType === option}
+                      onClick={() => setBookingOptions(prev => ({ ...prev, roomType: option }))}
+                    />
+                  ))}
+                </div>
+              </div>
 
-      {showComplaint && (
-        <div className="modal-overlay" onClick={() => setShowComplaint(false)}>
-          <div className="modal" onClick={e => e.stopPropagation()}>
-            <div className="modal-header">
-              <div className="modal-title">File a Complaint</div>
-              <button className="modal-close" onClick={() => setShowComplaint(false)}>✕</button>
-            </div>
-            <div className="modal-body">
-              <div className="form-group">
-                <label className="form-label">Issue Category</label>
-                <select className="form-select" value={complaint.category} onChange={e => setComplaint(c => ({ ...c, category: e.target.value }))}>
-                  <option value="">Select category...</option>
-                  <option>Food / Mess Quality</option>
-                  <option>Cleanliness / Hygiene</option>
-                  <option>Safety / Security</option>
-                  <option>WiFi / Internet</option>
-                  <option>Owner Behaviour</option>
-                  <option>Billing Issue</option>
-                  <option>Other</option>
-                </select>
+              {/* AC Preference */}
+              <div style={{ marginBottom: '28px' }}>
+                <label style={{ display: 'block', fontSize: '13px', fontWeight: 800, color: '#999', textTransform: 'uppercase', marginBottom: '14px', letterSpacing: '0.5px' }}>AC Preference (+₹1,500)</label>
+                <div style={{ display: 'flex', gap: '10px' }}>
+                  <OptionCard icon={MdAcUnit} label="AC Room" active={bookingOptions.ac} onClick={() => setBookingOptions(prev => ({ ...prev, ac: true }))} />
+                  <OptionCard icon={MdAcUnit} label="Non-AC" active={!bookingOptions.ac} onClick={() => setBookingOptions(prev => ({ ...prev, ac: false }))} />
+                </div>
               </div>
-              <div className="form-group">
-                <label className="form-label">Describe the Issue</label>
-                <textarea className="form-input form-textarea" placeholder="Describe the problem in detail..." value={complaint.text} onChange={e => setComplaint(c => ({ ...c, text: e.target.value }))} rows={4} />
+
+              {/* Food Preference */}
+              <div style={{ marginBottom: '28px' }}>
+                <label style={{ display: 'block', fontSize: '13px', fontWeight: 800, color: '#999', textTransform: 'uppercase', marginBottom: '14px', letterSpacing: '0.5px' }}>Food Facility (-₹1,000 if No)</label>
+                <div style={{ display: 'flex', gap: '10px' }}>
+                  <OptionCard icon={MdRestaurant} label="Included" active={bookingOptions.food} onClick={() => setBookingOptions(prev => ({ ...prev, food: true }))} />
+                  <OptionCard icon={MdRestaurant} label="No Food" active={!bookingOptions.food} onClick={() => setBookingOptions(prev => ({ ...prev, food: false }))} />
+                </div>
               </div>
-            </div>
-            <div className="modal-footer">
-              <button className="btn btn-ghost btn-sm" onClick={() => setShowComplaint(false)}>Cancel</button>
-              <button className="btn btn-primary btn-sm" onClick={handleComplaint}><MdReport /> Submit Complaint</button>
+
+              {/* Extra Facilities */}
+              <div style={{ marginBottom: '32px' }}>
+                <label style={{ display: 'block', fontSize: '13px', fontWeight: 800, color: '#999', textTransform: 'uppercase', marginBottom: '14px', letterSpacing: '0.5px' }}>Add-ons (+₹500 each)</label>
+                <div style={{ display: 'flex', gap: '10px' }}>
+                  <OptionCard icon={MdFitnessCenter} label="Gym" active={bookingOptions.gym} onClick={() => setBookingOptions(prev => ({ ...prev, gym: !bookingOptions.gym }))} />
+                  <OptionCard icon={MdLocalLaundryService} label="Laundry" active={bookingOptions.laundry} onClick={() => setBookingOptions(prev => ({ ...prev, laundry: !bookingOptions.laundry }))} />
+                </div>
+              </div>
+
+              {/* FINAL CALCULATION BOX */}
+              <div style={{ background: '#f5f5f5', padding: '24px', borderRadius: '24px', border: '1px solid #eee', marginBottom: '32px' }}>
+                <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: '12px' }}>
+                  <span style={{ color: '#666', fontSize: '15px', fontWeight: 600 }}>Total Estimated Rent</span>
+                  <span style={{ fontWeight: 950, fontSize: '28px', color: 'var(--primary)' }}>₹{calculatedRent.toLocaleString()}</span>
+                </div>
+                <div style={{ fontSize: '12px', color: '#999', textAlign: 'right' }}>Per Month (Exclusive of Deposit)</div>
+              </div>
+
+              <button className="btn btn-primary w-full" style={{ padding: '20px', borderRadius: '18px', fontSize: '17px', fontWeight: 900, background: 'var(--primary-gradient)', border: 'none', boxShadow: '0 8px 20px rgba(238,46,36,0.3)' }}
+                onClick={handleBookNow} disabled={isBooking}>
+                {isBooking ? 'Processing...' : 'Confirm & Request Booking'}
+              </button>
             </div>
           </div>
         </div>
       )}
+
+      {showReview && <ReviewModal pgName={pg.name} pgId={pg.id} onClose={() => setShowReview(false)} onSubmit={handleReviewSubmit} />}
     </StudentLayout>
   );
 };

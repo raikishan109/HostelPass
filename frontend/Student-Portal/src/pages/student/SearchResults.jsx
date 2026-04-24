@@ -9,6 +9,11 @@ const SearchResults = () => {
   const [searchParams] = useSearchParams();
   const [query, setQuery] = useState(searchParams.get('q') || '');
   const [sort, setSort] = useState(searchParams.get('sort') || 'rating');
+
+  React.useEffect(() => {
+    const q = searchParams.get('q');
+    if (q !== null) setQuery(q);
+  }, [searchParams]);
   const [filters, setFilters] = useState({ type: '', city: '', minRent: '', maxRent: '', minRating: '' });
   const [favorites, setFavorites] = useState([]);
   const [showFilters, setShowFilters] = useState(false);

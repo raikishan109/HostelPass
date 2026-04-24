@@ -10,12 +10,16 @@ const UserActions = () => {
 
   if (!user) return null;
 
-  const notifications = [
+  const [notifs, setNotifs] = useState([
     { id: 1, text: 'Your review for Sunrise PG was approved! ⭐', time: '2h ago' },
     { id: 2, text: 'New PG added in Koramangala matching your search.', time: '5h ago' },
-  ];
+  ]);
 
   const initials = (userData?.name || user?.displayName || 'U').charAt(0).toUpperCase();
+
+  const handleClearAll = () => {
+    setNotifs([]);
+  };
 
   return (
     <div className="topbar-right" style={{ position: 'relative' }}>
@@ -27,7 +31,7 @@ const UserActions = () => {
           onClick={() => setShowNotifications(!showNotifications)}
         >
           <MdNotifications size={20} />
-          <span className="notif-dot"></span>
+          {notifs.length > 0 && <span className="notif-dot"></span>}
         </button>
 
         {showNotifications && (
@@ -36,18 +40,32 @@ const UserActions = () => {
             borderRadius: '12px', marginTop: '12px', border: '1px solid #eee', zIndex: 1000,
             overflow: 'hidden'
           }}>
-            <div style={{ padding: '12px 16px', borderBottom: '1px solid #eee', fontWeight: 700, fontSize: '14px', color: '#333' }}>Notifications</div>
+            <div style={{ padding: '12px 16px', borderBottom: '1px solid #eee', fontWeight: 700, fontSize: '14px', color: '#333', display: 'flex', justifyContent: 'space-between' }}>
+              Notifications
+              {notifs.length > 0 && <span style={{ fontSize: '11px', color: '#999', fontWeight: 400 }}>{notifs.length} new</span>}
+            </div>
             <div style={{ maxHeight: '300px', overflowY: 'auto' }}>
-              {notifications.map(n => (
-                <div key={n.id} style={{ padding: '12px 16px', borderBottom: '1px solid #f9f9f9', cursor: 'pointer', textAlign: 'left' }}>
-                  <div style={{ fontSize: '13px', color: '#333', marginBottom: '4px' }}>{n.text}</div>
-                  <div style={{ fontSize: '11px', color: '#999' }}>{n.time}</div>
+              {notifs.length > 0 ? (
+                notifs.map(n => (
+                  <div key={n.id} style={{ padding: '12px 16px', borderBottom: '1px solid #f9f9f9', cursor: 'pointer', textAlign: 'left' }} className="notif-item-hover">
+                    <div style={{ fontSize: '13px', color: '#333', marginBottom: '4px' }}>{n.text}</div>
+                    <div style={{ fontSize: '11px', color: '#999' }}>{n.time}</div>
+                  </div>
+                ))
+              ) : (
+                <div style={{ padding: '40px 20px', textAlign: 'center', color: '#999', fontSize: '13px' }}>
+                  No new notifications
                 </div>
-              ))}
+              )}
             </div>
-            <div style={{ padding: '10px', textAlign: 'center', background: '#f8f9fa', fontSize: '12px', color: 'var(--primary)', fontWeight: 600, cursor: 'pointer' }}>
-              Clear All
-            </div>
+            {notifs.length > 0 && (
+              <div 
+                onClick={handleClearAll}
+                style={{ padding: '10px', textAlign: 'center', background: '#f8f9fa', fontSize: '12px', color: 'var(--primary)', fontWeight: 600, cursor: 'pointer' }}
+              >
+                Clear All
+              </div>
+            )}
           </div>
         )}
       </div>

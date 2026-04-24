@@ -20,6 +20,7 @@ const PartnerSidebar = ({ sidebarOpen }) => {
       <nav className="sidebar-nav">
         <div className="sidebar-section-title">Management</div>
         <Link to="/partner" className={`sidebar-link ${isActive('/partner') ? 'active' : ''}`}><MdDashboard /> Dashboard</Link>
+        <Link to="/partner/bookings" className={`sidebar-link ${isActive('/partner/bookings') ? 'active' : ''}`}><MdListAlt /> Manage Bookings</Link>
         <Link to="/partner/listings" className={`sidebar-link ${isActive('/partner/listings') ? 'active' : ''}`}><MdListAlt /> My Listings</Link>
         <Link to="/partner/add-listing" className={`sidebar-link ${isActive('/partner/add-listing') ? 'active' : ''}`}><MdAddBusiness /> Add New PG</Link>
         <div className="sidebar-section-title">Insights</div>
