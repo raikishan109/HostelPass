@@ -34,9 +34,9 @@ const RegisterPage = () => {
   };
 
   return (
-    <div style={{ minHeight: '100vh', display: 'flex', background: '#f5f7fa' }}>
+    <div className="auth-page-wrapper flex-mobile-col" style={{ minHeight: '100vh', display: 'flex', background: '#f5f7fa' }}>
       {/* Left Panel - Partner Themed */}
-      <div style={{ flex: 1.2, background: '#004d40', backgroundImage: 'linear-gradient(135deg, #004d40 0%, #00251a 100%)', display: 'flex', flexDirection: 'column', justifyContent: 'center', alignItems: 'center', padding: '40px' }}>
+      <div className="pc-only" style={{ flex: 1.2, background: '#004d40', backgroundImage: 'linear-gradient(135deg, #004d40 0%, #00251a 100%)', display: 'flex', flexDirection: 'column', justifyContent: 'center', alignItems: 'center', padding: '40px' }}>
         <div style={{ maxWidth: '360px', width: '100%' }}>
           <div style={{ display: 'flex', alignItems: 'center', gap: '10px', marginBottom: '32px' }}>
             <div style={{ width: 40, height: 40, background: '#00bfa5', borderRadius: '10px', display: 'flex', alignItems: 'center', justifyContent: 'center', fontWeight: 900, fontSize: '16px', color: 'white' }}>HP</div>
@@ -58,6 +58,15 @@ const RegisterPage = () => {
             </div>
           </div>
         </div>
+      </div>
+
+      {/* Mobile-only header */}
+      <div className="mobile-only" style={{ background: '#004d40', padding: '24px 20px', textAlign: 'center', color: 'white' }}>
+        <div style={{ display: 'flex', alignItems: 'center', gap: '10px', justifyContent: 'center', marginBottom: '8px' }}>
+          <div style={{ width: 32, height: 32, background: '#00bfa5', borderRadius: '8px', display: 'flex', alignItems: 'center', justifyContent: 'center', fontWeight: 900, fontSize: '14px', color: 'white' }}>HP</div>
+          <span style={{ fontWeight: 800, fontSize: '18px', color: 'white' }}>Hostel<span style={{ color: '#00bfa5' }}>Pass</span></span>
+        </div>
+        <h2 style={{ fontSize: '18px', fontWeight: 800 }}>Grow Your PG Business</h2>
       </div>
 
       {/* Right Panel - Even Smaller Box */}

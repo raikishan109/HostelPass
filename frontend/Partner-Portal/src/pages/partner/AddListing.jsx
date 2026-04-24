@@ -1,7 +1,6 @@
 import React, { useState } from 'react';
 import { useNavigate } from 'react-router-dom';
-import PartnerSidebar from '../../components/layout/PartnerSidebar';
-import Topbar from '../../components/layout/Topbar';
+import PartnerLayout from '../../components/layout/PartnerLayout';
 import { AMENITY_OPTIONS, CITY_OPTIONS, PG_TYPES } from '../../data/mockData';
 import toast from 'react-hot-toast';
 import { MdAdd, MdClose, MdSave, MdCloudUpload } from 'react-icons/md';
@@ -33,11 +32,7 @@ const AddListing = () => {
   };
 
   return (
-    <div className="dashboard-layout">
-      <PartnerSidebar />
-      <div className="main-content">
-        <Topbar title="Add New PG Listing" />
-        <div className="page-content animate-fadeIn">
+    <PartnerLayout title="Add New PG Listing">
           <div style={{ maxWidth: '720px', margin: '0 auto' }}>
             {/* Stepper */}
             <div style={{ display: 'flex', gap: '0', marginBottom: '32px', background: 'white', borderRadius: '16px', padding: '16px 24px', border: '1px solid var(--border)' }}>
@@ -180,9 +175,7 @@ const AddListing = () => {
               </div>
             </div>
           </div>
-        </div>
-      </div>
-    </div>
+    </PartnerLayout>
   );
 };
 

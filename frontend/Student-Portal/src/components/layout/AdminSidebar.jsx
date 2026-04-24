@@ -15,10 +15,6 @@ const AdminSidebar = ({ sidebarOpen }) => {
 
   return (
     <aside className={`sidebar ${sidebarOpen ? 'open' : ''}`}>
-      <div className="sidebar-logo">
-        <div className="sidebar-logo-mark" style={{ background: '#1F1F1F' }}>HP</div>
-        <div className="sidebar-logo-text">Admin<span>Panel</span></div>
-      </div>
       <nav className="sidebar-nav">
         <div className="sidebar-section-title">Overview</div>
         <Link to="/admin" className={`sidebar-link ${isActive('/admin') ? 'active' : ''}`}><MdDashboard /> Dashboard</Link>

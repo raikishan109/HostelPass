@@ -1,6 +1,5 @@
 import React, { useState, useEffect } from 'react';
-import PartnerSidebar from '../../components/layout/PartnerSidebar';
-import Topbar from '../../components/layout/Topbar';
+import PartnerLayout from '../../components/layout/PartnerLayout';
 import { db } from '../../firebase/config';
 import { collection, query, where, onSnapshot, doc, updateDoc } from 'firebase/firestore';
 import { useAuth } from '../../context/AuthContext';
@@ -54,11 +53,7 @@ const ManageBookings = () => {
   };
 
   return (
-    <div className="dashboard-layout">
-      <PartnerSidebar />
-      <div className="main-content">
-        <Topbar title="Manage Bookings" subtitle="Review and manage student booking requests" />
-        <div className="page-content animate-fadeIn">
+    <PartnerLayout title="Manage Bookings" subtitle="Review and manage student booking requests">
           
           <div style={{ background: 'white', borderRadius: '16px', border: '1px solid var(--border)', overflow: 'hidden' }}>
             <div style={{ padding: '20px 24px', borderBottom: '1px solid var(--border)' }}>
@@ -164,9 +159,7 @@ const ManageBookings = () => {
             )}
           </div>
 
-        </div>
-      </div>
-    </div>
+    </PartnerLayout>
   );
 };
 

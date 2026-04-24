@@ -1,7 +1,6 @@
 import React, { useState, useEffect } from 'react';
 import { Link } from 'react-router-dom';
-import PartnerSidebar from '../../components/layout/PartnerSidebar';
-import Topbar from '../../components/layout/Topbar';
+import PartnerLayout from '../../components/layout/PartnerLayout';
 import { useAuth } from '../../context/AuthContext';
 import { db } from '../../firebase/config';
 import { collection, query, where, onSnapshot, limit } from 'firebase/firestore';
@@ -48,14 +47,9 @@ const PartnerDashboard = () => {
   ];
 
   return (
-    <div className="dashboard-layout">
-      <PartnerSidebar />
-      <div className="main-content">
-        <Topbar title="Partner Dashboard" subtitle={`Welcome, ${userData?.name?.split(' ')[0] || 'Partner'}!`} />
-        <div className="page-content animate-fadeIn">
-
-          {/* Welcome Banner */}
-          <div style={{ background: 'linear-gradient(135deg, #1F1F1F, #2d0e0a)', borderRadius: '20px', padding: '28px 32px', marginBottom: '28px', display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
+    <PartnerLayout title="Partner Dashboard" subtitle={`Welcome, ${userData?.name?.split(' ')[0] || 'Partner'}!`}>
+      {/* Welcome Banner */}
+      <div style={{ background: 'linear-gradient(135deg, #1F1F1F, #2d0e0a)', borderRadius: '20px', padding: '28px 32px', marginBottom: '28px', display: 'flex', justifyContent: 'space-between', alignItems: 'center' }} className="flex-mobile-col">
             <div>
               <h2 style={{ color: 'white', fontWeight: 800, fontSize: '20px', marginBottom: '6px' }}>Manage Your Listings 🏠</h2>
               <p style={{ color: 'rgba(255,255,255,0.65)', fontSize: '14px' }}>Add new PGs, view ratings and respond to student feedback.</p>
@@ -157,9 +151,7 @@ const PartnerDashboard = () => {
             <button className="btn" style={{ background: 'var(--verified-color)', color: 'white' }}>Apply Now</button>
           </div>
 
-        </div>
-      </div>
-    </div>
+    </PartnerLayout>
   );
 };
 
