@@ -9,7 +9,7 @@ export default defineConfig({
       registerType: 'autoUpdate',
       includeAssets: ['favicon.ico', 'apple-touch-icon.png', 'mask-icon.svg'],
       manifest: {
-        name: 'HostelPass Student Portal',
+        name: 'HostelPass',
         short_name: 'HostelPass',
         description: 'Find your perfect PG/Hostel with honest reviews.',
         theme_color: '#ee2e24',
