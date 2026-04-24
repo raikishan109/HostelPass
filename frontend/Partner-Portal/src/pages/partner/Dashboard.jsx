@@ -5,10 +5,9 @@ import { useAuth } from '../../context/AuthContext';
 import { db } from '../../firebase/config';
 import { collection, query, where, onSnapshot, limit } from 'firebase/firestore';
 import { MOCK_PGS } from '../../data/mockData';
-import { 
-  MdAdd, MdStar, MdRestaurant, MdReport, MdVerified, 
-  MdRateReview, MdApartment, MdBookOnline, MdAssignmentLate 
-} from 'react-icons/md';
+import { MdAdd, MdStar, MdRestaurant, MdReport, MdVerified, MdRateReview, MdApartment, MdBookOnline, MdAssignmentLate, MdCheck, MdClose, MdDelete } from 'react-icons/md';
+import { doc, deleteDoc } from 'firebase/firestore';
+import toast from 'react-hot-toast';
 
 const PartnerDashboard = () => {
   const { user, userData } = useAuth();
@@ -16,6 +15,14 @@ const PartnerDashboard = () => {
   const [recentBookings, setRecentBookings] = useState([]);
   const [myPGs, setMyPGs] = useState([]);
   const [loading, setLoading] = useState(true);
+
+  const handleDelete = async (id) => {
+    if (!window.confirm('Delete this listing permanently?')) return;
+    try {
+      await deleteDoc(doc(db, 'hostels', id));
+      toast.success('Listing deleted');
+    } catch (e) { toast.error('Delete failed'); }
+  };
   
   useEffect(() => {
     if (!user) return;
@@ -155,7 +162,17 @@ const PartnerDashboard = () => {
                       <div style={{ fontWeight: 600, fontSize: '14px', whiteSpace: 'nowrap', overflow: 'hidden', textOverflow: 'ellipsis' }}>{pg.name}</div>
                       <div style={{ fontSize: '12px', color: '#666' }}>{pg.location}</div>
                     </div>
-                    <div style={{ fontWeight: 700, color: 'var(--primary)', fontSize: '14px', whiteSpace: 'nowrap' }}>₹{pg.rent.toLocaleString()}</div>
+                    <div style={{ display: 'flex', alignItems: 'center', gap: '12px' }}>
+                      <div style={{ fontWeight: 700, color: 'var(--primary)', fontSize: '14px', whiteSpace: 'nowrap' }}>₹{pg.rent.toLocaleString()}</div>
+                      <button 
+                        onClick={() => handleDelete(pg.id)}
+                        style={{ background: 'none', border: 'none', color: '#999', cursor: 'pointer', padding: '4px', display: 'flex' }}
+                        onMouseEnter={e => e.currentTarget.style.color = '#ef4444'}
+                        onMouseLeave={e => e.currentTarget.style.color = '#999'}
+                      >
+                        <MdDelete size={18} />
+                      </button>
+                    </div>
                   </div>
                 ))}
               </div>

@@ -31,6 +31,10 @@
   --transition: all 0.25s ease;
   --font: 'Inter', sans-serif;
   --verified-color: #1AB64F;
+  --success: #1AB64F;
+  --warning: #F59E0B;
+  --danger: #EF4444;
+  --info: #3B82F6;
 }
 
 /* ── Reset ── */

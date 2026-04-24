@@ -4,8 +4,9 @@ import PartnerLayout from '../../components/layout/PartnerLayout';
 import { AMENITY_OPTIONS, CITY_OPTIONS, PG_TYPES } from '../../data/mockData';
 import toast from 'react-hot-toast';
 import { MdAdd, MdClose, MdSave, MdCloudUpload } from 'react-icons/md';
-import { db } from '../../firebase/config';
+import { db, storage } from '../../firebase/config';
 import { collection, addDoc, serverTimestamp } from 'firebase/firestore';
+import { ref, uploadBytes, getDownloadURL } from 'firebase/storage';
 import { useAuth } from '../../context/AuthContext';
 const STEPS = ['Basic Info', 'Pricing', 'Amenities', 'Description'];
 
@@ -36,19 +37,34 @@ const AddListing = () => {
     if (!form.description) { toast.error('Description is required'); return; }
     
     setIsSubmitting(true);
+    const uploadToast = toast.loading('Uploading images and saving listing...');
+    
     try {
-      // For now, we store dummy image URLs since real storage requires configuration
-      const dummyImages = [
-        'https://images.unsplash.com/photo-1555854817-5b2247a8175f?auto=format&fit=crop&w=800&q=80',
-        'https://images.unsplash.com/photo-1595526114035-0d45ed16cfbf?auto=format&fit=crop&w=800&q=80'
-      ];
+      const imageUrls = [];
+      
+      // Upload images to Firebase Storage
+      if (form.images && form.images.length > 0) {
+        for (const imgObj of form.images) {
+          const storageRef = ref(storage, `hostels/${user.uid}/${Date.now()}-${imgObj.file.name}`);
+          const snapshot = await uploadBytes(storageRef, imgObj.file);
+          const downloadUrl = await getDownloadURL(snapshot.ref);
+          imageUrls.push(downloadUrl);
+        }
+      }
 
       await addDoc(collection(db, 'hostels'), {
-        ...form,
+        name: form.name,
+        type: form.type,
+        city: form.city,
+        location: form.location,
+        address: form.address,
         rent: Number(form.rent),
         deposit: Number(form.deposit),
         sharingRent: Number(form.sharingRent) || 0,
-        images: dummyImages, // Use dummy for now as per project stage
+        amenities: form.amenities,
+        description: form.description,
+        rules: form.rules,
+        images: imageUrls, // Store real URLs
         partnerId: user.uid,
         partnerName: user.displayName || 'Partner',
         verified: false,
@@ -59,11 +75,11 @@ const AddListing = () => {
         createdAt: serverTimestamp(),
       });
 
-      toast.success('PG listing submitted successfully! 🎉');
+      toast.success('PG listing submitted successfully! 🎉', { id: uploadToast });
       navigate('/partner/listings');
     } catch (error) {
       console.error("Error adding listing:", error);
-      toast.error('Failed to submit listing. Try again.');
+      toast.error('Failed to submit listing. Try again.', { id: uploadToast });
     } finally {
       setIsSubmitting(false);
     }
