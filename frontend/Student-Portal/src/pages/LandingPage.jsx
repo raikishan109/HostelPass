@@ -1,15 +1,18 @@
-import React from 'react';
-import { Link, useNavigate } from 'react-router-dom';
+import React, { useState } from 'react';
+import { useNavigate, Link } from 'react-router-dom';
 import { useAuth } from '../context/AuthContext';
 import {
   MdLocationOn, MdStar, MdRestaurant, MdVerified, MdSearch,
-  MdFeedback, MdFavorite, MdArrowForward
+  MdFeedback, MdFavorite, MdArrowForward, MdMenu, MdClose, MdDashboard, MdPerson, MdLogout, MdNotifications
 } from 'react-icons/md';
 import { MOCK_PGS } from '../data/mockData';
+import Logo from '../components/common/Logo';
+import UserActions from '../components/layout/UserActions';
 
 const LandingPage = () => {
-  const { user, userRole } = useAuth();
+  const { user, userRole, logout } = useAuth();
   const navigate = useNavigate();
+  const [isMenuOpen, setIsMenuOpen] = useState(false);
 
   const topPGs = MOCK_PGS.filter(p => p.rating >= 4.3).slice(0, 3);
 
@@ -23,32 +26,34 @@ const LandingPage = () => {
   ];
 
   return (
-    <div style={{ background: '#fcfcfc', minHeight: '100vh', fontFamily: "'Inter', sans-serif", overflowX: 'hidden' }}>
+    <div className="landing-container" style={{ background: '#fcfcfc', minHeight: '100vh', fontFamily: "'Inter', sans-serif", overflowX: 'hidden', paddingTop: '60px' }}>
       {/* ── Navbar ── */}
-      <nav className="landing-nav" style={{
-        background: 'white', borderBottom: '1px solid #eee', padding: '0 40px',
-        height: '72px', display: 'flex', alignItems: 'center', justifyContent: 'space-between',
-        position: 'sticky', top: 0, zIndex: 1000
-      }}>
-        <div style={{ display: 'flex', alignItems: 'center', gap: '8px' }}>
-          <div style={{
-            width: 32, height: 32, background: 'var(--primary-gradient)', borderRadius: '4px',
-            display: 'flex', alignItems: 'center', justifyContent: 'center',
-            fontWeight: 900, fontSize: '16px', color: 'white',
-          }}>HP</div>
-          <span style={{ fontWeight: 800, fontSize: '20px', color: '#333', letterSpacing: '-0.5px' }}>
-            Hostel<span style={{ color: 'var(--primary)' }}>Pass</span>
-          </span>
+      <nav className="landing-nav">
+        <div className="nav-left">
+          {/* Hamburger on Left for Mobile */}
+          <button 
+            className="btn btn-ghost btn-icon pc-only-hidden" 
+            onClick={() => setIsMenuOpen(!isMenuOpen)}
+          >
+            <MdMenu size={24} />
+          </button>
+
+          <Logo />
         </div>
-        <div style={{ display: 'flex', gap: '8px', alignItems: 'center' }}>
+
+        {/* User Actions */}
+        <div style={{ display: 'flex', alignItems: 'center', gap: '8px' }}>
           {user ? (
-            <Link to={`/${userRole}`} style={{ 
-              background: 'var(--primary-gradient)', color: 'white', padding: '8px 16px', 
-              borderRadius: '6px', fontWeight: 700, fontSize: '13px', textDecoration: 'none',
-              boxShadow: '0 4px 10px rgba(230, 0, 0, 0.2)'
-            }}>Dashboard</Link>
-          ) : (
             <>
+              <Link to={`/${userRole}`} className="pc-only" style={{ 
+                background: 'var(--primary-gradient)', color: 'white', padding: '8px 16px', 
+                borderRadius: '6px', fontWeight: 700, fontSize: '13px', textDecoration: 'none',
+                boxShadow: '0 4px 10px rgba(230, 0, 0, 0.2)', marginRight: '4px'
+              }}>Dashboard</Link>
+              <UserActions />
+            </>
+          ) : (
+            <div className="pc-only" style={{ display: 'flex', gap: '8px' }}>
               <Link to="/login" style={{ 
                 fontWeight: 600, color: '#333', fontSize: '13px', textDecoration: 'none',
                 padding: '8px 12px', borderRadius: '6px', border: '1px solid #eee'
@@ -57,11 +62,63 @@ const LandingPage = () => {
                 background: 'var(--primary-gradient)', color: 'white', padding: '8px 16px', 
                 borderRadius: '6px', fontWeight: 700, fontSize: '13px', textDecoration: 'none',
                 boxShadow: '0 4px 10px rgba(230, 0, 0, 0.2)'
-              }}>Join</Link>
-            </>
+              }}>Join Now</Link>
+            </div>
           )}
         </div>
       </nav>
+
+      {/* Mobile Sidebar Overlay */}
+      {isMenuOpen && (
+        <div 
+          onClick={() => setIsMenuOpen(false)}
+          style={{
+            position: 'fixed', top: 0, left: 0, right: 0, bottom: 0,
+            background: 'rgba(0,0,0,0.5)', zIndex: 1100,
+            animation: 'fadeIn 0.3s ease'
+          }}
+        >
+          <div 
+            onClick={e => e.stopPropagation()}
+            style={{
+              width: '280px', height: '100%', background: 'white',
+              padding: '24px', display: 'flex', flexDirection: 'column',
+              gap: '24px', animation: 'slideIn 0.3s ease'
+            }}
+          >
+            <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', marginBottom: '12px' }}>
+              <div style={{ display: 'flex', alignItems: 'center', gap: '8px' }}>
+                <img src="/pwa-192x192.png" style={{ width: 28, height: 28 }} alt="" />
+                <span style={{ fontWeight: 800, fontSize: '18px' }}>HostelPass</span>
+              </div>
+              <button onClick={() => setIsMenuOpen(false)} style={{ background: 'none', border: 'none', color: '#666' }}><MdClose size={24} /></button>
+            </div>
+
+            <div style={{ display: 'flex', flexDirection: 'column', gap: '8px' }}>
+              {user ? (
+                <>
+                  <Link to={`/${userRole}`} onClick={() => setIsMenuOpen(false)} style={{ display: 'flex', alignItems: 'center', gap: '12px', padding: '12px', borderRadius: '8px', textDecoration: 'none', color: '#333', fontWeight: 600, background: '#f8f9fa' }}>
+                    <MdDashboard color="var(--primary)" /> Dashboard
+                  </Link>
+                  <Link to={`/${userRole}/profile`} onClick={() => setIsMenuOpen(false)} style={{ display: 'flex', alignItems: 'center', gap: '12px', padding: '12px', borderRadius: '8px', textDecoration: 'none', color: '#333', fontWeight: 600 }}>
+                    <MdPerson color="var(--primary)" /> My Profile
+                  </Link>
+                  <div style={{ marginTop: 'auto', paddingTop: '16px', borderTop: '1px solid #eee' }}>
+                    <button onClick={() => { logout(); setIsMenuOpen(false); }} style={{ display: 'flex', alignItems: 'center', gap: '12px', width: '100%', padding: '12px', background: 'none', border: 'none', color: '#ee2e24', fontWeight: 600, cursor: 'pointer', textAlign: 'left' }}>
+                      <MdLogout /> Logout
+                    </button>
+                  </div>
+                </>
+              ) : (
+                <>
+                  <Link to="/login" onClick={() => setIsMenuOpen(false)} style={{ display: 'block', padding: '14px', borderRadius: '12px', border: '1px solid #eee', textDecoration: 'none', color: '#333', fontWeight: 600, textAlign: 'center' }}>Login</Link>
+                  <Link to="/register" onClick={() => setIsMenuOpen(false)} style={{ display: 'block', padding: '14px', borderRadius: '12px', background: 'var(--primary-gradient)', color: 'white', textDecoration: 'none', fontWeight: 700, textAlign: 'center' }}>Join Now</Link>
+                </>
+              )}
+            </div>
+          </div>
+        </div>
+      )}
 
       {/* ── Hero Section ── */}
       <section className="landing-hero" style={{ padding: '60px 24px 0', textAlign: 'center', background: 'white' }}>

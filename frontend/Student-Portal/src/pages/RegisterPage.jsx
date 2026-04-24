@@ -39,7 +39,11 @@ const RegisterPage = () => {
       <div style={{ flex: 1, background: 'linear-gradient(145deg, #1a0a00, #2d0e0a 50%, #1F1F1F)', display: 'flex', flexDirection: 'column', justifyContent: 'center', alignItems: 'center', padding: '60px 48px' }}>
         <div style={{ maxWidth: '380px', width: '100%' }}>
           <Link to="/" style={{ display: 'flex', alignItems: 'center', gap: '10px', marginBottom: '48px' }}>
-            <div style={{ width: 42, height: 42, background: 'var(--primary)', borderRadius: '12px', display: 'flex', alignItems: 'center', justifyContent: 'center', fontWeight: 900, fontSize: '18px', color: 'white' }}>HP</div>
+            <img 
+              src="/pwa-192x192.png" 
+              alt="HostelPass" 
+              style={{ width: '42px', height: '42px', borderRadius: '10px', objectFit: 'cover' }} 
+            />
             <span style={{ fontWeight: 800, fontSize: '22px', color: 'white' }}>Hostel<span style={{ color: 'var(--primary)' }}>Pass</span></span>
           </Link>
           <h1 style={{ fontSize: '34px', fontWeight: 900, color: 'white', marginBottom: '16px', lineHeight: 1.2 }}>Join thousands of students</h1>
