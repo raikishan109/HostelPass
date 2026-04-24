@@ -41,23 +41,26 @@ const SetupAdmin = () => {
   };
 
   return (
-    <div style={{ padding: '50px', textAlign: 'center', fontFamily: 'Inter, sans-serif' }}>
-      <div style={{ maxWidth: '400px', margin: '0 auto', background: '#fff', padding: '30px', borderRadius: '12px', boxShadow: '0 4px 20px rgba(0,0,0,0.1)' }}>
-        <MdSecurity size={50} color="#EE2E24" />
-        <h2>Admin Setup Utility</h2>
-        <p style={{ color: '#666' }}>This will create a permanent admin account in your Firebase database.</p>
+    <div className="auth-page">
+      <div className="auth-card animate-fadeIn">
+        <MdSecurity size={50} color="#EE2E24" style={{ marginBottom: '20px' }} />
+        <h2 style={{ marginBottom: '10px' }}>Admin Setup Utility</h2>
+        <p style={{ color: '#666', fontSize: '14px', marginBottom: '24px' }}>This will create a permanent admin account in your Firebase database.</p>
         
         {status === 'ready' && (
           <>
-            <input 
-              type="password" 
-              placeholder="Enter Setup Key" 
-              value={setupKey}
-              onChange={(e) => setSetupKey(e.target.value)}
-              style={{ width: '100%', padding: '10px', marginBottom: '15px', borderRadius: '6px', border: '1px solid #ccc' }}
-            />
-            <button onClick={createAdmin} className="btn btn-primary w-full" style={{ padding: '12px', fontWeight: 800, width: '100%', cursor: 'pointer' }}>
-              Create Admin Account
+            <div className="form-group">
+              <input 
+                type="password" 
+                placeholder="Enter Setup Key" 
+                className="form-input"
+                style={{ paddingLeft: '16px' }}
+                value={setupKey}
+                onChange={(e) => setSetupKey(e.target.value)}
+              />
+            </div>
+            <button onClick={createAdmin} className="btn btn-primary w-full" disabled={status === 'loading'}>
+              {status === 'loading' ? 'Creating...' : 'Create Admin Account'}
             </button>
           </>
         )}
@@ -65,20 +68,22 @@ const SetupAdmin = () => {
         {status === 'loading' && <p>Creating account... Please wait.</p>}
         
         {status === 'success' && (
-          <div style={{ color: '#059669' }}>
+          <div style={{ color: '#059669', marginTop: '20px' }}>
             <MdCheckCircle size={40} />
             <h3>Success!</h3>
-            <p>Admin account created. You can now login at /login.</p>
-            <p><b>Email:</b> admin@hostelpass.com</p>
-            <p><b>Pass:</b> admin123</p>
+            <p style={{ fontSize: '14px', marginTop: '10px' }}>Admin account created. You can now login at /login.</p>
+            <div style={{ background: '#f0fdf4', padding: '16px', borderRadius: '8px', marginTop: '16px', textAlign: 'left' }}>
+              <p style={{ fontSize: '13px' }}><b>Email:</b> admin@hostelpass.com</p>
+              <p style={{ fontSize: '13px' }}><b>Pass:</b> admin123</p>
+            </div>
           </div>
         )}
 
         {status === 'error' && (
-          <div style={{ color: '#EE2E24' }}>
+          <div style={{ color: '#EE2E24', marginTop: '20px' }}>
             <h3>Error</h3>
-            <p>{error}</p>
-            <p>Try logging in directly if the account already exists.</p>
+            <p style={{ fontSize: '14px' }}>{error}</p>
+            <button className="btn btn-ghost btn-sm mt-16" onClick={() => setStatus('ready')}>Try Again</button>
           </div>
         )}
       </div>

@@ -1,6 +1,5 @@
 import React, { useState } from 'react';
-import AdminSidebar from '../../components/layout/AdminSidebar';
-import Topbar from '../../components/layout/Topbar';
+import AdminLayout from '../../components/layout/AdminLayout';
 import { MdCheckCircle, MdHourglassEmpty, MdSearch } from 'react-icons/md';
 import toast from 'react-hot-toast';
 
@@ -29,49 +28,43 @@ const AdminComplaints = () => {
   const filtered = complaints.filter(c => statusFilter ? c.status === statusFilter : true);
 
   return (
-    <div className="dashboard-layout">
-      <AdminSidebar />
-      <div className="main-content">
-        <Topbar title="Complaints" subtitle={`${complaints.filter(c => c.status !== 'resolved').length} open complaints`} />
-        <div className="page-content animate-fadeIn">
-          <div style={{ display: 'flex', gap: '10px', marginBottom: '20px' }}>
-            {['', 'pending', 'investigating', 'resolved'].map(s => (
-              <button key={s} className={`filter-chip ${statusFilter === s ? 'active' : ''}`} onClick={() => setStatusFilter(s)}>
-                {s === '' ? 'All' : s.charAt(0).toUpperCase() + s.slice(1)}
-              </button>
-            ))}
-          </div>
-          <div style={{ display: 'flex', flexDirection: 'column', gap: '12px' }}>
-            {filtered.map(c => {
-              const st = STATUS_MAP[c.status];
-              return (
-                <div key={c.id} style={{ background: 'white', borderRadius: '14px', padding: '20px', border: '1px solid var(--border)' }}>
-                  <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'flex-start', marginBottom: '10px' }}>
-                    <div>
-                      <div style={{ display: 'flex', alignItems: 'center', gap: '10px', marginBottom: '4px' }}>
-                        <span style={{ fontWeight: 700, fontSize: '15px' }}>{c.pgName}</span>
-                        <span className="badge badge-grey">{c.category}</span>
-                      </div>
-                      <div style={{ fontSize: '12px', color: 'var(--text-light)' }}>
-                        By {c.student} · {new Date(c.date).toLocaleDateString('en-IN', { day: 'numeric', month: 'short', year: 'numeric' })}
-                      </div>
-                    </div>
-                    <span className="badge" style={{ background: st.bg, color: st.color }}>
-                      {c.status === 'resolved' ? <MdCheckCircle size={10} /> : <MdHourglassEmpty size={10} />} {st.label}
-                    </span>
+    <AdminLayout title="Complaints" subtitle={`${complaints.filter(c => c.status !== 'resolved').length} open complaints`}>
+      <div className="table-wrapper border-none" style={{ display: 'flex', gap: '10px', marginBottom: '20px', paddingBottom: '8px' }}>
+        {['', 'pending', 'investigating', 'resolved'].map(s => (
+          <button key={s} className={`filter-chip ${statusFilter === s ? 'active' : ''}`} onClick={() => setStatusFilter(s)}>
+            {s === '' ? 'All' : s.charAt(0).toUpperCase() + s.slice(1)}
+          </button>
+        ))}
+      </div>
+      <div style={{ display: 'flex', flexDirection: 'column', gap: '12px' }}>
+        {filtered.map(c => {
+          const st = STATUS_MAP[c.status];
+          return (
+            <div key={c.id} style={{ background: 'white', borderRadius: '14px', padding: '20px', border: '1px solid var(--border)' }}>
+              <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'flex-start', marginBottom: '10px' }}>
+                <div style={{ flex: 1 }}>
+                  <div style={{ display: 'flex', alignItems: 'center', gap: '8px', marginBottom: '4px', flexWrap: 'wrap' }}>
+                    <span style={{ fontWeight: 700, fontSize: '15px' }}>{c.pgName}</span>
+                    <span className="badge badge-grey">{c.category}</span>
                   </div>
-                  <p style={{ fontSize: '14px', color: 'var(--text-medium)', lineHeight: 1.7, marginBottom: '14px' }}>{c.text}</p>
-                  <div style={{ display: 'flex', gap: '8px' }}>
-                    {c.status !== 'investigating' && <button className="btn btn-outline btn-sm" onClick={() => updateStatus(c.id, 'investigating')}>Mark Investigating</button>}
-                    {c.status !== 'resolved' && <button className="btn btn-sm" style={{ background: 'var(--verified-color)', color: 'white' }} onClick={() => updateStatus(c.id, 'resolved')}><MdCheckCircle size={13} /> Mark Resolved</button>}
+                  <div style={{ fontSize: '12px', color: 'var(--text-light)' }}>
+                    By {c.student} · {new Date(c.date).toLocaleDateString('en-IN', { day: 'numeric', month: 'short', year: 'numeric' })}
                   </div>
                 </div>
-              );
-            })}
-          </div>
-        </div>
+                <span className="badge" style={{ background: st.bg, color: st.color, whiteSpace: 'nowrap', marginLeft: '8px' }}>
+                  {c.status === 'resolved' ? <MdCheckCircle size={10} /> : <MdHourglassEmpty size={10} />} {st.label}
+                </span>
+              </div>
+              <p style={{ fontSize: '14px', color: 'var(--text-medium)', lineHeight: 1.7, marginBottom: '14px' }}>{c.text}</p>
+              <div className="flex-mobile-col" style={{ display: 'flex', gap: '8px' }}>
+                {c.status !== 'investigating' && <button className="btn btn-outline btn-sm" onClick={() => updateStatus(c.id, 'investigating')} style={{ flex: 1 }}>Mark Investigating</button>}
+                {c.status !== 'resolved' && <button className="btn btn-sm" style={{ background: 'var(--verified-color)', color: 'white', flex: 1 }} onClick={() => updateStatus(c.id, 'resolved')}><MdCheckCircle size={13} /> Mark Resolved</button>}
+              </div>
+            </div>
+          );
+        })}
       </div>
-    </div>
+    </AdminLayout>
   );
 };
 

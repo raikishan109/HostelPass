@@ -10,6 +10,7 @@ const Topbar = ({ title, onMenuClick, subtitle }) => {
         <button 
           className="btn btn-ghost btn-icon pc-only-hidden" 
           onClick={onMenuClick}
+          style={{ padding: 0, minWidth: '40px' }}
         >
           <MdMenu size={24} />
         </button>

@@ -1,6 +1,5 @@
 import React, { useState } from 'react';
-import AdminSidebar from '../../components/layout/AdminSidebar';
-import Topbar from '../../components/layout/Topbar';
+import AdminLayout from '../../components/layout/AdminLayout';
 import { MdSearch, MdBlock, MdCheckCircle, MdPerson, MdBusiness, MdAdminPanelSettings } from 'react-icons/md';
 import toast from 'react-hot-toast';
 
@@ -30,68 +29,62 @@ const AdminUsers = () => {
   };
 
   return (
-    <div className="dashboard-layout">
-      <AdminSidebar />
-      <div className="main-content">
-        <Topbar title="User Management" subtitle={`${users.length} total users`} />
-        <div className="page-content animate-fadeIn">
-          <div style={{ display: 'flex', gap: '12px', marginBottom: '20px' }}>
-            <div style={{ flex: 1, display: 'flex', alignItems: 'center', gap: '10px', background: 'white', border: '2px solid var(--border)', borderRadius: '12px', padding: '10px 16px' }}>
-              <MdSearch color="var(--text-light)" />
-              <input style={{ flex: 1, border: 'none', outline: 'none', fontSize: '14px' }} placeholder="Search users..." value={query} onChange={e => setQuery(e.target.value)} />
-            </div>
-            <select className="form-select" style={{ width: 'auto', minWidth: '160px' }} value={roleFilter} onChange={e => setRoleFilter(e.target.value)}>
-              <option value="">All Roles</option>
-              <option value="student">Students</option>
-              <option value="partner">Partners</option>
-              <option value="admin">Admins</option>
-            </select>
-          </div>
-
-          <div className="table-wrapper">
-            <table className="table">
-              <thead><tr><th>User</th><th>Role</th><th>Reviews</th><th>Joined</th><th>Status</th><th>Action</th></tr></thead>
-              <tbody>
-                {filtered.map(u => (
-                  <tr key={u.id}>
-                    <td>
-                      <div style={{ display: 'flex', alignItems: 'center', gap: '10px' }}>
-                        <div className="avatar avatar-sm">{u.name.charAt(0)}</div>
-                        <div>
-                          <div style={{ fontWeight: 600 }}>{u.name}</div>
-                          <div style={{ fontSize: '12px', color: 'var(--text-light)' }}>{u.email}</div>
-                        </div>
-                      </div>
-                    </td>
-                    <td>
-                      <span className={`badge ${u.role === 'partner' ? 'badge-info' : u.role === 'admin' ? 'badge-danger' : 'badge-grey'}`}>
-                        {ROLE_ICONS[u.role]} {u.role}
-                      </span>
-                    </td>
-                    <td>{u.reviews}</td>
-                    <td style={{ fontSize: '13px', color: 'var(--text-light)' }}>{new Date(u.joined).toLocaleDateString('en-IN', { day: 'numeric', month: 'short', year: 'numeric' })}</td>
-                    <td>
-                      <span className={`badge ${u.status === 'active' ? 'badge-verified' : 'badge-danger'}`}>
-                        {u.status === 'active' ? <MdCheckCircle size={10} /> : <MdBlock size={10} />} {u.status}
-                      </span>
-                    </td>
-                    <td>
-                      <button
-                        className={`btn btn-sm ${u.status === 'active' ? 'btn-danger' : 'btn-ghost'}`}
-                        style={{ fontSize: '12px' }}
-                        onClick={() => toggleStatus(u.id)}
-                      >
-                        {u.status === 'active' ? <><MdBlock size={12} /> Suspend</> : <><MdCheckCircle size={12} /> Restore</>}
-                      </button>
-                    </td>
-                  </tr>
-                ))}
-              </tbody>
-            </table>
-          </div>
+    <AdminLayout title="User Management" subtitle={`${users.length} total users`}>
+      <div className="flex-mobile-col" style={{ display: 'flex', gap: '12px', marginBottom: '20px' }}>
+        <div style={{ flex: 1, display: 'flex', alignItems: 'center', gap: '10px', background: 'white', border: '2px solid var(--border)', borderRadius: '12px', padding: '10px 16px' }}>
+          <MdSearch color="var(--text-light)" />
+          <input style={{ flex: 1, border: 'none', outline: 'none', fontSize: '14px' }} placeholder="Search users..." value={query} onChange={e => setQuery(e.target.value)} />
         </div>
+        <select className="form-select" style={{ width: 'auto', minWidth: '160px' }} value={roleFilter} onChange={e => setRoleFilter(e.target.value)}>
+          <option value="">All Roles</option>
+          <option value="student">Students</option>
+          <option value="partner">Partners</option>
+          <option value="admin">Admins</option>
+        </select>
       </div>
-    </div>
+
+      <div className="table-wrapper">
+        <table className="table">
+          <thead><tr><th>User</th><th>Role</th><th>Reviews</th><th className="pc-only">Joined</th><th>Status</th><th>Action</th></tr></thead>
+          <tbody>
+            {filtered.map(u => (
+              <tr key={u.id}>
+                <td>
+                  <div style={{ display: 'flex', alignItems: 'center', gap: '10px' }}>
+                    <div className="avatar avatar-sm">{u.name.charAt(0)}</div>
+                    <div>
+                      <div style={{ fontWeight: 600 }}>{u.name}</div>
+                      <div className="pc-only" style={{ fontSize: '12px', color: 'var(--text-light)' }}>{u.email}</div>
+                    </div>
+                  </div>
+                </td>
+                <td>
+                  <span className={`badge ${u.role === 'partner' ? 'badge-info' : u.role === 'admin' ? 'badge-danger' : 'badge-grey'}`}>
+                    <span className="pc-only">{ROLE_ICONS[u.role]}</span> {u.role}
+                  </span>
+                </td>
+                <td>{u.reviews}</td>
+                <td className="pc-only" style={{ fontSize: '13px', color: 'var(--text-light)' }}>{new Date(u.joined).toLocaleDateString('en-IN', { day: 'numeric', month: 'short', year: 'numeric' })}</td>
+                <td>
+                  <span className={`badge ${u.status === 'active' ? 'badge-verified' : 'badge-danger'}`}>
+                    {u.status === 'active' ? <MdCheckCircle size={10} /> : <MdBlock size={10} />} {u.status}
+                  </span>
+                </td>
+                <td>
+                  <button
+                    className={`btn btn-sm ${u.status === 'active' ? 'btn-danger' : 'btn-ghost'}`}
+                    style={{ fontSize: '12px' }}
+                    onClick={() => toggleStatus(u.id)}
+                  >
+                    {u.status === 'active' ? <><MdBlock size={12} /> <span className="pc-only">Suspend</span></> : <><MdCheckCircle size={12} /> <span className="pc-only">Restore</span></>}
+                  </button>
+                </td>
+              </tr>
+            ))}
+          </tbody>
+        </table>
+      </div>
+    </AdminLayout>
   );
 };
 
