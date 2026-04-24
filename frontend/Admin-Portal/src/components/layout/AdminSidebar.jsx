@@ -22,7 +22,7 @@ const AdminSidebar = ({ sidebarOpen, setSidebarOpen }) => {
 
   return (
     <aside className={`sidebar ${sidebarOpen ? 'open' : ''}`}>
-      <div className="sidebar-logo">
+      <div className="sidebar-logo mobile-only">
         <Logo />
       </div>
       <nav className="sidebar-nav">

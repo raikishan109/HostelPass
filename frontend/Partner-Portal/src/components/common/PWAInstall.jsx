@@ -34,8 +34,8 @@ const PWAInstall = () => {
       <div className="pwa-content">
         <MdInstallMobile className="pwa-icon" />
         <div className="pwa-text">
-          <div className="pwa-title">HostelPass Admin</div>
-          <div className="pwa-desc">Install the admin portal for quick access</div>
+          <div className="pwa-title">HostelPass Partner</div>
+          <div className="pwa-desc">Install the partner portal for quick access</div>
         </div>
       </div>
       <div className="pwa-actions">

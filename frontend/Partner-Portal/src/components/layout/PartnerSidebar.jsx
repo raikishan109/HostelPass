@@ -51,7 +51,7 @@ const PartnerSidebar = ({ sidebarOpen, setSidebarOpen }) => {
         <div className="sidebar-section-title">Account</div>
         <Link to="/partner/profile" className={`sidebar-link ${isActive('/partner/profile') ? 'active' : ''}`} onClick={handleLinkClick}><MdPerson /> Profile</Link>
         {deferredPrompt && (
-          <button className="sidebar-link w-full" onClick={handleInstall} style={{ background: 'var(--primary-bg)', color: 'var(--primary)', marginTop: '8px', border: 'none', cursor: 'pointer', textAlign: 'left' }}>
+          <button className="sidebar-link w-full mobile-only" onClick={handleInstall} style={{ background: 'var(--primary-bg)', color: 'var(--primary)', marginTop: '8px', border: 'none', cursor: 'pointer', textAlign: 'left' }}>
             <MdGetApp /> Install App
           </button>
         )}

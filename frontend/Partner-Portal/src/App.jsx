@@ -15,6 +15,7 @@ import EditListing from './pages/partner/EditListing';
 import PartnerAnalytics from './pages/partner/Analytics';
 import PartnerProfile from './pages/partner/Profile';
 import ManageBookings from './pages/partner/ManageBookings';
+import PWAInstall from './components/common/PWAInstall';
 
 const ProtectedRoute = ({ children }) => {
   const { user, userRole, loading } = useAuth();
@@ -50,6 +51,7 @@ function App() {
     <AuthProvider>
       <BrowserRouter>
         <Toaster position="top-right" />
+        <PWAInstall />
         <AppRoutes />
       </BrowserRouter>
     </AuthProvider>
