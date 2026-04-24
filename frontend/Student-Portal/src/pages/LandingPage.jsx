@@ -11,14 +11,26 @@ import UserActions from '../components/layout/UserActions';
 import StudentSidebar from '../components/layout/StudentSidebar';
 import toast from 'react-hot-toast';
 
+import { db } from '../firebase/config';
+import { collection, query, orderBy, limit, onSnapshot, where } from 'firebase/firestore';
+
 const LandingPage = () => {
   const { user, userRole, logout } = useAuth();
   const navigate = useNavigate();
   const [isMenuOpen, setIsMenuOpen] = useState(false);
   const [searchQuery, setSearchQuery] = useState('');
   const [isDetecting, setIsDetecting] = useState(false);
+  const [topPGs, setTopPGs] = useState([]);
 
-  const topPGs = MOCK_PGS.filter(p => p.rating >= 4.3).slice(0, 3);
+  React.useEffect(() => {
+    // Fetch Top Rated PGs (verified or high rating)
+    const q = query(collection(db, 'hostels'), limit(6));
+    const unsubscribe = onSnapshot(q, (snap) => {
+      const pgs = snap.docs.map(doc => ({ id: doc.id, ...doc.data() }));
+      setTopPGs(pgs.slice(0, 3));
+    });
+    return () => unsubscribe();
+  }, []);
 
   const handleSearch = (e) => {
     e?.preventDefault();
@@ -37,12 +49,22 @@ const LandingPage = () => {
     }
     setIsDetecting(true);
     navigator.geolocation.getCurrentPosition(
-      (position) => {
-        setTimeout(() => {
-          setSearchQuery('Electronic City, Bangalore');
-          toast.success("Location detected: Bangalore");
+      async (position) => {
+        try {
+          const { latitude, longitude } = position.coords;
+          const response = await fetch(`https://nominatim.openstreetmap.org/reverse?format=json&lat=${latitude}&lon=${longitude}&zoom=10&addressdetails=1`);
+          const data = await response.json();
+          
+          const city = data.address.city || data.address.town || data.address.suburb || data.address.state || "Current Location";
+          setSearchQuery(city);
+          toast.success(`Location detected: ${city}`);
+        } catch (error) {
+          console.error("Error detecting location:", error);
+          setSearchQuery("Current Location");
+          toast.success("Location detected!");
+        } finally {
           setIsDetecting(false);
-        }, 1500);
+        }
       },
       () => {
         toast.error("Unable to retrieve location");

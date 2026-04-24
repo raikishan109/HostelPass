@@ -43,40 +43,39 @@ const AdminUsers = () => {
         </select>
       </div>
 
-      <div className="table-wrapper">
-        <table className="table">
+      <div className="table-wrapper" style={{ border: 'none', borderRadius: 0 }}>
+        <table className="table table-to-cards">
           <thead><tr><th>User</th><th>Role</th><th>Reviews</th><th className="pc-only">Joined</th><th>Status</th><th>Action</th></tr></thead>
           <tbody>
             {filtered.map(u => (
               <tr key={u.id}>
-                <td>
+                <td data-label="User">
                   <div style={{ display: 'flex', alignItems: 'center', gap: '10px' }}>
                     <div className="avatar avatar-sm">{u.name.charAt(0)}</div>
                     <div>
                       <div style={{ fontWeight: 600 }}>{u.name}</div>
-                      <div className="pc-only" style={{ fontSize: '12px', color: 'var(--text-light)' }}>{u.email}</div>
+                      <div style={{ fontSize: '12px', color: 'var(--text-light)' }}>{u.email}</div>
                     </div>
                   </div>
                 </td>
-                <td>
+                <td data-label="Role">
                   <span className={`badge ${u.role === 'partner' ? 'badge-info' : u.role === 'admin' ? 'badge-danger' : 'badge-grey'}`}>
-                    <span className="pc-only">{ROLE_ICONS[u.role]}</span> {u.role}
+                    {u.role}
                   </span>
                 </td>
-                <td>{u.reviews}</td>
-                <td className="pc-only" style={{ fontSize: '13px', color: 'var(--text-light)' }}>{new Date(u.joined).toLocaleDateString('en-IN', { day: 'numeric', month: 'short', year: 'numeric' })}</td>
-                <td>
+                <td data-label="Reviews">{u.reviews}</td>
+                <td data-label="Status">
                   <span className={`badge ${u.status === 'active' ? 'badge-verified' : 'badge-danger'}`}>
-                    {u.status === 'active' ? <MdCheckCircle size={10} /> : <MdBlock size={10} />} {u.status}
+                    {u.status}
                   </span>
                 </td>
-                <td>
+                <td data-label="Action">
                   <button
                     className={`btn btn-sm ${u.status === 'active' ? 'btn-danger' : 'btn-ghost'}`}
-                    style={{ fontSize: '12px' }}
+                    style={{ fontSize: '12px', padding: '6px 12px' }}
                     onClick={() => toggleStatus(u.id)}
                   >
-                    {u.status === 'active' ? <><MdBlock size={12} /> <span className="pc-only">Suspend</span></> : <><MdCheckCircle size={12} /> <span className="pc-only">Restore</span></>}
+                    {u.status === 'active' ? 'Suspend' : 'Restore'}
                   </button>
                 </td>
               </tr>

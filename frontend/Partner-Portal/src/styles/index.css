@@ -624,6 +624,7 @@ ul, ol { list-style: none; }
   .pc-only { display: none !important; }
   .mobile-only { display: block !important; }
   .flex-mobile-col { flex-direction: column !important; gap: 16px !important; }
+  .w-mobile-full { width: 100% !important; }
   
   .stat-card { padding: 16px; gap: 10px; }
   .stat-icon { width: 40px; height: 40px; font-size: 20px; }
@@ -631,6 +632,34 @@ ul, ol { list-style: none; }
   .stat-label { font-size: 11px; }
   
   .modal { width: 95%; margin: 10px; }
+
+  /* ── Table to Cards Transformation ── */
+  .table-to-cards thead { display: none; }
+  .table-to-cards tr { 
+    display: block; background: white; 
+    border: 1px solid var(--border); border-radius: 16px;
+    margin-bottom: 16px; padding: 12px;
+  }
+  .table-to-cards td { 
+    display: flex; justify-content: space-between; align-items: center;
+    padding: 8px 0; border: none; border-bottom: 1px solid #f8f9fa;
+    text-align: right; font-size: 13px;
+  }
+  .table-to-cards td:last-child { border-bottom: none; }
+  .table-to-cards td::before { 
+    content: attr(data-label); font-weight: 700; 
+    text-align: left; color: var(--text-light); 
+  }
+  .table-to-cards td[data-label="Actions"] {
+    display: block; text-align: left; padding-top: 12px;
+  }
+  .table-to-cards td[data-label="Actions"]::before {
+    display: block; margin-bottom: 8px;
+  }
+  .table-to-cards td[data-label="Actions"] > div {
+    justify-content: flex-start !important;
+  }
+  .table-to-cards td .avatar-sm { margin-left: auto; }
 }
 
 @media (max-width: 480px) {

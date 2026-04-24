@@ -612,6 +612,26 @@ ul, ol { list-style: none; }
   .topbar { padding: 0 16px; height: 60px; }
   
   .flex-mobile-col { flex-direction: column !important; }
+  
+  /* ── Table to Cards Transformation ── */
+  .table-to-cards thead { display: none; }
+  .table-to-cards tr { 
+    display: block; background: white; 
+    border: 1px solid var(--border); border-radius: 16px;
+    margin-bottom: 16px; padding: 12px;
+  }
+  .table-to-cards td { 
+    display: flex; justify-content: space-between; align-items: center;
+    padding: 8px 0; border: none; border-bottom: 1px solid #f8f9fa;
+    text-align: right; font-size: 13px;
+  }
+  .table-to-cards td:last-child { border-bottom: none; }
+  .table-to-cards td::before { 
+    content: attr(data-label); font-weight: 700; 
+    text-align: left; color: var(--text-light); 
+  }
+  .table-to-cards td .avatar-sm { margin-left: auto; }
+
   .table-wrapper { 
     margin: 0 -16px; 
     border-radius: 0; 

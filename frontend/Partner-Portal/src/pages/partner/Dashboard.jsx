@@ -11,16 +11,15 @@ import {
 } from 'react-icons/md';
 
 const PartnerDashboard = () => {
-  const { userData } = useAuth();
+  const { user, userData } = useAuth();
   const [pendingCount, setPendingCount] = useState(0);
   const [recentBookings, setRecentBookings] = useState([]);
+  const [myPGs, setMyPGs] = useState([]);
+  const [loading, setLoading] = useState(true);
   
-  const myPGs = MOCK_PGS.slice(0, 2);
-  const totalReviews = myPGs.reduce((s, p) => s + p.reviewCount, 0);
-  const avgRating = (myPGs.reduce((s, p) => s + p.rating, 0) / myPGs.length).toFixed(1);
-  const totalComplaints = myPGs.reduce((s, p) => s + p.complaintCount, 0);
-
   useEffect(() => {
+    if (!user) return;
+
     // Real-time listener for pending bookings
     const qPending = query(collection(db, 'bookings'), where('status', '==', 'pending'));
     const unsubPending = onSnapshot(qPending, (snap) => {
@@ -33,11 +32,24 @@ const PartnerDashboard = () => {
       setRecentBookings(snap.docs.map(doc => ({ id: doc.id, ...doc.data() })));
     });
 
+    // Real-time listener for My PGs
+    const qMyPGs = query(collection(db, 'hostels'), where('partnerId', '==', user.uid));
+    const unsubMyPGs = onSnapshot(qMyPGs, (snap) => {
+      setMyPGs(snap.docs.map(doc => ({ id: doc.id, ...doc.data() })));
+      setLoading(false);
+    });
+
     return () => {
       unsubPending();
       unsubRecent();
+      unsubMyPGs();
     };
-  }, []);
+  }, [user]);
+
+  const totalReviews = myPGs.reduce((s, p) => s + (p.reviewCount || 0), 0);
+  const avgRating = myPGs.length > 0 
+    ? (myPGs.reduce((s, p) => s + (p.rating || 0), 0) / myPGs.length).toFixed(1) 
+    : '0.0';
 
   const stats = [
     { icon: <MdAssignmentLate />, label: 'Pending Bookings', value: pendingCount, color: 'red' },
@@ -69,17 +81,17 @@ const PartnerDashboard = () => {
 
           {/* Pending Bookings Alert */}
           {pendingCount > 0 && (
-            <div style={{ background: '#FEF2F2', border: '1px solid #FCA5A5', borderRadius: '16px', padding: '20px 24px', marginBottom: '28px', display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
+            <div style={{ background: '#FEF2F2', border: '1px solid #FCA5A5', borderRadius: '16px', padding: '20px 24px', marginBottom: '28px', display: 'flex', justifyContent: 'space-between', alignItems: 'center' }} className="flex-mobile-col">
               <div style={{ display: 'flex', alignItems: 'center', gap: '12px' }}>
-                <div style={{ background: '#EF4444', color: 'white', padding: '8px', borderRadius: '50%', display: 'flex' }}>
+                <div style={{ background: '#EF4444', color: 'white', padding: '8px', borderRadius: '50%', display: 'flex', flexShrink: 0 }}>
                   <MdBookOnline size={20} />
                 </div>
                 <div>
                   <h4 style={{ fontWeight: 700, color: '#991B1B' }}>You have {pendingCount} new booking request{pendingCount > 1 ? 's' : ''}!</h4>
-                  <p style={{ fontSize: '13px', color: '#B91C1C' }}>Action required: Review and approve student bookings to confirm their stay.</p>
+                  <p style={{ fontSize: '13px', color: '#B91C1C' }}>Action required: Review and approve student bookings.</p>
                 </div>
               </div>
-              <Link to="/partner/bookings" className="btn" style={{ background: '#EF4444', color: 'white' }}>Review Now</Link>
+              <Link to="/partner/bookings" className="btn w-mobile-full" style={{ background: '#EF4444', color: 'white' }}>Review Now</Link>
             </div>
           )}
 
@@ -95,22 +107,35 @@ const PartnerDashboard = () => {
                   <p style={{ textAlign: 'center', padding: '20px', color: '#666' }}>No recent bookings</p>
                 ) : (
                   recentBookings.map(b => (
-                    <div key={b.id} style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', padding: '12px', borderBottom: '1px solid #f8f9fa' }}>
-                      <div>
-                        <div style={{ fontWeight: 600, fontSize: '14px' }}>{b.hostelName}</div>
-                        <div style={{ fontSize: '12px', color: '#666' }}>Student: {b.userId?.substring(0, 8)}...</div>
+                    <div key={b.id} style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', padding: '12px', borderBottom: '1px solid #f8f9fa', gap: '12px' }}>
+                      <div style={{ flex: 1, minWidth: 0 }}>
+                        <div style={{ fontWeight: 600, fontSize: '14px', whiteSpace: 'nowrap', overflow: 'hidden', textOverflow: 'ellipsis' }}>{b.hostelName}</div>
+                        <div style={{ fontSize: '12px', color: '#666' }}>ID: {b.id?.substring(0, 8)}...</div>
                       </div>
-                      <span style={{ 
-                        padding: '4px 8px', 
-                        borderRadius: '4px', 
-                        fontSize: '11px', 
-                        fontWeight: 700, 
-                        textTransform: 'capitalize',
-                        background: b.status === 'pending' ? '#FFFBEB' : '#E7F7EF',
-                        color: b.status === 'pending' ? '#B45309' : '#0D9488'
-                      }}>
-                        {b.status}
-                      </span>
+                      <div style={{ display: 'flex', gap: '8px', alignItems: 'center' }}>
+                        <span style={{ 
+                          padding: '4px 8px', 
+                          borderRadius: '4px', 
+                          fontSize: '11px', 
+                          fontWeight: 700, 
+                          textTransform: 'capitalize',
+                          background: b.status === 'pending' ? '#FFFBEB' : '#E7F7EF',
+                          color: b.status === 'pending' ? '#B45309' : '#0D9488',
+                          whiteSpace: 'nowrap'
+                        }}>
+                          {b.status}
+                        </span>
+                        {b.status === 'pending' && (
+                          <div style={{ display: 'flex', gap: '6px' }}>
+                            <button className="btn btn-sm" style={{ background: '#E7F7EF', color: '#0D9488', padding: '4px 8px', fontSize: '11px', fontWeight: 700, display: 'flex', alignItems: 'center', gap: '4px' }} onClick={() => handleUpdateStatus(b.id, 'confirmed')}>
+                              <MdCheck size={14} /> Confirm
+                            </button>
+                            <button className="btn btn-sm" style={{ background: '#FEF2F2', color: '#DC2626', padding: '4px 8px', fontSize: '11px', fontWeight: 700, display: 'flex', alignItems: 'center', gap: '4px' }} onClick={() => handleUpdateStatus(b.id, 'cancelled')}>
+                              <MdClose size={14} /> Reject
+                            </button>
+                          </div>
+                        )}
+                      </div>
                     </div>
                   ))
                 )}
@@ -125,12 +150,12 @@ const PartnerDashboard = () => {
               </div>
               <div style={{ padding: '12px' }}>
                 {myPGs.map(pg => (
-                  <div key={pg.id} style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', padding: '12px', borderBottom: '1px solid #f8f9fa' }}>
-                    <div>
-                      <div style={{ fontWeight: 600, fontSize: '14px' }}>{pg.name}</div>
+                  <div key={pg.id} style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', padding: '12px', borderBottom: '1px solid #f8f9fa', gap: '12px' }}>
+                    <div style={{ flex: 1, minWidth: 0 }}>
+                      <div style={{ fontWeight: 600, fontSize: '14px', whiteSpace: 'nowrap', overflow: 'hidden', textOverflow: 'ellipsis' }}>{pg.name}</div>
                       <div style={{ fontSize: '12px', color: '#666' }}>{pg.location}</div>
                     </div>
-                    <div style={{ fontWeight: 700, color: 'var(--primary)', fontSize: '14px' }}>₹{pg.rent.toLocaleString()}</div>
+                    <div style={{ fontWeight: 700, color: 'var(--primary)', fontSize: '14px', whiteSpace: 'nowrap' }}>₹{pg.rent.toLocaleString()}</div>
                   </div>
                 ))}
               </div>
@@ -138,17 +163,17 @@ const PartnerDashboard = () => {
           </div>
 
           {/* Apply for Verified badge */}
-          <div style={{ background: 'linear-gradient(135deg, #ecfdf5, #d1fae5)', borderRadius: '16px', padding: '24px', border: '1px solid #a7f3d0', display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
-            <div>
+          <div style={{ background: 'linear-gradient(135deg, #ecfdf5, #d1fae5)', borderRadius: '16px', padding: '24px', border: '1px solid #a7f3d0', display: 'flex', justifyContent: 'space-between', alignItems: 'center' }} className="flex-mobile-col">
+            <div style={{ flex: 1 }}>
               <div style={{ display: 'flex', alignItems: 'center', gap: '8px', marginBottom: '6px' }}>
-                <MdVerified color="var(--verified-color)" size={20} />
+                <MdVerified color="var(--verified-color)" size={20} style={{ flexShrink: 0 }} />
                 <span style={{ fontWeight: 700, fontSize: '16px', color: 'var(--text-dark)' }}>Apply for Verified PG Badge</span>
               </div>
               <p style={{ fontSize: '13px', color: 'var(--text-medium)' }}>
-                Get the Verified badge to build trust with students and increase bookings.
+                Increase student trust and bookings with a verified badge.
               </p>
             </div>
-            <button className="btn" style={{ background: 'var(--verified-color)', color: 'white' }}>Apply Now</button>
+            <button className="btn w-mobile-full" style={{ background: 'var(--verified-color)', color: 'white' }}>Apply Now</button>
           </div>
 
     </PartnerLayout>

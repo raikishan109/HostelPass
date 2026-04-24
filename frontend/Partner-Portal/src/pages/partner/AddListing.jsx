@@ -4,17 +4,22 @@ import PartnerLayout from '../../components/layout/PartnerLayout';
 import { AMENITY_OPTIONS, CITY_OPTIONS, PG_TYPES } from '../../data/mockData';
 import toast from 'react-hot-toast';
 import { MdAdd, MdClose, MdSave, MdCloudUpload } from 'react-icons/md';
-
+import { db } from '../../firebase/config';
+import { collection, addDoc, serverTimestamp } from 'firebase/firestore';
+import { useAuth } from '../../context/AuthContext';
 const STEPS = ['Basic Info', 'Pricing', 'Amenities', 'Description'];
 
 const AddListing = () => {
+  const { user } = useAuth();
   const navigate = useNavigate();
   const [step, setStep] = useState(0);
+  const [isSubmitting, setIsSubmitting] = useState(false);
   const [form, setForm] = useState({
     name: '', type: 'Boys', city: '', location: '', address: '',
     rent: '', deposit: '', sharingRent: '',
     amenities: [],
     description: '', rules: '',
+    images: [],
   });
 
   const setField = (k, v) => setForm(f => ({ ...f, [k]: v }));
@@ -26,9 +31,42 @@ const AddListing = () => {
     setStep(s => s + 1);
   };
 
-  const handleSubmit = () => {
-    toast.success('PG listing submitted for review! 🎉');
-    navigate('/partner/listings');
+  const handleSubmit = async () => {
+    if (isSubmitting) return;
+    if (!form.description) { toast.error('Description is required'); return; }
+    
+    setIsSubmitting(true);
+    try {
+      // For now, we store dummy image URLs since real storage requires configuration
+      const dummyImages = [
+        'https://images.unsplash.com/photo-1555854817-5b2247a8175f?auto=format&fit=crop&w=800&q=80',
+        'https://images.unsplash.com/photo-1595526114035-0d45ed16cfbf?auto=format&fit=crop&w=800&q=80'
+      ];
+
+      await addDoc(collection(db, 'hostels'), {
+        ...form,
+        rent: Number(form.rent),
+        deposit: Number(form.deposit),
+        sharingRent: Number(form.sharingRent) || 0,
+        images: dummyImages, // Use dummy for now as per project stage
+        partnerId: user.uid,
+        partnerName: user.displayName || 'Partner',
+        verified: false,
+        rating: 0,
+        messRating: 0,
+        reviewCount: 0,
+        complaintCount: 0,
+        createdAt: serverTimestamp(),
+      });
+
+      toast.success('PG listing submitted successfully! 🎉');
+      navigate('/partner/listings');
+    } catch (error) {
+      console.error("Error adding listing:", error);
+      toast.error('Failed to submit listing. Try again.');
+    } finally {
+      setIsSubmitting(false);
+    }
   };
 
   return (
@@ -151,14 +189,54 @@ const AddListing = () => {
                   </div>
                   <div className="form-group">
                     <label className="form-label">Upload Photos</label>
-                    <div style={{ border: '2px dashed var(--border)', borderRadius: '12px', padding: '32px', textAlign: 'center', cursor: 'pointer', background: 'var(--bg)', transition: 'all 0.2s' }}
+                    <input 
+                      type="file" 
+                      id="pg-photos" 
+                      multiple 
+                      accept="image/*" 
+                      style={{ display: 'none' }} 
+                      onChange={(e) => {
+                        const files = Array.from(e.target.files);
+                        if (files.length + (form.images?.length || 0) > 10) {
+                          toast.error('Maximum 10 photos allowed');
+                          return;
+                        }
+                        const newImages = files.map(file => ({
+                          file,
+                          preview: URL.createObjectURL(file)
+                        }));
+                        setField('images', [...(form.images || []), ...newImages]);
+                      }}
+                    />
+                    <div 
+                      style={{ border: '2px dashed var(--border)', borderRadius: '12px', padding: '32px', textAlign: 'center', cursor: 'pointer', background: 'var(--bg)', transition: 'all 0.2s' }}
+                      onClick={() => document.getElementById('pg-photos').click()}
                       onMouseEnter={e => { e.currentTarget.style.borderColor = 'var(--primary)'; e.currentTarget.style.background = 'var(--primary-bg)'; }}
                       onMouseLeave={e => { e.currentTarget.style.borderColor = 'var(--border)'; e.currentTarget.style.background = 'var(--bg)'; }}
                     >
                       <MdCloudUpload size={32} color="var(--text-light)" style={{ marginBottom: '8px' }} />
-                      <div style={{ fontWeight: 600, color: 'var(--text-medium)', marginBottom: '4px' }}>Click or drag photos here</div>
+                      <div style={{ fontWeight: 600, color: 'var(--text-medium)', marginBottom: '4px' }}>Click to upload photos</div>
                       <div style={{ fontSize: '12px', color: 'var(--text-light)' }}>JPG, PNG up to 5MB each. Max 10 photos.</div>
                     </div>
+
+                    {form.images && form.images.length > 0 && (
+                      <div style={{ display: 'grid', gridTemplateColumns: 'repeat(4, 1fr)', gap: '12px', marginTop: '20px' }}>
+                        {form.images.map((img, idx) => (
+                          <div key={idx} style={{ position: 'relative', height: '80px', borderRadius: '8px', overflow: 'hidden', border: '1px solid var(--border)' }}>
+                            <img src={img.preview} alt="preview" style={{ width: '100%', height: '100%', objectFit: 'cover' }} />
+                            <button 
+                              onClick={(e) => {
+                                e.stopPropagation();
+                                setField('images', form.images.filter((_, i) => i !== idx));
+                              }}
+                              style={{ position: 'absolute', top: '4px', right: '4px', background: 'rgba(238,46,36,0.8)', color: 'white', border: 'none', borderRadius: '50%', width: '20px', height: '20px', display: 'flex', alignItems: 'center', justifyContent: 'center', cursor: 'pointer' }}
+                            >
+                              <MdClose size={12} />
+                            </button>
+                          </div>
+                        ))}
+                      </div>
+                    )}
                   </div>
                 </div>
               )}

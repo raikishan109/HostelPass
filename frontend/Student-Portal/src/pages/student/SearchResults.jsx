@@ -1,19 +1,33 @@
-import React, { useState, useMemo } from 'react';
+import React, { useState, useEffect, useMemo } from 'react';
 import { useSearchParams } from 'react-router-dom';
 import StudentLayout from '../../components/layout/StudentLayout';
 import PGCard from '../../components/common/PGCard';
-import { MOCK_PGS, CITY_OPTIONS, PG_TYPES } from '../../data/mockData';
-import { MdSearch, MdFilterList, MdSort, MdClose, MdTune } from 'react-icons/md';
+import { CITY_OPTIONS, PG_TYPES } from '../../data/mockData';
+import { MdSearch, MdClose, MdTune } from 'react-icons/md';
+import { db } from '../../firebase/config';
+import { collection, onSnapshot, query as fsQuery, orderBy } from 'firebase/firestore';
 
 const SearchResults = () => {
   const [searchParams] = useSearchParams();
   const [query, setQuery] = useState(searchParams.get('q') || '');
   const [sort, setSort] = useState(searchParams.get('sort') || 'rating');
+  const [pgs, setPgs] = useState([]);
+  const [loading, setLoading] = useState(true);
 
-  React.useEffect(() => {
+  useEffect(() => {
     const q = searchParams.get('q');
     if (q !== null) setQuery(q);
   }, [searchParams]);
+
+  useEffect(() => {
+    const q = fsQuery(collection(db, 'hostels'), orderBy('createdAt', 'desc'));
+    const unsubscribe = onSnapshot(q, (snap) => {
+      setPgs(snap.docs.map(doc => ({ id: doc.id, ...doc.data() })));
+      setLoading(false);
+    });
+    return () => unsubscribe();
+  }, []);
+
   const [filters, setFilters] = useState({ type: '', city: '', minRent: '', maxRent: '', minRating: '' });
   const [favorites, setFavorites] = useState([]);
   const [showFilters, setShowFilters] = useState(false);
@@ -21,20 +35,25 @@ const SearchResults = () => {
   const setFilter = (k, v) => setFilters(f => ({ ...f, [k]: v }));
 
   const results = useMemo(() => {
-    let pgs = [...MOCK_PGS];
-    if (query) pgs = pgs.filter(p => p.name.toLowerCase().includes(query.toLowerCase()) || p.location.toLowerCase().includes(query.toLowerCase()) || p.city.toLowerCase().includes(query.toLowerCase()));
-    if (filters.type) pgs = pgs.filter(p => p.type === filters.type);
-    if (filters.city) pgs = pgs.filter(p => p.city === filters.city);
-    if (filters.minRent) pgs = pgs.filter(p => p.rent >= Number(filters.minRent));
-    if (filters.maxRent) pgs = pgs.filter(p => p.rent <= Number(filters.maxRent));
-    if (filters.minRating) pgs = pgs.filter(p => p.rating >= Number(filters.minRating));
-    if (sort === 'rating') pgs.sort((a, b) => b.rating - a.rating);
-    else if (sort === 'mess') pgs.sort((a, b) => b.messRating - a.messRating);
-    else if (sort === 'price_low') pgs.sort((a, b) => a.rent - b.rent);
-    else if (sort === 'price_high') pgs.sort((a, b) => b.rent - a.rent);
-    else if (sort === 'newest') pgs.sort((a, b) => new Date(b.createdAt) - new Date(a.createdAt));
-    return pgs;
-  }, [query, sort, filters]);
+    let filtered = [...pgs];
+    if (query) filtered = filtered.filter(p => 
+      p.name?.toLowerCase().includes(query.toLowerCase()) || 
+      p.location?.toLowerCase().includes(query.toLowerCase()) || 
+      p.city?.toLowerCase().includes(query.toLowerCase())
+    );
+    if (filters.type) filtered = filtered.filter(p => p.type === filters.type);
+    if (filters.city) filtered = filtered.filter(p => p.city === filters.city);
+    if (filters.minRent) filtered = filtered.filter(p => p.rent >= Number(filters.minRent));
+    if (filters.maxRent) filtered = filtered.filter(p => p.rent <= Number(filters.maxRent));
+    if (filters.minRating) filtered = filtered.filter(p => p.rating >= Number(filters.minRating));
+    
+    if (sort === 'rating') filtered.sort((a, b) => (b.rating || 0) - (a.rating || 0));
+    else if (sort === 'mess') filtered.sort((a, b) => (b.messRating || 0) - (a.messRating || 0));
+    else if (sort === 'price_low') filtered.sort((a, b) => (a.rent || 0) - (b.rent || 0));
+    else if (sort === 'price_high') filtered.sort((a, b) => (b.rent || 0) - (a.rent || 0));
+    
+    return filtered;
+  }, [query, sort, filters, pgs]);
 
   const clearFilters = () => setFilters({ type: '', city: '', minRent: '', maxRent: '', minRating: '' });
   const hasFilters = Object.values(filters).some(Boolean);

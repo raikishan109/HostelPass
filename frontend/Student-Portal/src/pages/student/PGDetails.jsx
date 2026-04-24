@@ -1,4 +1,4 @@
-import React, { useState, useMemo } from 'react';
+import React, { useState, useMemo, useEffect } from 'react';
 import { useParams, useNavigate } from 'react-router-dom';
 import StudentLayout from '../../components/layout/StudentLayout';
 import ReviewModal from '../../components/common/ReviewModal';
@@ -11,16 +11,16 @@ import {
   MdFlashOn, MdHotel, MdFlag, MdCheck, MdAcUnit, MdFitnessCenter, MdLocalLaundryService
 } from 'react-icons/md';
 import { db } from '../../firebase/config';
-import { collection, query, where, getDocs, addDoc, serverTimestamp } from 'firebase/firestore';
+import { collection, query, where, getDocs, addDoc, serverTimestamp, doc, getDoc } from 'firebase/firestore';
 
 const RatingBar = ({ label, value, color = 'var(--primary)' }) => (
   <div style={{ marginBottom: '10px' }}>
     <div style={{ display: 'flex', justifyContent: 'space-between', fontSize: '13px', marginBottom: '4px' }}>
       <span style={{ color: 'var(--text-medium)' }}>{label}</span>
-      <span style={{ fontWeight: 600 }}>{value.toFixed(1)}</span>
+      <span style={{ fontWeight: 600 }}>{(value || 0).toFixed(1)}</span>
     </div>
     <div className="progress-bar">
-      <div className="progress-fill" style={{ width: `${(value / 5) * 100}%`, background: color }} />
+      <div className="progress-fill" style={{ width: `${((value || 0) / 5) * 100}%`, background: color }} />
     </div>
   </div>
 );
@@ -52,14 +52,31 @@ const PGDetails = () => {
   const { id } = useParams();
   const navigate = useNavigate();
   const { userData } = useAuth();
-  const pg = MOCK_PGS.find(p => p.id === id) || MOCK_PGS[0];
-  const reviews = MOCK_REVIEWS.filter(r => r.pgId === id);
   
+  const [pg, setPg] = useState(null);
+  const [loading, setLoading] = useState(true);
   const [isFav, setIsFav] = useState(false);
   const [activeTab, setActiveTab] = useState('overview');
   const [showReview, setShowReview] = useState(false);
   const [showComplaint, setShowComplaint] = useState(false);
   const [showBookingModal, setShowBookingModal] = useState(false);
+
+  useEffect(() => {
+    const fetchPG = async () => {
+      try {
+        const docRef = doc(db, 'hostels', id);
+        const docSnap = await getDoc(docRef);
+        if (docSnap.exists()) {
+          setPg({ id: docSnap.id, ...docSnap.data() });
+        }
+      } catch (error) {
+        console.error("Error fetching PG:", error);
+      } finally {
+        setLoading(false);
+      }
+    };
+    fetchPG();
+  }, [id]);
   
   const [complaint, setComplaint] = useState({ category: '', text: '' });
   const [isBooking, setIsBooking] = useState(false);
@@ -67,16 +84,24 @@ const PGDetails = () => {
   
   // Extended Booking Options
   const [bookingOptions, setBookingOptions] = useState({
-    roomType: pg.roomOptions?.split(' / ')[0] || 'Triple',
+    roomType: 'Triple', // Default fallback
     food: true,
     ac: false,
     gym: false,
     laundry: false
   });
 
+  // Update roomType when PG is loaded
+  useEffect(() => {
+    if (pg?.roomOptions) {
+      setBookingOptions(prev => ({ ...prev, roomType: pg.roomOptions.split(' / ')[0] }));
+    }
+  }, [pg]);
+
   // DYNAMIC RENT CALCULATION
   const calculatedRent = useMemo(() => {
-    let total = pg.rent; // Base Rent
+    if (!pg) return 0;
+    let total = pg.rent || 0; // Base Rent
 
     // Room Type Adjustments
     if (bookingOptions.roomType === 'Single') total += 2000;
@@ -93,7 +118,7 @@ const PGDetails = () => {
     if (bookingOptions.laundry) total += 500;
 
     return total;
-  }, [bookingOptions, pg.rent]);
+  }, [bookingOptions, pg?.rent]);
 
   React.useEffect(() => {
     const checkActiveBooking = async () => {
@@ -168,7 +193,25 @@ const PGDetails = () => {
     setComplaint({ category: '', text: '' });
   };
 
-  if (!pg) return <div className="empty-state"><h3>PG Not Found</h3></div>;
+  if (loading) return (
+    <StudentLayout title="Loading...">
+      <div style={{ padding: '80px 20px', textAlign: 'center', color: '#666' }}>
+        <div style={{ fontSize: '32px', marginBottom: '16px' }}>🏠</div>
+        <p>Loading property details...</p>
+      </div>
+    </StudentLayout>
+  );
+
+  if (!pg) return (
+    <StudentLayout title="Not Found">
+      <div className="empty-state">
+        <div style={{ fontSize: '48px', marginBottom: '16px' }}>🔍</div>
+        <h3>PG Not Found</h3>
+        <p>The property you are looking for doesn't exist or has been removed.</p>
+        <button className="btn btn-primary" onClick={() => navigate('/student/search-results')}>Back to Search</button>
+      </div>
+    </StudentLayout>
+  );
 
   return (
     <StudentLayout title={pg.name}>
@@ -204,21 +247,23 @@ const PGDetails = () => {
               <h1 style={{ fontSize: '36px', fontWeight: 900, marginBottom: '10px', color: '#1A1A1A' }}>{pg.name}</h1>
               <div style={{ display: 'flex', flexDirection: 'column', gap: '10px' }}>
                 <div style={{ display: 'flex', alignItems: 'center', gap: '8px', color: 'var(--text-light)', fontSize: '17px' }}>
-                  <MdLocationOn size={22} color="var(--primary)" />{pg.location}
+                  <MdLocationOn size={22} color="var(--primary)" />{pg.location}, {pg.city}
                 </div>
-                <div style={{ display: 'flex', alignItems: 'center', gap: '8px', color: '#666', fontSize: '16px' }}>
-                  <MdHotel size={22} color="#666" />{pg.roomOptions}
-                </div>
+                {pg.roomOptions && (
+                  <div style={{ display: 'flex', alignItems: 'center', gap: '8px', color: '#666', fontSize: '16px' }}>
+                    <MdHotel size={22} color="#666" />{pg.roomOptions}
+                  </div>
+                )}
               </div>
             </div>
 
             <div style={{ display: 'flex', gap: '16px', marginBottom: '28px', flexWrap: 'wrap' }}>
               <div style={{ display: 'flex', alignItems: 'center', gap: '10px', background: '#fffbeb', padding: '12px 20px', borderRadius: '14px' }}>
-                <MdStar color="#f59e0b" size={22} /> <span style={{ fontWeight: 800, fontSize: '18px' }}>{pg.rating}</span>
-                <span style={{ color: 'var(--text-light)', fontSize: '15px' }}>({pg.reviewCount} reviews)</span>
+                <MdStar color="#f59e0b" size={22} /> <span style={{ fontWeight: 800, fontSize: '18px' }}>{pg.rating || 0}</span>
+                <span style={{ color: 'var(--text-light)', fontSize: '15px' }}>({pg.reviewCount || 0} reviews)</span>
               </div>
               <div style={{ display: 'flex', alignItems: 'center', gap: '10px', background: '#fff7ed', padding: '12px 20px', borderRadius: '14px' }}>
-                <MdRestaurant color="#ea580c" size={22} /> <span style={{ fontWeight: 800, fontSize: '18px' }}>Mess {pg.messRating}</span>
+                <MdRestaurant color="#ea580c" size={22} /> <span style={{ fontWeight: 800, fontSize: '18px' }}>Mess {pg.messRating || 0}</span>
               </div>
             </div>
 
@@ -235,14 +280,14 @@ const PGDetails = () => {
               <div style={{ padding: '32px', borderBottom: '1px solid #f0f0f0' }}>
                 <div style={{ textAlign: 'center', marginBottom: '28px' }}>
                   <div style={{ fontSize: '14px', color: '#999', fontWeight: 700, textTransform: 'uppercase', letterSpacing: '0.8px', marginBottom: '8px' }}>Base Rent Starts From</div>
-                  <div style={{ fontSize: '44px', fontWeight: 950, color: 'var(--primary)', lineHeight: 1 }}>₹{pg.rent.toLocaleString()}</div>
-                  <div style={{ fontSize: '15px', color: 'var(--verified-color)', fontWeight: 700, marginTop: '10px' }}>Deposit: ₹{pg.deposit?.toLocaleString() || '15,000'}</div>
+                  <div style={{ fontSize: '44px', fontWeight: 950, color: 'var(--primary)', lineHeight: 1 }}>₹{pg.rent?.toLocaleString() || '0'}</div>
+                  <div style={{ fontSize: '15px', color: 'var(--verified-color)', fontWeight: 700, marginTop: '10px' }}>Deposit: ₹{pg.deposit?.toLocaleString() || '0'}</div>
                 </div>
 
                 <div style={{ display: 'flex', alignItems: 'center', gap: '16px', background: '#f9f9f9', padding: '18px', borderRadius: '18px' }}>
-                  <div className="avatar avatar-md" style={{ width: '52px', height: '52px' }}>{pg.partnerName.charAt(0)}</div>
+                  <div className="avatar avatar-md" style={{ width: '52px', height: '52px' }}>{pg.partnerName?.charAt(0) || 'P'}</div>
                   <div>
-                    <div style={{ fontWeight: 800, fontSize: '17px', color: '#1A1A1A' }}>{pg.partnerName}</div>
+                    <div style={{ fontWeight: 800, fontSize: '17px', color: '#1A1A1A' }}>{pg.partnerName || 'Verified Partner'}</div>
                     <div style={{ fontSize: '13px', color: 'var(--verified-color)', fontWeight: 700, display: 'flex', alignItems: 'center', gap: '4px' }}>
                       <MdVerified size={15} /> Verified Owner
                     </div>
