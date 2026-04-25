@@ -43,62 +43,66 @@ const PWAInstall = () => {
   return (
     <div className="pwa-install-banner" style={{
       position: 'fixed',
-      bottom: '20px',
-      left: '20px',
-      right: '20px',
+      bottom: '16px',
+      left: '16px',
+      right: '16px',
       background: 'white',
-      borderRadius: '16px',
-      padding: '16px 20px',
-      boxShadow: '0 10px 40px rgba(0,0,0,0.2)',
+      borderRadius: '20px',
+      padding: '12px 16px',
+      boxShadow: '0 12px 48px rgba(0,0,0,0.25)',
       display: 'flex',
       alignItems: 'center',
       justifyContent: 'space-between',
       zIndex: 10000,
-      border: '1px solid #eee',
-      animation: 'slideUp 0.5s ease-out'
+      border: '1px solid rgba(0,0,0,0.05)',
+      animation: 'pwaSlideUp 0.6s cubic-bezier(0.16, 1, 0.3, 1)'
     }}>
       <div style={{ display: 'flex', alignItems: 'center', gap: '12px' }}>
-        <img src="/pwa-192x192.png" alt="App Icon" style={{ width: '44px', height: '44px', borderRadius: '10px' }} />
+        <div style={{ 
+          width: '48px', height: '48px', background: '#f8f9fa', 
+          borderRadius: '12px', display: 'flex', alignItems: 'center', 
+          justifyContent: 'center', border: '1px solid #f0f0f0' 
+        }}>
+          <img src="/pwa-192x192.png" alt="App" style={{ width: '32px', height: '32px', borderRadius: '6px' }} />
+        </div>
         <div>
-          <div style={{ fontWeight: 800, fontSize: '15px', color: '#1a1a1a' }}>Install HostelPass</div>
-          <div style={{ fontSize: '12px', color: '#666' }}>Add to home screen for quick access</div>
+          <div style={{ fontWeight: 800, fontSize: '14px', color: '#1a1a1a', lineHeight: 1.2 }}>HostelPass</div>
+          <div style={{ fontSize: '11px', color: '#777', marginTop: '2px' }}>Faster booking experience</div>
         </div>
       </div>
       
-      <div style={{ display: 'flex', gap: '8px' }}>
+      <div style={{ display: 'flex', alignItems: 'center', gap: '8px' }}>
         <button onClick={handleInstall} style={{
           background: 'var(--primary-gradient)',
           color: 'white',
           border: 'none',
-          padding: '8px 16px',
-          borderRadius: '10px',
-          fontWeight: 700,
+          padding: '10px 20px',
+          borderRadius: '12px',
+          fontWeight: 800,
           fontSize: '13px',
-          display: 'flex',
-          alignItems: 'center',
-          gap: '6px',
-          cursor: 'pointer'
+          cursor: 'pointer',
+          boxShadow: '0 4px 12px rgba(238,46,36,0.2)'
         }}>
-          <MdDownload /> Install
+          Install
         </button>
         <button onClick={handleDismiss} style={{
-          background: '#f5f5f5',
-          color: '#666',
+          background: '#f1f3f5',
+          color: '#495057',
           border: 'none',
-          width: '36px',
-          height: '36px',
-          borderRadius: '10px',
+          width: '32px',
+          height: '32px',
+          borderRadius: '50%',
           display: 'flex',
           alignItems: 'center',
           justifyContent: 'center',
           cursor: 'pointer'
         }}>
-          <MdClose size={20} />
+          <MdClose size={18} />
         </button>
       </div>
 
       <style>{`
-        @keyframes slideUp {
+        @keyframes pwaSlideUp {
           from { transform: translateY(100px); opacity: 0; }
           to { transform: translateY(0); opacity: 1; }
         }

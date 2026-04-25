@@ -249,7 +249,11 @@ const LandingPage = () => {
             </div>
             <p style={{ color: '#666', fontSize: '14px' }}>Real reviews for better student living.</p>
           </div>
-          <div style={{ color: '#999', fontSize: '14px', fontWeight: 500 }}>© 2026 HostelPass. Built for students, by students.</div>
+          <div style={{ color: '#999', fontSize: '13px', fontWeight: 600, textAlign: 'center', lineHeight: 1.8, flex: 1 }}>
+            <div>© 2026 HostelPass.</div>
+            <div>Built for Students,</div>
+            <div style={{ fontWeight: 800, color: '#666' }}>By Team <span style={{ color: '#9333ea' }}>Hack</span>Scouts</div>
+          </div>
         </div>
       </footer>
     </div>
