@@ -6,7 +6,7 @@ const Logo = ({ color = 'var(--text-dark)' }) => (
     <img 
       src="/admin-logo.png" 
       alt="HostelPass Admin" 
-      style={{ width: '36px', height: '36px', objectFit: 'contain' }} 
+      style={{ width: '44px', height: '44px', objectFit: 'contain' }} 
     />
     <div style={{ display: 'flex', flexDirection: 'column', lineHeight: 1 }}>
       <span className="logo-text" style={{ color, fontSize: '20px', fontWeight: 800 }}>

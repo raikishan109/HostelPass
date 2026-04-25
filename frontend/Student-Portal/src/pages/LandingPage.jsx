@@ -109,9 +109,9 @@ const LandingPage = () => {
           {user ? (
             <><Link to={`/${userRole}`} className="pc-only" style={{ background: 'var(--primary-gradient)', color: 'white', padding: '8px 16px', borderRadius: '6px', fontWeight: 700, fontSize: '13px', textDecoration: 'none', boxShadow: '0 4px 10px rgba(230, 0, 0, 0.2)', marginRight: '4px' }}>Dashboard</Link><UserActions /></>
           ) : (
-            <div className="pc-only" style={{ display: 'flex', gap: '8px' }}>
+            <div className="pc-only" style={{ display: 'flex', alignItems: 'center' }}>
               <Link to="/login" style={{ fontWeight: 600, color: '#333', fontSize: '13px', textDecoration: 'none', padding: '8px 12px', borderRadius: '6px', border: '1px solid #eee' }}>Login</Link>
-              <Link to="/register" style={{ background: 'var(--primary-gradient)', color: 'white', padding: '8px 16px', borderRadius: '6px', fontWeight: 700, fontSize: '13px', textDecoration: 'none', boxShadow: '0 4px 10px rgba(230, 0, 0, 0.2)' }}>Join Now</Link>
+              <Link to="/register" style={{ background: 'var(--primary-gradient)', color: 'white', padding: '8px 16px', borderRadius: '6px', fontWeight: 700, fontSize: '13px', textDecoration: 'none', boxShadow: '0 4px 10px rgba(230, 0, 0, 0.2)', marginLeft: '12px' }}>Join Now</Link>
             </div>
           )}
         </div>
@@ -182,7 +182,7 @@ const LandingPage = () => {
           </div>
           <div className="features-grid">
             {features.map((f, i) => (
-              <div key={i} className="feature-card" style={{ padding: '32px', borderRadius: '24px', background: '#fcfcfc', border: '1px solid #eee' }}>
+              <div key={i} className="feature-card" style={{ padding: '32px', borderRadius: '24px', background: '#fff5f5', border: '1px solid #fee2e2' }}>
                 <div className="icon" style={{ fontSize: '32px', color: 'var(--primary)', marginBottom: '20px' }}>{f.icon}</div>
                 <h3 style={{ fontSize: '20px', fontWeight: 800, marginBottom: '12px' }}>{f.title}</h3>
                 <p style={{ fontSize: '15px', color: '#666', lineHeight: 1.7 }}>{f.desc}</p>
@@ -202,7 +202,7 @@ const LandingPage = () => {
             </div>
             <Link to="/student/search-results" style={{ color: 'var(--primary)', fontWeight: 800, fontSize: '15px', textDecoration: 'none', display: 'flex', alignItems: 'center', gap: '6px' }}>View All Hostels <MdArrowForward /></Link>
           </div>
-          <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fit, minmax(320px, 1fr))', gap: '32px' }}>
+          <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fit, minmax(280px, 1fr))', gap: '32px' }} className="lp-hostel-grid">
             {topPGs.map(pg => (
               <div key={pg.id} style={{ background: 'white', borderRadius: '24px', overflow: 'hidden', border: '1px solid #eee', boxShadow: '0 4px 15px rgba(0,0,0,0.02)' }}>
                 <div style={{ height: '220px', position: 'relative' }}>
@@ -241,15 +241,15 @@ const LandingPage = () => {
 
       {/* Footer */}
       <footer style={{ padding: '60px 24px', background: 'white', borderTop: '1px solid #eee' }}>
-        <div style={{ maxWidth: '1100px', margin: '0 auto', display: 'flex', justifyContent: 'space-between', alignItems: 'center', flexWrap: 'wrap', gap: '40px' }}>
-          <div>
-            <div style={{ display: 'flex', alignItems: 'center', gap: '8px', marginBottom: '12px' }}>
-              <div style={{ width: 28, height: 28, background: 'var(--primary)', borderRadius: '4px', display: 'flex', alignItems: 'center', justifyContent: 'center', fontWeight: 900, fontSize: '14px', color: 'white' }}>HP</div>
-              <span style={{ fontWeight: 900, fontSize: '20px', color: '#333' }}>Hostel<span style={{ color: 'var(--primary)' }}>Pass</span></span>
+        <div className="flex-mobile-col" style={{ maxWidth: '1100px', margin: '0 auto', display: 'flex', justifyContent: 'space-between', alignItems: 'center', flexWrap: 'wrap', gap: '40px' }}>
+          <div className="mobile-text-center" style={{ textAlign: 'left' }}>
+            <div style={{ marginBottom: '12px', display: 'flex', justifyContent: 'flex-start' }} className="mobile-justify-center">
+              <Logo />
             </div>
             <p style={{ color: '#666', fontSize: '14px' }}>Real reviews for better student living.</p>
           </div>
-          <div style={{ color: '#999', fontSize: '13px', fontWeight: 600, textAlign: 'center', lineHeight: 1.8, flex: 1 }}>
+          
+          <div className="mobile-text-center" style={{ color: '#999', fontSize: '13px', fontWeight: 600, lineHeight: 1.8, textAlign: 'right' }}>
             <div>© 2026 HostelPass.</div>
             <div>Built for Students,</div>
             <div style={{ fontWeight: 800, color: '#666' }}>By Team <span style={{ color: '#9333ea' }}>Hack</span>Scouts</div>

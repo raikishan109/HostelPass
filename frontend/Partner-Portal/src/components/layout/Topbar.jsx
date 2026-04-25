@@ -41,7 +41,7 @@ const Topbar = ({ title, onMenuClick, subtitle }) => {
             src="/partner-logo.png" 
             alt="HostelPass" 
             className="logo-img"
-            style={{ width: '36px', height: '36px', objectFit: 'contain', background: 'transparent' }}
+            style={{ width: '44px', height: '44px', objectFit: 'contain', background: 'transparent' }}
           />
           <div style={{ display: 'flex', flexDirection: 'column', lineHeight: 1 }}>
             <span className="logo-text" style={{ color: 'var(--text-dark)', fontSize: '20px', fontWeight: 800 }}>
