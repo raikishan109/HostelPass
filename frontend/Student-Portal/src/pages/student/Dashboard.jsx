@@ -161,20 +161,20 @@ const StudentDashboard = () => {
     <StudentLayout title="My Hostel" subtitle={activeBooking ? "Residence Control Center" : "Find your perfect stay"}>
       {!activeBooking ? (
         <div style={{ background: 'white', borderRadius: '24px', padding: '80px 24px', textAlign: 'center', border: '1px solid #f0f0f0' }}>
-          <div style={{ width: '80px', height: '80px', background: '#FEF2F2', borderRadius: '24px', display: 'flex', alignItems: 'center', justifyCenter: 'center', margin: '0 auto 24px' }}>
-            <MdHome size={40} color="#EE2E24" />
+          <div style={{ width: '100px', height: '100px', background: 'rgba(238,46,36,0.05)', borderRadius: '50%', display: 'flex', alignItems: 'center', justifyContent: 'center', margin: '0 auto 24px', color: 'var(--primary)' }}>
+            <MdHotel size={48} />
           </div>
           <h2 style={{ fontSize: '24px', fontWeight: 800, marginBottom: '12px' }}>No Active Booking</h2>
           <p style={{ color: '#666', marginBottom: '32px' }}>Browse through our premium selections to get started.</p>
           <button className="btn btn-primary" onClick={() => navigate('/student/search')}>Explore PGs <MdArrowForward /></button>
         </div>
       ) : (
-        <div className="my-hostel-container" style={{ display: 'flex', flexDirection: 'column', gap: '20px', width: '100%' }}>
+        <div className="my-hostel-container" style={{ width: '100%' }}>
           
-          <div style={{ background: 'white', borderRadius: '24px', overflow: 'hidden', border: '1px solid #f0f0f0', boxShadow: '0 10px 40px rgba(0,0,0,0.04)' }}>
-            <div style={{ display: 'flex', flexDirection: 'row', flexWrap: 'wrap' }}>
+          <div className="hostel-card" style={{ background: 'white', borderRadius: '24px', overflow: 'hidden', border: '1px solid #f0f0f0', boxShadow: '0 10px 40px rgba(0,0,0,0.04)' }}>
+            <div className="mobile-stack">
               
-              <div style={{ flex: '0 0 420px', minHeight: '280px', position: 'relative' }}>
+              <div className="pg-hero-img-container">
                 <img 
                   src={activeBooking.hostelImage} 
                   alt={activeBooking.hostelName}
@@ -186,7 +186,7 @@ const StudentDashboard = () => {
                 </div>
               </div>
 
-              <div style={{ flex: '1 1 400px', padding: '24px 40px' }}>
+              <div className="mobile-width-100" style={{ flex: '1', padding: '24px 40px' }}>
                 <div style={{ marginBottom: '24px' }}>
                   <h2 style={{ fontSize: '24px', fontWeight: 800, marginBottom: '6px' }}>{activeBooking.hostelName}</h2>
                   <div style={{ display: 'flex', alignItems: 'center', gap: '6px', color: '#666', fontSize: '14px' }}>
@@ -262,7 +262,10 @@ const StudentDashboard = () => {
           <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fit, minmax(280px, 1fr))', gap: '20px' }}>
             <div style={{ background: 'white', padding: '24px', borderRadius: '20px', border: '1px solid #f0f0f0' }}>
               <h4 style={{ fontWeight: 800, fontSize: '16px', marginBottom: '16px', display: 'flex', alignItems: 'center', gap: '8px' }}>
-                <MdCalendarToday color="#EE2E24" size={20} /> Stay Timeline
+                <div style={{ width: '40px', height: '40px', background: 'rgba(238,46,36,0.05)', borderRadius: '50%', display: 'flex', alignItems: 'center', justifyContent: 'center', color: '#EE2E24' }}>
+                  <MdHotel size={20} />
+                </div>
+                Stay Timeline
               </h4>
               <div style={{ display: 'flex', flexDirection: 'column', gap: '12px' }}>
                 <div style={{ display: 'flex', justifyContent: 'space-between', paddingBottom: '12px', borderBottom: '1px solid #f9f9f9' }}>

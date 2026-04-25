@@ -30,7 +30,7 @@ const StudentSidebar = ({ sidebarOpen, setSidebarOpen }) => {
   return (
     <aside className={`sidebar ${sidebarOpen ? 'open' : ''}`}>
       <nav className="sidebar-nav">
-        {user ? (
+        {user && (
           <>
             <div className="sidebar-section-title">Main</div>
             <Link to="/student" className={`sidebar-link ${isActive('/student') ? 'active' : ''}`} onClick={handleLinkClick}>
@@ -56,9 +56,13 @@ const StudentSidebar = ({ sidebarOpen, setSidebarOpen }) => {
               <MdPerson /> Profile
             </Link>
           </>
-        ) : (
-          <div style={{ display: 'flex', flexDirection: 'column', gap: '12px', padding: '10px' }}>
-            <div className="sidebar-section-title">Welcome to HostelPass</div>
+        )}
+      </nav>
+
+      {!user ? (
+        <div className="sidebar-footer" style={{ padding: '16px 12px', borderTop: '1px solid var(--border)' }}>
+          <div style={{ display: 'flex', flexDirection: 'column', gap: '8px' }}>
+            <div className="sidebar-section-title" style={{ padding: '0 4px 4px', margin: 0 }}>Welcome to HostelPass</div>
             <Link to="/login" className="sidebar-link" onClick={handleLinkClick} style={{ background: '#f8f9fa', borderRadius: '12px', fontWeight: 700 }}>
               <MdPerson /> Login
             </Link>
@@ -66,10 +70,8 @@ const StudentSidebar = ({ sidebarOpen, setSidebarOpen }) => {
               <MdLogout style={{ transform: 'rotate(180deg)' }} /> Join Now
             </Link>
           </div>
-        )}
-      </nav>
-
-      {user && (
+        </div>
+      ) : (
         <div className="sidebar-footer" style={{ padding: '12px', borderTop: '1px solid var(--border)' }}>
           <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', gap: '8px' }}>
             <div style={{ display: 'flex', alignItems: 'center', gap: '10px', overflow: 'hidden' }}>

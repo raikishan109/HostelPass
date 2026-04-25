@@ -11,26 +11,48 @@ const AdminReviews = () => {
   return (
     <AdminLayout title="Review Management" subtitle={`${reviews.length} total reviews`}>
       <div className="table-wrapper">
-        <table className="table">
-          <thead><tr><th>Reviewer</th><th>PG</th><th className="pc-only">Overall</th><th className="pc-only">Mess</th><th>Review Excerpt</th><th className="pc-only">Date</th><th>Action</th></tr></thead>
+        <table className="table table-to-cards">
+          <thead>
+            <tr>
+              <th>Reviewer</th>
+              <th>PG</th>
+              <th>Overall</th>
+              <th>Mess</th>
+              <th>Review Excerpt</th>
+              <th className="pc-only">Date</th>
+              <th>Action</th>
+            </tr>
+          </thead>
           <tbody>
             {reviews.map(r => {
               const pg = MOCK_PGS.find(p => p.id === r.pgId);
               return (
                 <tr key={r.id}>
-                  <td>
+                  <td data-label="Reviewer">
                     <div style={{ display: 'flex', alignItems: 'center', gap: '8px' }}>
                       <div className="avatar avatar-sm">{r.userName.charAt(0)}</div>
                       <span style={{ fontWeight: 600, fontSize: '13px' }}>{r.userName}</span>
                     </div>
                   </td>
-                  <td style={{ fontSize: '13px', color: 'var(--text-light)' }}>{pg?.name}</td>
-                  <td className="pc-only"><span style={{ display: 'flex', alignItems: 'center', gap: '3px' }}><MdStar color="#f59e0b" size={13} />{r.overallRating}</span></td>
-                  <td className="pc-only"><span style={{ display: 'flex', alignItems: 'center', gap: '3px' }}><MdRestaurant color="#ea580c" size={13} />{r.messRating}</span></td>
-                  <td style={{ maxWidth: '200px', fontSize: '13px', color: 'var(--text-medium)', whiteSpace: 'nowrap', overflow: 'hidden', textOverflow: 'ellipsis' }}>{r.text}</td>
-                  <td className="pc-only" style={{ fontSize: '12px', color: 'var(--text-light)' }}>{new Date(r.createdAt).toLocaleDateString('en-IN', { day: 'numeric', month: 'short' })}</td>
-                  <td>
-                    <div style={{ display: 'flex', gap: '6px' }}>
+                  <td data-label="PG" style={{ fontSize: '13px', color: 'var(--text-light)' }}>{pg?.name}</td>
+                  <td data-label="Rating">
+                    <span style={{ display: 'flex', alignItems: 'center', gap: '3px' }}>
+                      <MdStar color="#f59e0b" size={13} />{r.overallRating}
+                    </span>
+                  </td>
+                  <td data-label="Food">
+                    <span style={{ display: 'flex', alignItems: 'center', gap: '3px' }}>
+                      <MdRestaurant color="#ea580c" size={13} />{r.messRating}
+                    </span>
+                  </td>
+                  <td data-label="Comment" style={{ maxWidth: '200px', fontSize: '13px', color: 'var(--text-medium)', whiteSpace: 'nowrap', overflow: 'hidden', textOverflow: 'ellipsis' }}>
+                    {r.text}
+                  </td>
+                  <td className="pc-only" data-label="Date" style={{ fontSize: '12px', color: 'var(--text-light)' }}>
+                    {new Date(r.createdAt).toLocaleDateString('en-IN', { day: 'numeric', month: 'short' })}
+                  </td>
+                  <td data-label="Action">
+                    <div style={{ display: 'flex', gap: '6px', justifyContent: 'flex-end' }}>
                       <button className="btn btn-ghost btn-sm" style={{ padding: '4px 8px', color: 'var(--warning)' }} title="Flag as suspicious" onClick={() => toast.success('Review flagged for review')}>
                         <MdFlag size={14} />
                       </button>

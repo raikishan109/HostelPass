@@ -62,8 +62,8 @@ const SearchResults = () => {
   return (
     <StudentLayout title="Find PGs & Hostels">
       {/* Search + Sort Bar */}
-      <div style={{ display: 'flex', gap: '12px', marginBottom: '20px', flexWrap: 'wrap' }}>
-        <div style={{ flex: 1, display: 'flex', alignItems: 'center', gap: '10px', background: 'white', border: '2px solid var(--border)', borderRadius: '12px', padding: '10px 16px', minWidth: '200px', transition: 'border-color 0.2s' }}
+      <div className="search-controls" style={{ display: 'flex', gap: '12px', marginBottom: '20px', flexWrap: 'wrap' }}>
+        <div style={{ flex: '2 1 300px', display: 'flex', alignItems: 'center', gap: '10px', background: 'white', border: '2px solid var(--border)', borderRadius: '12px', padding: '10px 16px', transition: 'border-color 0.2s' }}
           onFocus={e => e.currentTarget.style.borderColor = 'var(--primary)'}
           onBlur={e => e.currentTarget.style.borderColor = 'var(--border)'}
         >
@@ -77,17 +77,23 @@ const SearchResults = () => {
           {query && <button onClick={() => setQuery('')} style={{ background: 'none', border: 'none', cursor: 'pointer', color: 'var(--text-light)' }}><MdClose /></button>}
         </div>
 
-        <select className="form-select" style={{ width: 'auto', minWidth: '180px' }} value={sort} onChange={e => setSort(e.target.value)}>
-          <option value="rating">Sort: Top Rated</option>
-          <option value="mess">Sort: Best Mess</option>
-          <option value="price_low">Sort: Price (Low → High)</option>
-          <option value="price_high">Sort: Price (High → Low)</option>
-          <option value="newest">Sort: Newest</option>
-        </select>
+        <div className="mobile-full-width" style={{ display: 'flex', gap: '12px', flex: '1 1 300px' }}>
+          <select className="form-select" style={{ flex: 1, height: '44px', margin: 0 }} value={sort} onChange={e => setSort(e.target.value)}>
+            <option value="rating">Top Rated</option>
+            <option value="mess">Best Mess</option>
+            <option value="price_low">Price: Low to High</option>
+            <option value="price_high">Price: High to Low</option>
+            <option value="newest">Newest First</option>
+          </select>
 
-        <button className={`btn ${showFilters ? 'btn-primary' : 'btn-outline'} btn-sm`} onClick={() => setShowFilters(!showFilters)}>
-          <MdTune /> Filters {hasFilters && `(${Object.values(filters).filter(Boolean).length})`}
-        </button>
+          <button 
+            className="btn btn-primary" 
+            style={{ flex: 1, height: '44px', whiteSpace: 'nowrap', display: 'flex', alignItems: 'center', justifyContent: 'center', gap: '6px' }} 
+            onClick={() => setShowFilters(!showFilters)}
+          >
+            <MdTune /> Filters {hasFilters && `(${Object.values(filters).filter(Boolean).length})`}
+          </button>
+        </div>
       </div>
 
       {/* Filters Panel */}

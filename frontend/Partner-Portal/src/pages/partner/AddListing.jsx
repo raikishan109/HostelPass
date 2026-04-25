@@ -89,16 +89,20 @@ const AddListing = () => {
     <PartnerLayout title="Add New PG Listing">
           <div style={{ maxWidth: '720px', margin: '0 auto' }}>
             {/* Stepper */}
-            <div style={{ display: 'flex', gap: '0', marginBottom: '32px', background: 'white', borderRadius: '16px', padding: '16px 24px', border: '1px solid var(--border)' }}>
+            <div className="filter-chips" style={{ 
+              display: 'flex', gap: '0', marginBottom: '32px', background: 'white', 
+              borderRadius: '16px', padding: '16px 20px', border: '1px solid var(--border)',
+              overflowX: 'auto', WebkitOverflowScrolling: 'touch', scrollbarWidth: 'none', msOverflowStyle: 'none'
+            }}>
               {STEPS.map((s, i) => (
-                <div key={s} style={{ flex: 1, display: 'flex', alignItems: 'center' }}>
-                  <div style={{ display: 'flex', alignItems: 'center', gap: '8px', cursor: 'pointer' }} onClick={() => i < step && setStep(i)}>
-                    <div style={{ width: 28, height: 28, borderRadius: '50%', display: 'flex', alignItems: 'center', justifyContent: 'center', fontWeight: 700, fontSize: '13px', background: i === step ? 'var(--primary)' : i < step ? 'var(--verified-color)' : 'var(--bg)', color: i <= step ? 'white' : 'var(--text-light)', transition: 'all 0.2s' }}>
+                <div key={s} style={{ display: 'flex', alignItems: 'center', flexShrink: 0 }}>
+                  <div style={{ display: 'flex', alignItems: 'center', gap: '8px', cursor: 'pointer', paddingRight: '12px' }} onClick={() => i < step && setStep(i)}>
+                    <div style={{ width: 32, height: 32, minWidth: 32, borderRadius: '50%', display: 'flex', alignItems: 'center', justifyContent: 'center', fontWeight: 700, fontSize: '13px', background: i === step ? 'var(--primary)' : i < step ? 'var(--verified-color)' : 'var(--bg)', color: i <= step ? 'white' : 'var(--text-light)', transition: 'all 0.2s' }}>
                       {i < step ? '✓' : i + 1}
                     </div>
-                    <span style={{ fontSize: '13px', fontWeight: 600, color: i === step ? 'var(--primary)' : i < step ? 'var(--verified-color)' : 'var(--text-light)' }}>{s}</span>
+                    <span style={{ fontSize: '13px', fontWeight: 600, whiteSpace: 'nowrap', color: i === step ? 'var(--primary)' : i < step ? 'var(--verified-color)' : 'var(--text-light)' }}>{s}</span>
                   </div>
-                  {i < STEPS.length - 1 && <div style={{ flex: 1, height: 2, background: i < step ? 'var(--verified-color)' : 'var(--border)', margin: '0 12px', transition: 'background 0.3s' }} />}
+                  {i < STEPS.length - 1 && <div style={{ width: '20px', height: 2, background: i < step ? 'var(--verified-color)' : 'var(--border)', marginRight: '12px', transition: 'background 0.3s' }} />}
                 </div>
               ))}
             </div>

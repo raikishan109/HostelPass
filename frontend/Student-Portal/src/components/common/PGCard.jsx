@@ -24,9 +24,9 @@ const PGCard = ({ pg, isFavorite, onToggleFavorite, linkPrefix = '/student/pg' }
 
   return (
     <div className="pg-card" onClick={() => navigate(`${linkPrefix}/${pg.id}`)} style={{
-      borderRadius: '4px', border: '1px solid #eee', boxShadow: '0 2px 8px rgba(0,0,0,0.05)'
+      borderRadius: '24px', border: '1px solid #eee', boxShadow: '0 4px 20px rgba(0,0,0,0.06)', overflow: 'hidden'
     }}>
-      <div className="pg-card-image" style={{ height: '220px', borderRadius: '4px 4px 0 0' }}>
+      <div className="pg-card-image" style={{ height: '220px' }}>
         {pg.images && pg.images.length > 0
           ? <img 
               src={pg.images[0]} 
@@ -35,13 +35,13 @@ const PGCard = ({ pg, isFavorite, onToggleFavorite, linkPrefix = '/student/pg' }
                 e.target.style.display = 'none';
                 e.target.parentNode.innerHTML = '<span style="font-size: 48px; opacity: 0.2">🏠</span>';
               }}
-              style={{ borderRadius: '4px 4px 0 0', width: '100%', height: '100%', objectFit: 'cover' }} 
+              style={{ width: '100%', height: '100%', objectFit: 'cover' }} 
             />
           : <span style={{ fontSize: '48px', opacity: 0.2 }}>🏠</span>
         }
         {pg.verified && (
           <div className="pg-card-badge">
-            <span className="badge" style={{ background: 'white', color: 'var(--verified-color)', border: '1px solid var(--verified-color)', borderRadius: '2px', fontWeight: 700 }}>
+            <span className="badge" style={{ background: 'white', color: 'var(--verified-color)', border: '1px solid var(--verified-color)', borderRadius: '8px', fontWeight: 700 }}>
               <MdVerified size={10} /> VERIFIED
             </span>
           </div>
@@ -59,14 +59,14 @@ const PGCard = ({ pg, isFavorite, onToggleFavorite, linkPrefix = '/student/pg' }
               <MdHotel size={14} color="#666" /> {pg.roomOptions}
             </div>
           </div>
-          <div className="rating-chip" style={{ background: 'var(--verified-color)', color: 'white', borderRadius: '4px', padding: '4px 8px' }}>
+          <div className="rating-chip" style={{ background: 'var(--verified-color)', color: 'white', borderRadius: '10px', padding: '4px 10px' }}>
             {pg.rating?.toFixed(1) || '—'} <MdStar size={14} />
           </div>
         </div>
 
         <div style={{ display: 'flex', gap: '8px', marginTop: '12px' }}>
-           <span style={{ fontSize: '12px', color: 'var(--text-light)', border: '1px solid #eee', padding: '2px 8px', borderRadius: '2px' }}>{pg.type}</span>
-           <span style={{ fontSize: '12px', color: '#c2410c', background: '#fff7ed', padding: '2px 8px', borderRadius: '2px', fontWeight: 600 }}>Mess {pg.messRating}★</span>
+           <span style={{ fontSize: '12px', color: 'var(--text-light)', border: '1px solid #eee', padding: '2px 10px', borderRadius: '8px' }}>{pg.type}</span>
+           <span style={{ fontSize: '12px', color: '#c2410c', background: '#fff7ed', padding: '2px 10px', borderRadius: '8px', fontWeight: 600 }}>Mess {pg.messRating}★</span>
         </div>
 
         <div style={{ marginTop: '16px', display: 'flex', alignItems: 'baseline', gap: '6px' }}>

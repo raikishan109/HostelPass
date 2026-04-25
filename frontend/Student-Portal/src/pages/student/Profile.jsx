@@ -12,22 +12,22 @@ const StudentProfile = () => {
 
   return (
     <StudentLayout title="My Profile">
-      <div className="animate-fadeIn" style={{ maxWidth: '640px' }}>
+      <div className="animate-fadeIn" style={{ maxWidth: '640px', width: '100%' }}>
           <div style={{ background: 'white', borderRadius: '20px', border: '1px solid var(--border)', overflow: 'hidden' }}>
-            <div style={{ background: 'linear-gradient(135deg, var(--primary), var(--primary-dark))', padding: '40px 32px', display: 'flex', alignItems: 'center', gap: '24px' }}>
-              <div className="avatar avatar-xl" style={{ background: 'rgba(255,255,255,0.2)', color: 'white', fontSize: '36px', border: '3px solid rgba(255,255,255,0.4)' }}>
+            <div className="profile-header" style={{ background: 'linear-gradient(135deg, var(--primary), var(--primary-dark))', padding: '40px 32px', display: 'flex', alignItems: 'center', gap: '24px' }}>
+              <div className="avatar avatar-xl" style={{ background: 'rgba(255,255,255,0.2)', color: 'white', fontSize: '36px', border: '3px solid rgba(255,255,255,0.4)', flexShrink: 0 }}>
                 {(form.name || 'S').charAt(0).toUpperCase()}
               </div>
-              <div>
-                <h2 style={{ color: 'white', fontSize: '22px', fontWeight: 800 }}>{form.name || 'Student'}</h2>
-                <p style={{ color: 'rgba(255,255,255,0.75)', fontSize: '14px' }}>Student · Hostel-Pass Member</p>
+              <div className="profile-header-text">
+                <h2 style={{ color: 'white', fontSize: '22px', fontWeight: 800, margin: 0 }}>{form.name || 'Student'}</h2>
+                <p style={{ color: 'rgba(255,255,255,0.75)', fontSize: '14px', margin: '4px 0 0' }}>Student · Hostel-Pass Member</p>
               </div>
             </div>
-            <div style={{ padding: '28px 32px' }}>
-              <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: '24px' }}>
-                <h3 style={{ fontWeight: 700 }}>Personal Information</h3>
-                <button className="btn btn-outline btn-sm" onClick={() => editing ? save() : setEditing(true)}>
-                  {editing ? <><MdSave /> Save Changes</> : <><MdEdit /> Edit Profile</>}
+            <div className="profile-body" style={{ padding: '28px 32px' }}>
+              <div className="mobile-stack" style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: '24px', gap: '12px' }}>
+                <h3 style={{ fontWeight: 700, margin: 0 }}>Personal Information</h3>
+                <button className="btn btn-outline btn-sm" onClick={() => editing ? save() : setEditing(true)} style={{ whiteSpace: 'nowrap' }}>
+                  {editing ? <><MdSave /> Save</> : <><MdEdit /> Edit Profile</>}
                 </button>
               </div>
               <div className="grid-2" style={{ gap: '16px' }}>

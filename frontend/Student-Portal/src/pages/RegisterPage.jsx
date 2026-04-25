@@ -2,7 +2,7 @@ import React, { useState } from 'react';
 import { Link, useNavigate } from 'react-router-dom';
 import { useAuth } from '../context/AuthContext';
 import toast from 'react-hot-toast';
-import { MdPerson, MdEmail, MdLock, MdArrowForward, MdVisibility, MdVisibilityOff, MdPhone } from 'react-icons/md';
+import { MdPerson, MdEmail, MdLock, MdArrowForward, MdVisibility, MdVisibilityOff, MdPhone, MdSchool } from 'react-icons/md';
 
 const RegisterPage = () => {
   const [form, setForm] = useState({ name: '', email: '', phone: '', password: '', confirm: '' });
@@ -34,48 +34,14 @@ const RegisterPage = () => {
   };
 
   return (
-    <div style={{ minHeight: '100vh', display: 'flex', background: 'var(--bg)' }}>
-      {/* Left Panel */}
-      <div style={{ flex: 1, background: 'linear-gradient(145deg, #1a0a00, #2d0e0a 50%, #1F1F1F)', display: 'flex', flexDirection: 'column', justifyContent: 'center', alignItems: 'center', padding: '60px 48px' }}>
-        <div style={{ maxWidth: '380px', width: '100%' }}>
-          <Link to="/" style={{ display: 'flex', alignItems: 'center', gap: '10px', marginBottom: '48px' }}>
-            <img 
-              src="/pwa-192x192.png" 
-              alt="HostelPass" 
-              style={{ width: '42px', height: '42px', borderRadius: '10px', objectFit: 'cover' }} 
-            />
-            <span style={{ fontWeight: 800, fontSize: '22px', color: 'white' }}>Hostel<span style={{ color: 'var(--primary)' }}>Pass</span></span>
-          </Link>
-          <h1 style={{ fontSize: '34px', fontWeight: 900, color: 'white', marginBottom: '16px', lineHeight: 1.2 }}>Join thousands of students</h1>
-          <p style={{ color: 'rgba(255,255,255,0.65)', fontSize: '15px', lineHeight: 1.8, marginBottom: '36px' }}>
-            Create your free account and start exploring PGs with real mess ratings and honest student reviews.
-          </p>
-          <div style={{ background: 'rgba(255,255,255,0.06)', borderRadius: '16px', padding: '24px', border: '1px solid rgba(255,255,255,0.1)' }}>
-            <div style={{ display: 'flex', gap: '12px', alignItems: 'flex-start' }}>
-              <span style={{ fontSize: '28px' }}>🍽️</span>
-              <div>
-                <div style={{ color: 'white', fontWeight: 700, marginBottom: '4px' }}>Mess Score System</div>
-                <div style={{ color: 'rgba(255,255,255,0.6)', fontSize: '13px', lineHeight: 1.6 }}>
-                  Our unique Mess Score is calculated from real student food ratings — no bias, no sponsorships.
-                </div>
-              </div>
+    <div className="auth-page student-theme">
+      {/* Registration Card */}
+      <div className="auth-card animate-fadeIn">
+          <div className="auth-header" style={{ textAlign: 'left' }}>
+            <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'flex-start', gap: '12px', marginBottom: '8px' }}>
+              <div className="role-icon student-icon" style={{ width: '44px', height: '44px', fontSize: '22px', margin: 0 }}><MdSchool /></div>
+              <h2 style={{ margin: 0 }}>Registration</h2>
             </div>
-          </div>
-        </div>
-      </div>
-
-      {/* Right Panel */}
-      <div style={{ flex: 1, display: 'flex', alignItems: 'center', justifyContent: 'center', padding: '24px', background: 'white' }}>
-        <div className="animate-fadeIn" style={{ 
-          width: '100%', 
-          maxWidth: '400px', 
-          padding: '32px', 
-          borderRadius: '24px', 
-          boxShadow: '0 10px 30px rgba(0,0,0,0.04)',
-          border: '1px solid #f1f5f9'
-        }}>
-          <div style={{ marginBottom: '28px', textAlign: 'center' }}>
-            <h2 style={{ fontSize: '24px', fontWeight: 800, color: 'var(--text-dark)', marginBottom: '6px' }}>Student Registration</h2>
             <p style={{ color: 'var(--text-light)', fontSize: '14px' }}>
               Already have an account? <Link to="/login" style={{ color: 'var(--primary)', fontWeight: 600 }}>Sign in</Link>
             </p>
@@ -111,7 +77,7 @@ const RegisterPage = () => {
             </div>
 
             <button type="submit" className="btn btn-primary w-full" style={{ height: '46px', borderRadius: '12px', fontWeight: 800 }} disabled={loading}>
-              {loading ? 'Creating Account...' : 'Register as Student'}
+              {loading ? 'Creating Account...' : 'Register'}
             </button>
           </form>
           <p style={{ fontSize: '11px', color: 'var(--text-light)', textAlign: 'center', marginTop: '20px' }}>
@@ -119,7 +85,6 @@ const RegisterPage = () => {
           </p>
         </div>
       </div>
-    </div>
   );
 };
 

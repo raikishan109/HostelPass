@@ -54,21 +54,30 @@ const Topbar = ({ title, onMenuClick, subtitle }) => {
         </Link>
       </div>
 
-      <div className="topbar-right" style={{ position: 'relative' }}>
-        <div style={{ position: 'relative' }}>
+      <div className="topbar-right" style={{ position: 'relative', display: 'flex', alignItems: 'center', flexDirection: 'row', gap: '8px', flexShrink: 0, marginLeft: 'auto' }}>
+        <div style={{ position: 'relative', display: 'flex', alignItems: 'center' }}>
           <button
-            className="btn btn-ghost btn-icon"
-            style={{ position: 'relative' }}
+            className="btn-icon"
+            style={{ 
+              position: 'relative', background: 'transparent', color: '#333', border: 'none', 
+              cursor: 'pointer', width: '40px', height: '40px', display: 'flex', 
+              alignItems: 'center', justifyContent: 'center', padding: 0, flexShrink: 0 
+            }}
             title="Notifications"
             onClick={() => setShowNotifications(!showNotifications)}
           >
-            <MdNotifications size={20} />
-            {notifs.length > 0 && <span className="notif-dot"></span>}
+            <MdNotifications size={24} style={{ color: '#333' }} />
+            {notifs.length > 0 && (
+              <span style={{ 
+                position: 'absolute', top: '8px', right: '8px', width: '10px', height: '10px', 
+                background: '#EE2E24', borderRadius: '50%', border: '2px solid white', zIndex: 10 
+              }}></span>
+            )}
           </button>
 
           {showNotifications && (
             <div className="notif-dropdown shadow-lg animate-fadeIn" style={{
-              position: 'absolute', top: '100%', right: 0, width: '280px', background: 'white',
+              position: 'absolute', top: '100%', right: 0, width: '320px', background: 'white',
               borderRadius: '12px', marginTop: '12px', border: '1px solid #eee', zIndex: 1000,
               overflow: 'hidden'
             }}>
@@ -104,7 +113,12 @@ const Topbar = ({ title, onMenuClick, subtitle }) => {
 
         <div
           className="avatar avatar-sm"
-          style={{ cursor: 'pointer' }}
+          style={{ 
+            cursor: 'pointer', flexShrink: 0, width: '36px', height: '36px', 
+            display: 'flex', alignItems: 'center', justifyContent: 'center', 
+            borderRadius: '50%', background: 'var(--primary)', color: 'white', 
+            fontWeight: 700, fontSize: '14px' 
+          }}
           title={userData?.name}
           onClick={() => navigate('/partner/profile')}
         >

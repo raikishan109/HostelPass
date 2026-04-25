@@ -663,11 +663,38 @@ ul, ol { list-style: none; }
     justify-content: flex-start !important;
   }
   .table-to-cards td .avatar-sm { margin-left: auto; }
+  
+  /* Responsive Flex Layouts */
+  .responsive-flex { display: flex; gap: 24px; }
+  @media (max-width: 992px) { .responsive-flex { flex-direction: column; } }
+
+  .mobile-stack { display: flex; flex-direction: row; flex-wrap: wrap; gap: 20px; }
+  @media (max-width: 768px) {
+    .mobile-stack { flex-direction: column; }
+    .mobile-width-100 { width: 100% !important; max-width: 100% !important; flex: 1 1 auto !important; }
+    
+    /* Navbar Mobile Fixes */
+    .topbar-right { gap: 6px !important; }
+    .notif-dropdown { 
+      position: fixed !important; top: 60px !important; 
+      right: 12px !important; left: 12px !important; 
+      width: auto !important; max-width: none !important;
+    }
+    .avatar-sm { width: 36px !important; height: 36px !important; font-size: 14px !important; }
+
+    /* Property Card Mobile Fixes */
+    .pg-hero-img-container { 
+      width: 100% !important; 
+      height: 180px !important; 
+      max-width: none !important; 
+      border-radius: 20px !important; 
+    }
+  }
 }
 
 @media (max-width: 480px) {
   .btn-lg { padding: 14px 24px; font-size: 15px; }
-  .auth-card { padding: 24px; }
+  .auth-card { padding: 24px 16px !important; max-width: 330px !important; margin: 0 auto; }
   .sidebar { width: 280px; }
 }
 

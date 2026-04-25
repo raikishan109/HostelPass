@@ -644,10 +644,30 @@ ul, ol { list-style: none; }
     overflow-x: auto; 
     -webkit-overflow-scrolling: touch;
   }
+  
+  /* Responsive Flex Layouts */
+  .responsive-flex { display: flex; gap: 24px; }
+  @media (max-width: 992px) { .responsive-flex { flex-direction: column; } }
+
+  .mobile-stack { display: flex; flex-direction: row; flex-wrap: wrap; gap: 20px; }
+  @media (max-width: 768px) {
+    .mobile-stack { flex-direction: column; }
+    .mobile-width-100 { width: 100% !important; max-width: 100% !important; flex: 1 1 auto !important; }
+    
+    /* Navbar Mobile Fixes */
+    .topbar-right { gap: 6px !important; }
+    .notif-dropdown { 
+      position: fixed !important; top: 60px !important; 
+      right: 12px !important; left: 12px !important; 
+      width: auto !important; max-width: none !important;
+    }
+    .avatar-sm { width: 36px !important; height: 36px !important; font-size: 14px !important; }
+  }
 }
 
 @media (max-width: 480px) {
   .btn-lg { padding: 14px 24px; font-size: 15px; }
+  .auth-card { padding: 24px 16px !important; max-width: 330px !important; margin: 0 auto; }
   .page-title { font-size: 20px; }
   .stat-card { padding: 16px; gap: 10px; }
   .stat-icon { width: 40px; height: 40px; font-size: 20px; }

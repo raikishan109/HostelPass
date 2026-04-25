@@ -14,7 +14,7 @@ const Logo = ({ color = 'var(--text-dark)' }) => (
         Hostel<span style={{ color: 'var(--primary)' }}>Pass</span>
       </span>
       <span style={{ fontSize: '10px', fontWeight: 800, color: 'var(--primary)', textTransform: 'uppercase', letterSpacing: '1.2px', marginTop: '2px' }}>
-        Student Portal
+        For Students
       </span>
     </div>
   </Link>

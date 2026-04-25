@@ -239,14 +239,14 @@ const PGDetails = () => {
       <div className="pg-details-content-container" style={{ width: '100%' }}>
         
         {/* Main Info Row */}
-        <div style={{ display: 'flex', gap: '32px', flexWrap: 'wrap', marginBottom: '32px', alignItems: 'stretch' }}>
+        <div className="mobile-stack" style={{ marginBottom: '32px', alignItems: 'stretch' }}>
           
           {/* PG Content Column */}
-          <div style={{ flex: '2 1 650px', background: 'white', borderRadius: '24px', padding: '36px', border: '1px solid var(--border)' }}>
+          <div className="mobile-width-100" style={{ flex: '2', background: 'white', borderRadius: '24px', padding: '36px', border: '1px solid var(--border)' }}>
             <div style={{ marginBottom: '28px' }}>
-              <h1 style={{ fontSize: '36px', fontWeight: 900, marginBottom: '10px', color: '#1A1A1A' }}>{pg.name}</h1>
+              <h1 className="pg-details-title" style={{ fontSize: '36px', fontWeight: 900, marginBottom: '10px', color: '#1A1A1A' }}>{pg.name}</h1>
               <div style={{ display: 'flex', flexDirection: 'column', gap: '10px' }}>
-                <div style={{ display: 'flex', alignItems: 'center', gap: '8px', color: 'var(--text-light)', fontSize: '17px' }}>
+                <div className="pg-details-location" style={{ display: 'flex', alignItems: 'center', gap: '8px', color: 'var(--text-light)', fontSize: '17px' }}>
                   <MdLocationOn size={22} color="var(--primary)" />{pg.location}, {pg.city}
                 </div>
                 {pg.roomOptions && (
@@ -257,12 +257,12 @@ const PGDetails = () => {
               </div>
             </div>
 
-            <div style={{ display: 'flex', gap: '16px', marginBottom: '28px', flexWrap: 'wrap' }}>
-              <div style={{ display: 'flex', alignItems: 'center', gap: '10px', background: '#fffbeb', padding: '12px 20px', borderRadius: '14px' }}>
+            <div className="pg-details-badge-group" style={{ display: 'flex', gap: '16px', marginBottom: '28px', flexWrap: 'wrap' }}>
+              <div className="pg-details-badge" style={{ display: 'flex', alignItems: 'center', gap: '10px', background: '#fffbeb', padding: '12px 20px', borderRadius: '14px' }}>
                 <MdStar color="#f59e0b" size={22} /> <span style={{ fontWeight: 800, fontSize: '18px' }}>{pg.rating || 0}</span>
                 <span style={{ color: 'var(--text-light)', fontSize: '15px' }}>({pg.reviewCount || 0} reviews)</span>
               </div>
-              <div style={{ display: 'flex', alignItems: 'center', gap: '10px', background: '#fff7ed', padding: '12px 20px', borderRadius: '14px' }}>
+              <div className="pg-details-badge" style={{ display: 'flex', alignItems: 'center', gap: '10px', background: '#fff7ed', padding: '12px 20px', borderRadius: '14px' }}>
                 <MdRestaurant color="#ea580c" size={22} /> <span style={{ fontWeight: 800, fontSize: '18px' }}>Mess {pg.messRating || 0}</span>
               </div>
             </div>
@@ -270,17 +270,17 @@ const PGDetails = () => {
             <div className="divider" style={{ margin: '28px 0', height: '1px', background: '#f0f0f0' }}></div>
             
             <h4 style={{ fontWeight: 800, fontSize: '15px', color: '#999', textTransform: 'uppercase', letterSpacing: '1.2px', marginBottom: '16px' }}>Property Overview</h4>
-            <p style={{ fontSize: '17px', color: '#444', lineHeight: 1.9 }}>{pg.description}</p>
+            <p className="pg-details-description" style={{ fontSize: '17px', color: '#444', lineHeight: 1.9 }}>{pg.description}</p>
           </div>
 
           {/* Sidebar Card */}
-          <div style={{ flex: '1 1 380px' }}>
+          <div className="mobile-width-100" style={{ flex: '1' }}>
             <div style={{ background: 'white', borderRadius: '24px', padding: '0', border: '1px solid var(--border)', overflow: 'hidden', boxShadow: '0 12px 40px rgba(0,0,0,0.04)', position: 'sticky', top: '80px' }}>
               
               <div style={{ padding: '32px', borderBottom: '1px solid #f0f0f0' }}>
                 <div style={{ textAlign: 'center', marginBottom: '28px' }}>
                   <div style={{ fontSize: '14px', color: '#999', fontWeight: 700, textTransform: 'uppercase', letterSpacing: '0.8px', marginBottom: '8px' }}>Base Rent Starts From</div>
-                  <div style={{ fontSize: '44px', fontWeight: 950, color: 'var(--primary)', lineHeight: 1 }}>₹{pg.rent?.toLocaleString() || '0'}</div>
+                  <div className="pg-details-rent" style={{ fontSize: '32px', fontWeight: 900, color: 'var(--primary)', lineHeight: 1 }}>₹{pg.rent?.toLocaleString() || '0'}</div>
                   <div style={{ fontSize: '15px', color: 'var(--verified-color)', fontWeight: 700, marginTop: '10px' }}>Deposit: ₹{pg.deposit?.toLocaleString() || '0'}</div>
                 </div>
 
@@ -297,15 +297,15 @@ const PGDetails = () => {
 
               <div style={{ padding: '28px', display: 'flex', flexDirection: 'column', gap: '14px' }}>
                 <div style={{ display: 'flex', gap: '12px' }}>
-                  <button className="btn btn-primary" style={{ flex: 2, padding: '18px', borderRadius: '14px', fontSize: '16px', fontWeight: 800 }} 
+                  <button className="btn btn-primary pg-details-btn" style={{ flex: 1, padding: '18px', borderRadius: '14px', fontSize: '16px', fontWeight: 800 }} 
                     onClick={() => hasActiveBooking ? toast.error('Active booking exists') : setShowBookingModal(true)}>
                     <MdFlashOn /> BOOK NOW
                   </button>
-                  <a href={`tel:${pg.phone}`} className="btn btn-outline" style={{ flex: 1.2, padding: '18px', borderRadius: '14px' }}>
+                  <a href={`tel:${pg.phone}`} className="btn btn-outline pg-details-btn" style={{ flex: 1, padding: '18px', borderRadius: '14px', display: 'flex', alignItems: 'center', justifyContent: 'center' }}>
                     <MdPhone /> CALL
                   </a>
                 </div>
-                <button className="btn" style={{ width: '100%', padding: '14px', background: '#FEF2F2', color: '#DC2626', border: '1px solid #FEE2E2', borderRadius: '14px', fontWeight: 700 }} onClick={() => setShowComplaint(true)}>
+                <button className="btn pg-details-btn" style={{ width: '100%', padding: '14px', background: '#FEF2F2', color: '#DC2626', border: '1px solid #FEE2E2', borderRadius: '14px', fontWeight: 700, display: 'flex', alignItems: 'center', justifyContent: 'center', gap: '8px' }} onClick={() => setShowComplaint(true)}>
                   <MdFlag size={18} /> REPORT LISTING
                 </button>
               </div>

@@ -87,8 +87,20 @@ const LandingPage = () => {
       
       {/* ── Navbar ── */}
       <nav className="landing-nav" style={{ position: 'fixed', top: 0, left: 0, right: 0, height: '60px', background: 'white', borderBottom: '1px solid #eee', display: 'flex', alignItems: 'center', justifyContent: 'space-between', padding: '0 24px', zIndex: 1000 }}>
-        <div className="nav-left">
-          <button className="btn btn-ghost btn-icon pc-only-hidden" onClick={() => setIsMenuOpen(true)}>
+        <div className="nav-left" style={{ height: '60px', display: 'flex', alignItems: 'center' }}>
+          <button 
+            className="btn btn-ghost btn-icon mobile-only" 
+            onClick={() => setIsMenuOpen(true)}
+            style={{ 
+              padding: 0, 
+              minWidth: '40px', 
+              height: '60px', 
+              display: 'flex', 
+              alignItems: 'center', 
+              justifyContent: 'center',
+              color: '#333'
+            }}
+          >
             <MdMenu size={24} />
           </button>
           <Logo />
@@ -129,7 +141,7 @@ const LandingPage = () => {
             <span style={{ color: '#1a1a1a' }}>PG/Hostel</span> <br className="pc-only" />
             <span style={{ background: 'var(--primary-gradient)', WebkitBackgroundClip: 'text', WebkitTextFillColor: 'transparent', display: 'inline-block', paddingBottom: '8px' }}>Near Your College</span>
           </h1>
-          <p style={{ fontSize: '18px', color: '#666', marginBottom: '40px', maxWidth: '750px', margin: '0 auto 40px', lineHeight: 1.6 }}>
+          <p className="landing-desc" style={{ fontSize: '18px', color: '#666', marginBottom: '40px', maxWidth: '750px', margin: '0 auto 40px', lineHeight: 1.6 }}>
             Browse verified listings, read honest student reviews, and book your stay with a single click. No hidden fees, just pure transparency.
           </p>
 
@@ -139,7 +151,9 @@ const LandingPage = () => {
               <input style={{ flex: 1, border: 'none', padding: '12px 12px', fontSize: '16px', outline: 'none', width: '100%', fontWeight: 500 }} placeholder={isDetecting ? "Detecting..." : "Search city, location or college..."} value={searchQuery} onChange={(e) => setSearchQuery(e.target.value)} />
               <button type="button" onClick={detectLocation} style={{ background: 'none', border: 'none', cursor: 'pointer', padding: '10px', color: isDetecting ? 'var(--primary)' : '#999' }}><MdMyLocation size={22} /></button>
             </div>
-            <button type="submit" style={{ background: 'var(--primary-gradient)', color: 'white', border: 'none', padding: '14px 28px', borderRadius: '40px', fontWeight: 800, cursor: 'pointer', boxShadow: '0 6px 18px rgba(238,46,36,0.25)', display: 'flex', alignItems: 'center', gap: '8px' }}><MdSearch size={22} /> Search</button>
+            <button type="submit" className="landing-search-btn" style={{ background: 'var(--primary-gradient)', color: 'white', border: 'none', padding: '14px 28px', borderRadius: '40px', fontWeight: 800, cursor: 'pointer', boxShadow: '0 6px 18px rgba(238,46,36,0.25)', display: 'flex', alignItems: 'center', gap: '8px' }}>
+              <MdSearch size={22} /> <span className="pc-only">Search</span>
+            </button>
           </form>
 
           <div style={{ display: 'flex', gap: '10px', justifyContent: 'center', flexWrap: 'wrap', marginBottom: '80px' }}>

@@ -29,10 +29,24 @@ const AdminComplaints = () => {
 
   return (
     <AdminLayout title="Complaints" subtitle={`${complaints.filter(c => c.status !== 'resolved').length} open complaints`}>
-      <div className="table-wrapper border-none" style={{ display: 'flex', gap: '10px', marginBottom: '20px', paddingBottom: '8px' }}>
+      <div className="filter-chips" style={{ 
+        display: 'flex', 
+        gap: '8px', 
+        marginBottom: '24px', 
+        overflowX: 'auto', 
+        paddingBottom: '4px',
+        WebkitOverflowScrolling: 'touch',
+        msOverflowStyle: 'none',
+        scrollbarWidth: 'none'
+      }}>
         {['', 'pending', 'investigating', 'resolved'].map(s => (
-          <button key={s} className={`filter-chip ${statusFilter === s ? 'active' : ''}`} onClick={() => setStatusFilter(s)}>
-            {s === '' ? 'All' : s.charAt(0).toUpperCase() + s.slice(1)}
+          <button 
+            key={s} 
+            className={`filter-chip ${statusFilter === s ? 'active' : ''}`} 
+            onClick={() => setStatusFilter(s)}
+            style={{ whiteSpace: 'nowrap', flexShrink: 0 }}
+          >
+            {s === '' ? 'All Reports' : s.charAt(0).toUpperCase() + s.slice(1)}
           </button>
         ))}
       </div>

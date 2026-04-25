@@ -14,11 +14,17 @@ import AdminListings from './pages/admin/Listings';
 import AdminReviews from './pages/admin/Reviews';
 import AdminComplaints from './pages/admin/Complaints';
 import AdminAnalytics from './pages/admin/Analytics';
+import AdminProfile from './pages/admin/Profile';
 import PWAInstall from './components/common/PWAInstall';
 
 const ProtectedRoute = ({ children }) => {
   const { user, userRole, loading } = useAuth();
-  if (loading) return <div className="loading-screen">Loading...</div>;
+  if (loading) return (
+    <div className="loading-fullscreen">
+      <div className="loading-spinner"></div>
+      <p style={{ color: '#666', fontWeight: 500, marginTop: '16px' }}>Authenticating Admin...</p>
+    </div>
+  );
   if (!user) return <Navigate to="/login" replace />;
   if (userRole !== 'admin') return <Navigate to="/login" replace />;
   return children;
@@ -38,6 +44,7 @@ const AppRoutes = () => {
       <Route path="/admin/reviews" element={<ProtectedRoute><AdminReviews /></ProtectedRoute>} />
       <Route path="/admin/complaints" element={<ProtectedRoute><AdminComplaints /></ProtectedRoute>} />
       <Route path="/admin/analytics" element={<ProtectedRoute><AdminAnalytics /></ProtectedRoute>} />
+      <Route path="/admin/profile" element={<ProtectedRoute><AdminProfile /></ProtectedRoute>} />
 
       <Route path="*" element={<Navigate to="/login" replace />} />
     </Routes>

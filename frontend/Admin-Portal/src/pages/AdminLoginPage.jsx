@@ -7,13 +7,20 @@ import toast from 'react-hot-toast';
 const AdminLoginPage = () => {
   const [email, setEmail] = useState('');
   const [password, setPassword] = useState('');
-  const [loading, setLoading] = useState(false);
-  const { login } = useAuth();
+  const [isSubmitting, setIsSubmitting] = useState(false);
+  const { login, user, userRole, loading: authLoading } = useAuth();
   const navigate = useNavigate();
+
+  // Redirect if already logged in as admin
+  React.useEffect(() => {
+    if (!authLoading && user && userRole === 'admin') {
+      navigate('/admin');
+    }
+  }, [user, userRole, authLoading, navigate]);
 
   const handleLogin = async (e) => {
     e.preventDefault();
-    setLoading(true);
+    setIsSubmitting(true);
     try {
       await login(email, password);
       toast.success('Admin access granted');
@@ -21,7 +28,7 @@ const AdminLoginPage = () => {
     } catch (error) {
       toast.error('Unauthorized access or invalid admin credentials');
     } finally {
-      setLoading(false);
+      setIsSubmitting(false);
     }
   };
 
@@ -34,27 +41,30 @@ const AdminLoginPage = () => {
         background: '#141414', 
         border: '1px solid #333',
         boxShadow: '0 0 40px rgba(238, 46, 36, 0.1)',
-        maxWidth: '400px'
+        width: '100%',
+        maxWidth: '380px',
+        padding: '32px'
       }}>
-        <Link to="/" className="back-link" style={{ color: '#666' }}>
-          <MdArrowBack /> Back to Home
-        </Link>
         
-        <div className="auth-header">
+        <div className="auth-header" style={{ textAlign: 'left', display: 'flex', alignItems: 'center', gap: '16px', marginBottom: '32px' }}>
           <div className="role-icon admin-icon" style={{ 
+            width: '52px', height: '52px', minWidth: '52px', margin: 0, fontSize: '26px',
             background: 'linear-gradient(135deg, #EE2E24, #c4221a)',
             boxShadow: '0 0 20px rgba(238, 46, 36, 0.4)',
-            color: 'white'
+            color: 'white',
+            display: 'flex', alignItems: 'center', justifyContent: 'center', borderRadius: '12px'
           }}>
             <MdAdminPanelSettings />
           </div>
-          <h2 style={{ color: 'white', letterSpacing: '-0.5px' }}>Admin Login</h2>
-          <p style={{ color: '#666' }}>Secure System Management Portal</p>
+          <div>
+            <h2 style={{ color: 'white', fontSize: '22px', fontWeight: 800, margin: 0, letterSpacing: '-0.5px' }}>Admin Login</h2>
+            <p style={{ color: '#666', fontSize: '13px', margin: '2px 0 0' }}>Secure Management</p>
+          </div>
         </div>
 
         <form onSubmit={handleLogin}>
           <div className="form-group">
-            <label className="form-label" style={{ color: '#888' }}>System Identifier</label>
+            <label className="form-label" style={{ color: '#888' }}>Admin Email</label>
             <div className="input-with-icon">
               <MdEmail className="input-icon" style={{ color: '#444' }} />
               <input
@@ -66,7 +76,7 @@ const AdminLoginPage = () => {
                   color: 'white',
                   paddingLeft: '44px' 
                 }}
-                placeholder="admin@hostelpass.com"
+                placeholder="Email Address"
                 value={email}
                 onChange={(e) => setEmail(e.target.value)}
                 required
@@ -75,7 +85,7 @@ const AdminLoginPage = () => {
           </div>
 
           <div className="form-group">
-            <label className="form-label" style={{ color: '#888' }}>Access Key</label>
+            <label className="form-label" style={{ color: '#888' }}>Access Password</label>
             <div className="input-with-icon">
               <MdLock className="input-icon" style={{ color: '#444' }} />
               <input
@@ -87,7 +97,7 @@ const AdminLoginPage = () => {
                   color: 'white',
                   paddingLeft: '44px' 
                 }}
-                placeholder="••••••••"
+                placeholder="Password"
                 value={password}
                 onChange={(e) => setPassword(e.target.value)}
                 required
@@ -98,27 +108,27 @@ const AdminLoginPage = () => {
           <div style={{ 
             display: 'flex', 
             alignItems: 'center', 
-            gap: '8px', 
+            gap: '10px', 
             background: 'rgba(238, 46, 36, 0.05)', 
             padding: '12px', 
-            borderRadius: '8px', 
+            borderRadius: '12px', 
             marginBottom: '24px',
             border: '1px solid rgba(238, 46, 36, 0.1)'
           }}>
-            <MdSecurity style={{ color: '#EE2E24' }} />
-            <span style={{ fontSize: '12px', color: '#888', textAlign: 'left' }}>
-              IP logging is active. Unauthorized attempts will be blocked.
+            <MdSecurity style={{ color: '#EE2E24', minWidth: '18px' }} />
+            <span style={{ fontSize: '12px', color: '#888', textAlign: 'left', lineHeight: 1.4 }}>
+              Secure IP logging active. Unauthorized attempts are blocked.
             </span>
           </div>
 
           <button type="submit" className="btn btn-primary w-full" style={{ 
-            height: '48px', 
-            fontSize: '16px', 
+            height: '46px', 
+            fontSize: '14px', 
             fontWeight: 800,
-            textTransform: 'uppercase',
-            letterSpacing: '1px'
-          }} disabled={loading}>
-            {loading ? 'Authenticating...' : 'Enter Admin Portal'}
+            letterSpacing: '0.5px',
+            borderRadius: '10px'
+          }} disabled={isSubmitting}>
+            {isSubmitting ? 'Authenticating...' : 'Enter Admin Panel'}
           </button>
         </form>
       </div>
