@@ -10,7 +10,7 @@ export default defineConfig({
       includeAssets: ['favicon.svg', 'pwa-192x192.png', 'pwa-512x512.png', 'partner-logo.png'],
       manifest: {
         name: 'HostelPass Partner',
-        short_name: 'HP Partner',
+        short_name: 'HostelPass Partner',
         description: 'Manage your PG listings and student bookings effortlessly with HostelPass Partner.',
         theme_color: '#00796b',
         background_color: '#ffffff',

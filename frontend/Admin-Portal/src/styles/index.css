@@ -395,9 +395,9 @@ ul, ol { list-style: none; }
   padding: 16px 12px; border-top: 1px solid var(--border);
 }
 .main-content { padding-top: 64px; margin-left: 240px; min-height: 100vh; }
-.nav-left { display: flex; align-items: center; gap: 12px; }
+.nav-left { display: flex; align-items: center; gap: 10px; }
 @media (max-width: 768px) {
-  .nav-left { gap: 4px !important; margin-left: -12px; }
+  .nav-left { gap: 8px !important; margin-left: 0 !important; padding-left: 4px; }
 }
 .topbar-right { display: flex; align-items: center; gap: 12px; }
 

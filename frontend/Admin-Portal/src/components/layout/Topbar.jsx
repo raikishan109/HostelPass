@@ -9,12 +9,19 @@ const Topbar = ({ title, onMenuClick, subtitle }) => {
   const navigate = useNavigate();
 
   return (
-    <nav className="topbar">
+    <nav className="topbar" style={{ display: 'flex', alignItems: 'center' }}>
       <div className="nav-left">
         <button 
           className="btn btn-ghost btn-icon mobile-only" 
           onClick={onMenuClick}
-          style={{ padding: 0, minWidth: '40px' }}
+          style={{ 
+            padding: 0, 
+            minWidth: '40px', 
+            height: '60px', 
+            display: 'flex', 
+            alignItems: 'center', 
+            justifyContent: 'center'
+          }}
         >
           <MdMenu size={24} />
         </button>

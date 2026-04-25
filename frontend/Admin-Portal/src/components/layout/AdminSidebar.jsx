@@ -1,3 +1,4 @@
+import React from 'react';
 import { Link, useLocation, useNavigate } from 'react-router-dom';
 import { useAuth } from '../../context/AuthContext';
 import Logo from '../common/Logo';
@@ -35,17 +36,37 @@ const AdminSidebar = ({ sidebarOpen, setSidebarOpen }) => {
         <Link to="/admin/reviews" className={`sidebar-link ${isActive('/admin/reviews') ? 'active' : ''}`} onClick={handleLinkClick}><MdRateReview /> Reviews</Link>
         <Link to="/admin/complaints" className={`sidebar-link ${isActive('/admin/complaints') ? 'active' : ''}`} onClick={handleLinkClick}><MdReport /> Complaints</Link>
       </nav>
-      <div className="sidebar-footer">
-        <div style={{ display: 'flex', alignItems: 'center', gap: '10px', marginBottom: '12px' }}>
-          <div className="avatar avatar-sm" style={{ background: '#1F1F1F', color: 'white' }}>
-            <MdShield />
+      <div className="sidebar-footer" style={{ padding: '12px', borderTop: '1px solid var(--border)' }}>
+        <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', gap: '8px' }}>
+          <div style={{ display: 'flex', alignItems: 'center', gap: '10px', overflow: 'hidden' }}>
+            <div className="avatar avatar-sm" style={{ background: '#1F1F1F', color: 'white', flexShrink: 0 }}>
+              <MdShield />
+            </div>
+            <div style={{ overflow: 'hidden' }}>
+              <div style={{ fontSize: '12px', fontWeight: 700, whiteSpace: 'nowrap', overflow: 'hidden', textOverflow: 'ellipsis' }}>{userData?.name || 'Admin'}</div>
+              <div style={{ fontSize: '10px', color: 'var(--text-light)' }}>Super Admin</div>
+            </div>
           </div>
-          <div>
-            <div style={{ fontSize: '13px', fontWeight: 600 }}>{userData?.name || 'Admin'}</div>
-            <div style={{ fontSize: '11px', color: 'var(--text-light)' }}>Super Admin</div>
-          </div>
+          <button 
+            onClick={handleLogout} 
+            title="Sign Out"
+            style={{ 
+              background: 'rgba(238,46,36,0.05)', 
+              color: 'var(--primary)', 
+              padding: '8px', 
+              borderRadius: '8px',
+              display: 'flex',
+              alignItems: 'center',
+              justifyContent: 'center',
+              cursor: 'pointer',
+              border: 'none',
+              minWidth: '36px',
+              height: '36px'
+            }}
+          >
+            <MdLogout size={18} />
+          </button>
         </div>
-        <button className="btn btn-ghost btn-sm w-full" onClick={handleLogout}><MdLogout /> Sign Out</button>
       </div>
     </aside>
   );

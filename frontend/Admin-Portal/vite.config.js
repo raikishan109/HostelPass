@@ -10,7 +10,7 @@ export default defineConfig({
       includeAssets: ['admin-logo.png', 'pwa-192x192.png', 'pwa-512x512.png'],
       manifest: {
         name: 'HostelPass Admin',
-        short_name: 'HP Admin',
+        short_name: 'HostelPass Admin',
         description: 'Secure Administrative Portal for HostelPass.',
         theme_color: '#EE2E24',
         background_color: '#0a0a0a',

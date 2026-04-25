@@ -10,6 +10,7 @@ import {
 } from 'firebase/auth';
 import { doc, setDoc, getDoc, onSnapshot, serverTimestamp } from 'firebase/firestore';
 import { auth, db } from '../firebase/config';
+import toast from 'react-hot-toast';
 
 const AuthContext = createContext();
 
@@ -27,7 +28,6 @@ export const AuthProvider = ({ children }) => {
 
   useEffect(() => {
     let unsubscribeDoc = null;
-
     const unsubscribeAuth = onAuthStateChanged(auth, async (firebaseUser) => {
       if (firebaseUser) {
         setUser(firebaseUser);
@@ -41,7 +41,7 @@ export const AuthProvider = ({ children }) => {
             setLoading(false);
           } else {
             console.warn('User document does not exist yet in Firestore.');
-            // We don't set loading false here because we might be waiting for setDoc in loginWithGoogle
+            setLoading(false); // Stop loading even if doc is missing
           }
         }, (err) => {
           console.error('Firestore onSnapshot Error:', err.code, err.message);
@@ -80,7 +80,13 @@ export const AuthProvider = ({ children }) => {
   };
 
   const login = async (email, password) => {
-    return await signInWithEmailAndPassword(auth, email, password);
+    setLoading(true);
+    try {
+      return await signInWithEmailAndPassword(auth, email, password);
+    } catch (error) {
+      setLoading(false);
+      throw error;
+    }
   };
 
   const loginWithGoogle = async (role = 'student') => {

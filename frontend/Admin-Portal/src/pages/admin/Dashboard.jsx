@@ -8,6 +8,7 @@ import toast from 'react-hot-toast';
 const AdminDashboard = () => {
   const [counts, setCounts] = useState({ users: 0, pgs: 0, reviews: 0, complaints: 0 });
   const [pendingPGs, setPendingPGs] = useState([]);
+  const [highComplaintPGs, setHighComplaintPGs] = useState([]);
   const [loading, setLoading] = useState(true);
 
   useEffect(() => {
@@ -28,6 +29,12 @@ const AdminDashboard = () => {
       setPendingPGs(snap.docs
         .map(d => ({ id: d.id, ...d.data() }))
         .filter(p => !p.verified)
+        .slice(0, 5)
+      );
+      setHighComplaintPGs(snap.docs
+        .map(d => ({ id: d.id, ...d.data() }))
+        .filter(p => (p.complaintCount || 0) > 0)
+        .sort((a, b) => (b.complaintCount || 0) - (a.complaintCount || 0))
         .slice(0, 5)
       );
       setLoading(false);
@@ -58,7 +65,7 @@ const AdminDashboard = () => {
     { icon: <MdReport />, label: 'Open Complaints', value: counts.complaints, color: 'amber', change: '-5' },
   ];
 
-  const recentComplaints = MOCK_PGS.filter(p => p.complaintCount > 0).slice(0, 5);
+  const recentComplaints = highComplaintPGs;
 
   return (
     <AdminLayout title="Admin Dashboard" subtitle="Platform overview and controls">

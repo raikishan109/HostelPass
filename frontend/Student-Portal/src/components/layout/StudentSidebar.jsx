@@ -70,17 +70,38 @@ const StudentSidebar = ({ sidebarOpen, setSidebarOpen }) => {
       </nav>
 
       {user && (
-        <div className="sidebar-footer">
-          <div style={{ display: 'flex', alignItems: 'center', gap: '10px', marginBottom: '12px' }}>
-            <div className="avatar avatar-sm">{initials}</div>
-            <div>
-              <div style={{ fontSize: '13px', fontWeight: 600 }}>{userData?.name || 'Student'}</div>
-              <div style={{ fontSize: '11px', color: 'var(--text-light)' }}>Student</div>
+        <div className="sidebar-footer" style={{ padding: '12px', borderTop: '1px solid var(--border)' }}>
+          <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', gap: '8px' }}>
+            <div style={{ display: 'flex', alignItems: 'center', gap: '10px', overflow: 'hidden' }}>
+              <div className="avatar avatar-sm" style={{ flexShrink: 0 }}>{initials}</div>
+              <div style={{ overflow: 'hidden' }}>
+                <div style={{ fontSize: '12px', fontWeight: 700, whiteSpace: 'nowrap', overflow: 'hidden', textOverflow: 'ellipsis', color: 'var(--text-dark)' }}>
+                  {userData?.name || 'Student'}
+                </div>
+                <div style={{ fontSize: '10px', color: 'var(--text-light)', fontWeight: 500 }}>Student</div>
+              </div>
             </div>
+            <button 
+              onClick={handleLogout} 
+              title="Sign Out"
+              style={{ 
+                background: 'rgba(238,46,36,0.05)', 
+                color: 'var(--primary)', 
+                padding: '8px', 
+                borderRadius: '8px',
+                display: 'flex',
+                alignItems: 'center',
+                justifyContent: 'center',
+                cursor: 'pointer',
+                transition: 'all 0.2s ease',
+                border: 'none',
+                minWidth: '36px',
+                height: '36px'
+              }}
+            >
+              <MdLogout size={18} />
+            </button>
           </div>
-          <button className="btn btn-ghost btn-sm w-full" onClick={handleLogout}>
-            <MdLogout /> Sign Out
-          </button>
         </div>
       )}
     </aside>

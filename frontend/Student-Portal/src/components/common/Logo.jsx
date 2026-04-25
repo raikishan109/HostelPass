@@ -7,11 +7,16 @@ const Logo = ({ color = 'var(--text-dark)' }) => (
       src="/pwa-192x192.png" 
       alt="HostelPass" 
       className="logo-img"
-      style={{ width: '32px', height: '32px', objectFit: 'contain', background: 'transparent' }}
+      style={{ width: '36px', height: '36px', objectFit: 'contain', background: 'transparent' }}
     />
-    <span className="logo-text" style={{ color }}>
-      Hostel<span style={{ color: 'var(--primary)' }}>Pass</span>
-    </span>
+    <div style={{ display: 'flex', flexDirection: 'column', lineHeight: 1 }}>
+      <span className="logo-text" style={{ color, fontSize: '20px', fontWeight: 800 }}>
+        Hostel<span style={{ color: 'var(--primary)' }}>Pass</span>
+      </span>
+      <span style={{ fontSize: '10px', fontWeight: 800, color: 'var(--primary)', textTransform: 'uppercase', letterSpacing: '1.2px', marginTop: '2px' }}>
+        Student Portal
+      </span>
+    </div>
   </Link>
 );
 

@@ -360,16 +360,15 @@ ul, ol { list-style: none; }
   box-shadow: var(--shadow-sm);
   padding: 0 24px; height: 60px;
 }
-.nav-left { display: flex; align-items: center; gap: 12px; }
-.logo-text { font-weight: 800; font-size: 22px; letter-spacing: -0.5px; }
-.logo-img { width: 34px; height: 34px; border-radius: var(--radius-md); object-fit: contain; overflow: hidden; }
+.nav-left { display: flex; align-items: center; gap: 10px; }
 @media (max-width: 768px) {
-  .nav-left { gap: 6px !important; margin-left: -8px; }
+  .nav-left { gap: 8px !important; margin-left: 0 !important; padding-left: 4px; }
 }
+.logo-text { font-weight: 800; font-size: 22px; letter-spacing: -0.5px; }
+.logo-img { width: 36px; height: 36px; border-radius: var(--radius-md); object-fit: contain; overflow: hidden; }
 @media (max-width: 480px) {
-  .logo-text { font-size: 18px; }
-  .logo-img { width: 30px; height: 30px; border-radius: var(--radius-md); }
-  .nav-left { gap: 10px; }
+  .logo-text { font-size: 20px; }
+  .logo-img { width: 36px; height: 36px; border-radius: var(--radius-md); }
 }
 .sidebar {
   width: 240px; flex-shrink: 0; background: var(--white);
