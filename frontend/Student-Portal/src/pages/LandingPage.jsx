@@ -199,7 +199,7 @@ const LandingPage = () => {
                 onChange={(e) => setSearchQuery(e.target.value)} 
                 readOnly={isDetecting}
               />
-              <button type="button" onClick={detectLocation} style={{ background: '#f8f9fa', border: 'none', cursor: 'pointer', padding: '10px', borderRadius: '12px', color: isDetecting ? 'var(--primary)' : '#3B82F6', marginRight: '2px' }}>
+              <button type="button" onClick={detectLocation} style={{ background: 'transparent', border: 'none', cursor: 'pointer', padding: '8px', borderRadius: '12px', color: isDetecting ? 'var(--primary)' : '#3B82F6', marginRight: '2px', WebkitTapHighlightColor: 'transparent' }}>
                 <MdMyLocation size={22} />
               </button>
             </div>
