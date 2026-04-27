@@ -12,8 +12,8 @@ const Topbar = ({ title, onMenuClick, subtitle }) => {
           onClick={onMenuClick}
           style={{ 
             padding: 0, 
-            minWidth: '40px', 
-            height: '60px', 
+            width: '40px', 
+            height: '40px', 
             display: 'flex', 
             alignItems: 'center', 
             justifyContent: 'center'

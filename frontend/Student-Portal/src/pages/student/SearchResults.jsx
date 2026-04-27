@@ -150,9 +150,18 @@ const SearchResults = () => {
         </div>
 
         {/* Results List */}
-        <div style={{ paddingBottom: '40px' }}>
+        <div className="search-results-grid">
           {loading ? (
-            <div style={{ textAlign: 'center', padding: '40px' }}>Loading PGs...</div>
+            Array(4).fill(0).map((_, i) => (
+              <div key={i} className="app-card skeleton-card">
+                <div className="skeleton-img"></div>
+                <div className="skeleton-content">
+                  <div className="skeleton-title"></div>
+                  <div className="skeleton-text"></div>
+                  <div className="skeleton-footer"></div>
+                </div>
+              </div>
+            ))
           ) : results.length > 0 ? (
             results.map(p => (
               <PGCard 

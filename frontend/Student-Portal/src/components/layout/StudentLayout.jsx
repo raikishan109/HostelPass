@@ -15,7 +15,7 @@ const StudentLayout = ({ children, title, subtitle }) => {
         <div 
           className="modal-overlay pc-only-hidden" 
           onClick={() => setSidebarOpen(false)}
-          style={{ zIndex: 999 }}
+          style={{ zIndex: 2999, background: 'rgba(0,0,0,0.5)' }}
         />
       )}
 

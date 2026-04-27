@@ -24,7 +24,7 @@ const PGCard = ({ pg, isFavorite, onToggleFavorite, linkPrefix = '/student/pg' }
 
   return (
     <div className="app-card" onClick={() => navigate(`${linkPrefix}/${pg.id}`)} style={{
-      display: 'flex', gap: '16px', padding: '12px', marginBottom: '16px', cursor: 'pointer', position: 'relative',
+      display: 'flex', gap: '16px', padding: '12px', cursor: 'pointer', position: 'relative',
       border: '1px solid #f2f2f2'
     }}>
       <div style={{ width: '100px', height: '100px', borderRadius: '14px', overflow: 'hidden', flexShrink: 0, position: 'relative' }}>
@@ -63,8 +63,17 @@ const PGCard = ({ pg, isFavorite, onToggleFavorite, linkPrefix = '/student/pg' }
           <span style={{ fontSize: '11px', color: '#aaa' }}>({pg.reviewsCount || 128})</span>
         </div>
 
-        <div style={{ fontSize: '15px', fontWeight: 900, color: '#222' }}>
-          ₹{pg.rent?.toLocaleString()} <span style={{ fontSize: '10px', color: '#999', fontWeight: 400 }}>/ month</span>
+        <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginTop: '4px' }}>
+          <div style={{ fontSize: '15px', fontWeight: 900, color: '#222' }}>
+            ₹{pg.rent?.toLocaleString()} <span style={{ fontSize: '10px', color: '#999', fontWeight: 400 }}>/ mo</span>
+          </div>
+          <button className="pg-card-btn" style={{ 
+            background: 'var(--primary)', color: 'white', border: 'none', 
+            padding: '8px 14px', borderRadius: '8px', fontSize: '12px', fontWeight: 800,
+            cursor: 'pointer'
+          }}>
+            View Details
+          </button>
         </div>
       </div>
     </div>
