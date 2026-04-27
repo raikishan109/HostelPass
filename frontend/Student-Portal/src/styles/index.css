@@ -878,6 +878,16 @@ ul, ol { list-style: none; }
   .pg-details-sidebar > div { position: static !important; }
 }
 
+.features-grid {
+  display: grid;
+  grid-template-columns: repeat(3, 1fr);
+  gap: 24px;
+  margin-top: 40px;
+  max-width: 1000px;
+  margin-left: auto;
+  margin-right: auto;
+}
+
 @media (max-width: 768px) {
   .sidebar { 
     display: flex !important;
@@ -913,6 +923,11 @@ ul, ol { list-style: none; }
   .pg-header-row { flex-direction: column; align-items: flex-start !important; }
   .pg-header-row div:last-child { text-align: left !important; margin-top: 10px; }
   .pg-details-hero { height: 180px !important; }
+  .pg-name-app { font-size: 20px !important; }
+  .rent-card-app { padding: 12px 16px !important; }
+  .rent-card-stats { margin-top: 8px !important; padding-top: 8px !important; gap: 8px !important; }
+  .rent-card-actions { margin-top: 10px !important; gap: 6px !important; }
+  .rent-card-actions button { padding: 8px !important; font-size: 12px !important; }
   .amenities-grid { grid-template-columns: repeat(2, 1fr) !important; }
   
   /* Landing Page Responsive Utilities */
@@ -1154,3 +1169,162 @@ ul, ol { list-style: none; }
   .mobile-text-center { text-align: center !important; }
   .mobile-justify-center { justify-content: center !important; }
 }
+
+/* ── Quick Actions: Desktop layout ── */
+@media (min-width: 769px) {
+  /* Hide View All toggle on desktop */
+  .view-all-mobile { display: none !important; }
+  /* Show all 5 in one row */
+  .quick-actions-grid { grid-template-columns: repeat(5, 1fr) !important; gap: 20px !important; }
+  /* Always show Support item on desktop */
+  .action-support-mobile-hidden { display: flex !important; }
+  /* Bigger action boxes on desktop */
+  .action-item {
+    padding: 24px 12px !important;
+    border-radius: 20px !important;
+    background: #fff;
+    box-shadow: 0 2px 12px rgba(0,0,0,0.05) !important;
+    border: 1px solid #f0f0f0;
+    gap: 14px !important;
+    transition: transform 0.2s ease, box-shadow 0.2s ease;
+  }
+  .action-item:hover {
+    transform: translateY(-4px);
+    box-shadow: 0 8px 24px rgba(0,0,0,0.10) !important;
+  }
+  .action-icon {
+    width: 72px !important;
+    height: 72px !important;
+    font-size: 36px !important;
+    border-radius: 18px !important;
+    background: transparent !important;
+    border: none !important;
+    box-shadow: none !important;
+  }
+  /* Scale the SVG icon itself */
+  .action-icon svg {
+    width: 40px !important;
+    height: 40px !important;
+  }
+  .action-label {
+    font-size: 15px !important;
+    font-weight: 700 !important;
+  }
+  
+  /* Bookings Grid: Desktop */
+  .bookings-grid-app {
+    grid-template-columns: repeat(4, 1fr) !important;
+    gap: 20px !important;
+  }
+  .booking-card-compact {
+    flex-direction: column !important;
+    padding: 16px !important;
+  }
+  .booking-card-img {
+    width: 100% !important;
+    height: 140px !important;
+    margin-bottom: 12px;
+  }
+  .booking-card-header {
+    flex-direction: column !important;
+    align-items: flex-start !important;
+    gap: 6px;
+  }
+}
+
+/* ── Quick Actions: Mobile layout ── */
+@media (max-width: 768px) {
+  .quick-actions-grid { grid-template-columns: repeat(4, 1fr) !important; }
+  /* Hide support item on mobile unless toggled */
+  .action-support-mobile-hidden { display: none !important; }
+}
+
+/* ── Bookings Grid & Card Styles ── */
+.bookings-grid-app {
+  display: grid;
+  gap: 16px;
+  margin-bottom: 24px;
+  grid-template-columns: 1fr; /* Default mobile: 1 column */
+}
+
+.booking-card-compact {
+  display: flex;
+  gap: 16px;
+  padding: 12px;
+  cursor: pointer;
+  transition: transform 0.2s ease, box-shadow 0.2s ease;
+}
+
+.booking-card-compact:hover {
+  transform: translateY(-4px);
+  box-shadow: 0 8px 24px rgba(0,0,0,0.1) !important;
+}
+
+.booking-card-img {
+  width: 80px;
+  height: 80px;
+  border-radius: 12px;
+  overflow: hidden;
+  flex-shrink: 0;
+}
+
+.booking-card-img img {
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+}
+
+.booking-card-info {
+  flex: 1;
+  display: flex;
+  flex-direction: column;
+  justify-content: space-between;
+}
+
+.booking-card-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: flex-start;
+}
+
+.booking-card-title {
+  font-size: 15px;
+  font-weight: 800;
+  margin: 0;
+  color: #1a1a1a;
+}
+
+.booking-card-loc {
+  font-size: 11px;
+  color: #888;
+  margin: 2px 0 8px;
+}
+
+.booking-card-footer {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+}
+
+.booking-card-price {
+  font-size: 14px;
+  font-weight: 800;
+  color: var(--primary);
+}
+
+.booking-card-price span {
+  font-size: 10px;
+  color: #999;
+  font-weight: 400;
+}
+
+.booking-card-date {
+  font-size: 10px;
+  color: #999;
+}
+
+.booking-card-date span {
+  font-weight: 700;
+  color: #444;
+}
+

@@ -7,26 +7,28 @@ import { MdHotel, MdLocationOn, MdCalendarToday, MdPayments, MdArrowForward } fr
 import { Link } from 'react-router-dom';
 
 const Bookings = () => {
-  const { userData } = useAuth();
+  const { user } = useAuth();
   const [bookings, setBookings] = useState([]);
   const [loading, setLoading] = useState(true);
 
   useEffect(() => {
-    if (!userData?.uid) return;
+    if (!user?.uid) return;
     const q = query(
       collection(db, 'bookings'),
-      where('userId', '==', userData.uid),
-      orderBy('createdAt', 'desc')
+      where('userId', '==', user.uid)
     );
     const unsubscribe = onSnapshot(q, (snap) => {
-      setBookings(snap.docs.map(doc => ({ id: doc.id, ...doc.data() })));
+      // Sort manually to avoid index requirement
+      const data = snap.docs.map(doc => ({ id: doc.id, ...doc.data() }));
+      data.sort((a, b) => (b.createdAt?.toMillis() || 0) - (a.createdAt?.toMillis() || 0));
+      setBookings(data);
       setLoading(false);
     }, (error) => {
-      console.error("Firestore Error:", error);
+      console.error("Bookings Fetch Error:", error);
       setLoading(false);
     });
     return () => unsubscribe();
-  }, [userData]);
+  }, [user]);
 
   return (
     <StudentLayout title="My Bookings">
@@ -37,40 +39,32 @@ const Bookings = () => {
         ) : bookings.length > 0 ? (
           <div style={{ display: 'flex', flexDirection: 'column', gap: '20px' }}>
             {bookings.map(b => (
-              <div key={b.id} className="app-card" style={{ padding: 0, overflow: 'hidden' }}>
-                <div style={{ position: 'relative', height: '140px' }}>
-                  <img src={b.hostelImage || 'https://images.unsplash.com/photo-1522771739844-6a9f6d5f14af?auto=format&fit=crop&w=800'} style={{ width: '100%', height: '100%', objectFit: 'cover' }} />
-                  <div style={{ position: 'absolute', top: '12px', right: '12px' }}>
-                    <span className={`status-badge status-${b.status}`}>
+              <div key={b.id} className="app-card" style={{ display: 'flex', gap: '12px', padding: '12px', alignItems: 'center' }}>
+                <div style={{ width: '100px', height: '100px', borderRadius: '12px', overflow: 'hidden', flexShrink: 0, position: 'relative' }}>
+                  <img src={b.hostelImage || 'https://images.unsplash.com/photo-1522771739844-6a9f6d5f14af?auto=format&fit=crop&w=400'} style={{ width: '100%', height: '100%', objectFit: 'cover' }} />
+                  <div style={{ position: 'absolute', top: '6px', left: '6px' }}>
+                    <span className={`status-badge status-${b.status?.toLowerCase()}`} style={{ fontSize: '8px', padding: '2px 6px' }}>
                       {b.status}
                     </span>
                   </div>
                 </div>
-                <div style={{ padding: '20px' }}>
-                  <h3 style={{ fontSize: '18px', fontWeight: 800, margin: 0 }}>{b.hostelName}</h3>
-                  <div style={{ display: 'flex', alignItems: 'center', gap: '6px', color: '#888', fontSize: '12px', marginTop: '4px' }}>
-                    <MdLocationOn color="var(--primary)" /> {b.location}
+                
+                <div style={{ flex: 1, minWidth: 0 }}>
+                  <h3 style={{ fontSize: '15px', fontWeight: 800, margin: 0, whiteSpace: 'nowrap', overflow: 'hidden', textOverflow: 'ellipsis' }}>{b.hostelName}</h3>
+                  <div style={{ display: 'flex', alignItems: 'center', gap: '4px', color: '#888', fontSize: '11px', marginTop: '2px' }}>
+                    <MdLocationOn size={12} color="var(--primary)" /> 
+                    <span style={{ whiteSpace: 'nowrap', overflow: 'hidden', textOverflow: 'ellipsis' }}>{b.location}</span>
                   </div>
                   
-                  <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: '16px', marginTop: '20px', padding: '16px', background: '#f8f9fa', borderRadius: '12px' }}>
-                    <div>
-                      <div style={{ fontSize: '10px', color: '#aaa', fontWeight: 700, textTransform: 'uppercase' }}>Move-in Date</div>
-                      <div style={{ fontSize: '13px', fontWeight: 700, display: 'flex', alignItems: 'center', gap: '4px', marginTop: '2px' }}>
-                        <MdCalendarToday size={14} color="#666" /> {b.moveInDate || 'TBD'}
-                      </div>
-                    </div>
-                    <div>
-                      <div style={{ fontSize: '10px', color: '#aaa', fontWeight: 700, textTransform: 'uppercase' }}>Monthly Rent</div>
-                      <div style={{ fontSize: '13px', fontWeight: 700, display: 'flex', alignItems: 'center', gap: '4px', marginTop: '2px' }}>
-                        <MdPayments size={14} color="#666" /> ₹{b.rent?.toLocaleString()}
-                      </div>
-                    </div>
+                  <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginTop: '8px' }}>
+                    <div style={{ fontSize: '13px', fontWeight: 800, color: 'var(--primary)' }}>₹{b.rent?.toLocaleString()}</div>
+                    <div style={{ fontSize: '10px', color: '#999' }}>{b.moveInDate || 'TBD'}</div>
                   </div>
 
-                  <div style={{ display: 'flex', gap: '12px', marginTop: '20px' }}>
-                    <Link to={`/student/pg/${b.hostelId}`} className="btn btn-outline" style={{ flex: 1, padding: '10px', fontSize: '13px', borderRadius: '10px' }}>Property Details</Link>
-                    {b.status === 'confirmed' && (
-                      <Link to="/student/payments" className="btn btn-primary" style={{ flex: 1, padding: '10px', fontSize: '13px', borderRadius: '10px' }}>Pay Rent</Link>
+                  <div style={{ display: 'flex', gap: '8px', marginTop: '10px' }}>
+                    <Link to={`/student/pg/${b.hostelId}`} style={{ flex: 1, textAlign: 'center', padding: '6px', fontSize: '11px', background: '#f8f9fa', borderRadius: '6px', fontWeight: 700, color: '#444' }}>Details</Link>
+                    {b.status?.toLowerCase() === 'confirmed' && (
+                      <Link to="/student/payments" style={{ flex: 1, textAlign: 'center', padding: '6px', fontSize: '11px', background: 'var(--primary)', color: 'white', borderRadius: '6px', fontWeight: 700 }}>Pay Now</Link>
                     )}
                   </div>
                 </div>

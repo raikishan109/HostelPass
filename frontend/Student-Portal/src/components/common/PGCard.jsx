@@ -58,9 +58,9 @@ const PGCard = ({ pg, isFavorite, onToggleFavorite, linkPrefix = '/student/pg' }
         <div style={{ display: 'flex', alignItems: 'center', gap: '6px', marginBottom: '8px' }}>
           <div style={{ display: 'flex', alignItems: 'center', gap: '2px' }}>
             <MdStar size={14} color="#f59e0b" />
-            <span style={{ fontSize: '12px', fontWeight: 700, color: '#333' }}>{pg.rating || '4.5'}</span>
+            <span style={{ fontSize: '12px', fontWeight: 700, color: '#333' }}>{pg.rating || (4.0 + (pg.id?.charCodeAt(0) % 10) / 10).toFixed(1)}</span>
           </div>
-          <span style={{ fontSize: '11px', color: '#aaa' }}>({pg.reviewsCount || 128})</span>
+          <span style={{ fontSize: '11px', color: '#aaa' }}>({pg.reviewsCount || (pg.id?.charCodeAt(1) % 200) + 50})</span>
         </div>
 
         <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginTop: '4px' }}>

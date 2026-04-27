@@ -26,6 +26,12 @@ service cloud.firestore {
       allow read, write: if isSignedIn(); // In production, refine to owner/admin
     }
 
+    // Payments: Only owners can read their own payments
+    match /payments/{paymentId} {
+      allow read: if isSignedIn() && request.auth.uid == resource.data.userId;
+      allow write: if isSignedIn();
+    }
+
     // Default deny
     match /{document=**} {
       allow read, write: if false;

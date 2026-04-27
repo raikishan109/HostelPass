@@ -9,65 +9,61 @@ Hostel-Pass/
 ├── frontend/
 │   ├── Admin-Portal/
 │   │   ├── src/
-│   │   │   ├── components/
-│   │   │   │   ├── common/
-│   │   │   │   └── layout/
-│   │   │   ├── context/
-│   │   │   │   └── AuthContext.jsx
-│   │   │   ├── data/
-│   │   │   ├── firebase/
-│   │   │   │   └── config.js
+│   │   │   ├── components/ (common, layout)
+│   │   │   ├── context/ (AuthContext.jsx)
+│   │   │   ├── firebase/ (config.js)
 │   │   │   ├── pages/
-│   │   │   │   ├── admin/
+│   │   │   │   ├── admin/ (Dashboard, ManageUsers, etc.)
 │   │   │   │   ├── AdminLoginPage.jsx
-│   │   │   │   ├── LoginPage.jsx
 │   │   │   │   └── SetupAdmin.jsx
-│   │   │   ├── styles/
 │   │   │   ├── App.jsx
 │   │   │   └── main.jsx
-│   │   ├── package.json
-│   │   └── vite.config.js
+│   │   └── package.json
 │   ├── Partner-Portal/
 │   │   ├── src/
-│   │   │   ├── components/
-│   │   │   │   ├── common/
-│   │   │   │   └── layout/
-│   │   │   ├── context/
-│   │   │   │   └── AuthContext.jsx
-│   │   │   ├── data/
-│   │   │   ├── firebase/
-│   │   │   │   └── config.js
+│   │   │   ├── components/ (common, layout)
+│   │   │   ├── context/ (AuthContext.jsx)
+│   │   │   ├── firebase/ (config.js)
 │   │   │   ├── pages/
 │   │   │   │   ├── partner/
-│   │   │   │   ├── LoginPage.jsx
+│   │   │   │   │   ├── Dashboard.jsx
+│   │   │   │   │   ├── AddListing.jsx
+│   │   │   │   │   ├── EditListing.jsx
+│   │   │   │   │   ├── ManageListings.jsx
+│   │   │   │   │   ├── ManageBookings.jsx
+│   │   │   │   │   ├── Analytics.jsx
+│   │   │   │   │   └── Profile.jsx
 │   │   │   │   ├── PartnerLoginPage.jsx
 │   │   │   │   └── RegisterPage.jsx
-│   │   │   ├── styles/
 │   │   │   ├── App.jsx
 │   │   │   └── main.jsx
-│   │   ├── package.json
-│   │   └── vite.config.js
+│   │   └── package.json
 │   └── Student-Portal/
 │       ├── src/
-│       │   ├── components/
-│       │   │   ├── common/
-│       │   │   └── layout/
-│       │   ├── context/
-│       │   │   └── AuthContext.jsx
-│       │   ├── data/
-│       │   ├── firebase/
-│       │   │   └── config.js
+│       │   ├── components/ (common, layout)
+│       │   ├── context/ (AuthContext.jsx)
+│       │   ├── firebase/ (config.js)
 │       │   ├── pages/
 │       │   │   ├── student/
+│       │   │   │   ├── Dashboard.jsx
+│       │   │   │   ├── SearchResults.jsx
+│       │   │   │   ├── PGDetails.jsx
+│       │   │   │   ├── Bookings.jsx
+│       │   │   │   ├── Payments.jsx
+│       │   │   │   ├── PaymentGateway.jsx
+│       │   │   │   ├── Complaints.jsx
+│       │   │   │   ├── MyReviews.jsx
+│       │   │   │   ├── Favorites.jsx
+│       │   │   │   └── Profile.jsx
 │       │   │   ├── LandingPage.jsx
-│       │   │   ├── LoginPage.jsx
-│       │   │   ├── RegisterPage.jsx
-│       │   │   └── StudentLoginPage.jsx
-│       │   ├── styles/
+│       │   │   ├── StudentLoginPage.jsx
+│       │   │   └── RegisterPage.jsx
 │       │   ├── App.jsx
 │       │   └── main.jsx
-│       ├── package.json
-│       └── vite.config.js
+│       └── package.json
+├── firestore.rules
+├── storage.rules
 ├── firebase.json
+├── cors.json
 └── package.json
 ```

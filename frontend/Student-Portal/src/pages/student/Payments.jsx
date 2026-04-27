@@ -1,35 +1,63 @@
 import React, { useState, useEffect } from 'react';
+import { useNavigate } from 'react-router-dom';
 import StudentLayout from '../../components/layout/StudentLayout';
 import { useAuth } from '../../context/AuthContext';
 import { db } from '../../firebase/config';
-import { collection, query, where, onSnapshot, orderBy } from 'firebase/firestore';
+import { collection, query, where, onSnapshot, orderBy, getDocs, limit } from 'firebase/firestore';
 import { MdPayments, MdHistory, MdAccountBalanceWallet, MdArrowForward, MdCheckCircle, MdAccessTime } from 'react-icons/md';
 
 const Payments = () => {
-  const { userData } = useAuth();
+  const navigate = useNavigate();
+  const { user } = useAuth();
   const [payments, setPayments] = useState([]);
+  const [activeBooking, setActiveBooking] = useState(null);
   const [loading, setLoading] = useState(true);
 
   useEffect(() => {
-    if (!userData?.uid) {
-      // If we have userData but no UID, it means user is not logged in or data is missing
-      // But protected route handles login, so we just wait for data
-      return;
-    }
+    if (!user?.uid) return;
+    
+    // Fetch active booking to check for outstanding balance
+    const bookingQuery = query(
+      collection(db, 'bookings'),
+      where('userId', '==', user.uid)
+    );
+
+    getDocs(bookingQuery).then(snap => {
+      const activeBookings = snap.docs.map(doc => ({ id: doc.id, ...doc.data() }))
+        .filter(b => ['pending', 'confirmed', 'checked-in'].includes(b.status));
+        
+      if (activeBookings.length > 0) {
+        activeBookings.sort((a,b) => (b.createdAt?.toMillis() || 0) - (a.createdAt?.toMillis() || 0));
+        setActiveBooking(activeBookings[0]);
+      }
+    });
+
     const q = query(
       collection(db, 'payments'),
-      where('userId', '==', userData.uid),
-      orderBy('createdAt', 'desc')
+      where('userId', '==', user.uid)
     );
+    
     const unsubscribe = onSnapshot(q, (snap) => {
-      setPayments(snap.docs.map(doc => ({ id: doc.id, ...doc.data() })));
+      console.log("Found Payments for UID:", user.uid, snap.docs.length);
+      const data = snap.docs.map(doc => ({ id: doc.id, ...doc.data() }));
+      
+      // Better sorting: handle null createdAt (for local optimistic updates)
+      data.sort((a, b) => {
+        const timeA = a.createdAt?.toMillis ? a.createdAt.toMillis() : Date.now();
+        const timeB = b.createdAt?.toMillis ? b.createdAt.toMillis() : Date.now();
+        return timeB - timeA;
+      });
+      
+      setPayments(data);
       setLoading(false);
     }, (error) => {
-      console.error("Firestore Error:", error);
-      setLoading(false); // Stop loading even on error
+      console.error("Payments Fetch Error:", error);
+      setLoading(false);
     });
     return () => unsubscribe();
-  }, [userData]);
+  }, [user]);
+
+  const hasOutstanding = activeBooking && activeBooking.paymentStatus !== 'paid' && activeBooking.status !== 'pending';
 
   return (
     <StudentLayout title="Payments">
@@ -38,8 +66,12 @@ const Payments = () => {
         {/* Balance Card */}
         <div className="app-gradient-card" style={{ marginBottom: '24px', textAlign: 'center', padding: '32px 20px' }}>
           <div style={{ fontSize: '13px', opacity: 0.8, fontWeight: 600, textTransform: 'uppercase', letterSpacing: '1px' }}>Outstanding Balance</div>
-          <div style={{ fontSize: '36px', fontWeight: 950, margin: '8px 0' }}>₹0</div>
-          <div style={{ fontSize: '12px', opacity: 0.7 }}>No pending dues for this month</div>
+          <div style={{ fontSize: '36px', fontWeight: 950, margin: '8px 0' }}>
+            ₹{hasOutstanding ? activeBooking.rent?.toLocaleString() : '0'}
+          </div>
+          <div style={{ fontSize: '12px', opacity: 0.7 }}>
+            {hasOutstanding ? `Due for ${new Date().toLocaleString('default', { month: 'long' })}` : 'No pending dues for this month'}
+          </div>
         </div>
 
         {/* Quick Actions */}
@@ -47,7 +79,7 @@ const Payments = () => {
           <h3 className="section-title-app">Payment Options</h3>
         </div>
         <div className="grid-2" style={{ gap: '12px', marginBottom: '32px' }}>
-          <div className="app-card" style={{ display: 'flex', alignItems: 'center', gap: '12px', cursor: 'pointer' }}>
+          <div className="app-card" onClick={() => navigate('/student/pay')} style={{ display: 'flex', alignItems: 'center', gap: '12px', cursor: 'pointer' }}>
             <div style={{ width: '40px', height: '40px', borderRadius: '12px', background: '#f0f9ff', display: 'flex', alignItems: 'center', justifyContent: 'center', color: '#0369a1' }}>
               <MdPayments size={20} />
             </div>
@@ -82,19 +114,21 @@ const Payments = () => {
               <div key={p.id} className="app-card" style={{ display: 'flex', alignItems: 'center', gap: '16px' }}>
                 <div style={{ 
                   width: '44px', height: '44px', borderRadius: '50%', 
-                  background: p.status === 'success' ? '#ecfdf5' : '#fef2f2',
+                  background: (p.status === 'success' || p.status === 'paid') ? '#ecfdf5' : '#fef2f2',
                   display: 'flex', alignItems: 'center', justifyContent: 'center',
-                  color: p.status === 'success' ? '#059669' : '#dc2626'
+                  color: (p.status === 'success' || p.status === 'paid') ? '#059669' : '#dc2626'
                 }}>
-                  {p.status === 'success' ? <MdCheckCircle size={22} /> : <MdAccessTime size={22} />}
+                  {(p.status === 'success' || p.status === 'paid') ? <MdCheckCircle size={22} /> : <MdAccessTime size={22} />}
                 </div>
                 <div style={{ flex: 1 }}>
                   <div style={{ fontSize: '14px', fontWeight: 700 }}>Rent for {p.month || 'Current Month'}</div>
-                  <div style={{ fontSize: '11px', color: '#888' }}>{p.date || 'Today'} • {p.method || 'UPI'}</div>
+                  <div style={{ fontSize: '11px', color: '#888' }}>
+                    {p.createdAt?.toDate ? p.createdAt.toDate().toLocaleDateString('en-IN', { day: 'numeric', month: 'short', year: 'numeric' }) : 'Recently'} • {p.method || 'UPI'}
+                  </div>
                 </div>
                 <div style={{ textAlign: 'right' }}>
                   <div style={{ fontSize: '15px', fontWeight: 800, color: '#1a1a1a' }}>₹{p.amount?.toLocaleString()}</div>
-                  <div style={{ fontSize: '10px', color: p.status === 'success' ? '#059669' : '#dc2626', fontWeight: 700, textTransform: 'uppercase' }}>{p.status}</div>
+                  <div style={{ fontSize: '10px', color: (p.status === 'success' || p.status === 'paid') ? '#059669' : '#dc2626', fontWeight: 700, textTransform: 'uppercase' }}>{p.status}</div>
                 </div>
               </div>
             ))

@@ -271,7 +271,7 @@ const LandingPage = () => {
             </h2>
             <p className="section-subtitle-sm" style={{ fontSize: '17px', color: '#666', maxWidth: '600px', margin: '0 auto', lineHeight: 1.6 }}>We put transparency at the center — every review, every mess score is real.</p>
           </div>
-          <div className="features-grid" style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fit, minmax(300px, 1fr))', gap: '24px' }}>
+          <div className="features-grid">
             {features.map((f, i) => (
               <div key={i} className="app-card" style={{ padding: '40px 32px', border: '1px solid #f0f0f0' }}>
                 <div style={{ 

@@ -8,7 +8,8 @@ import toast from 'react-hot-toast';
 import {
   MdLocationOn, MdVerified, MdStar, MdRestaurant, MdWifi, MdFavorite, MdFavoriteBorder,
   MdPhone, MdReport, MdRateReview, MdArrowBack, MdCheckCircle, MdOutlineBedroomParent,
-  MdFlashOn, MdHotel, MdFlag, MdCheck, MdAcUnit, MdFitnessCenter, MdLocalLaundryService
+  MdFlashOn, MdHotel, MdFlag, MdCheck, MdAcUnit, MdFitnessCenter, MdLocalLaundryService,
+  MdChevronLeft, MdChevronRight, MdClose
 } from 'react-icons/md';
 import { db } from '../../firebase/config';
 import { collection, query, where, getDocs, addDoc, serverTimestamp, doc, getDoc } from 'firebase/firestore';
@@ -60,6 +61,7 @@ const PGDetails = () => {
   const [showReview, setShowReview] = useState(false);
   const [showComplaint, setShowComplaint] = useState(false);
   const [showBookingModal, setShowBookingModal] = useState(false);
+  const [photoIndex, setPhotoIndex] = useState(null);
 
   useEffect(() => {
     const fetchPG = async () => {
@@ -181,9 +183,27 @@ const PGDetails = () => {
     }
   };
 
-  const handleReviewSubmit = (data) => {
-    toast.success('Review submitted successfully!');
-    setShowReview(false);
+  const handleReviewSubmit = async (data) => {
+    if (!userData) return;
+    try {
+      await addDoc(collection(db, 'reviews'), {
+        pgId: id,
+        userId: userData.uid,
+        userName: userData.name || 'Anonymous',
+        userImage: userData.photoURL || '',
+        overallRating: data.overallRating,
+        messRating: data.messRating,
+        cleanlinessRating: data.cleanlinessRating,
+        securityRating: data.securityRating,
+        text: data.text,
+        createdAt: serverTimestamp(),
+      });
+      toast.success('Review submitted successfully!');
+      setShowReview(false);
+    } catch (error) {
+      console.error("Error submitting review:", error);
+      toast.error('Failed to submit review');
+    }
   };
 
   const handleComplaint = () => {
@@ -241,7 +261,7 @@ const PGDetails = () => {
         <div className="app-card" style={{ marginTop: '-40px', position: 'relative', zIndex: 2, padding: '24px', boxShadow: '0 10px 30px rgba(0,0,0,0.05)' }}>
           <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'flex-start' }}>
             <div>
-              <h1 style={{ fontSize: '24px', fontWeight: 900, margin: 0, color: '#1a1a1a' }}>{pg.name}</h1>
+              <h1 className="pg-name-app" style={{ fontSize: '24px', fontWeight: 900, margin: 0, color: '#1a1a1a' }}>{pg.name}</h1>
               <p style={{ fontSize: '13px', color: '#888', marginTop: '6px', display: 'flex', alignItems: 'center', gap: '4px' }}>
                 <MdLocationOn color="var(--primary)" /> {pg.location}, {pg.city}
               </p>
@@ -249,9 +269,9 @@ const PGDetails = () => {
             <div style={{ textAlign: 'right' }}>
               <div style={{ display: 'flex', alignItems: 'center', gap: '4px', justifyContent: 'flex-end' }}>
                 <MdStar color="#f59e0b" size={18} />
-                <span style={{ fontSize: '16px', fontWeight: 800 }}>{pg.rating || '4.8'}</span>
+                <span style={{ fontSize: '16px', fontWeight: 800 }}>{pg.rating || (4.0 + (pg.id?.charCodeAt(0) % 10) / 10).toFixed(1)}</span>
               </div>
-              <span style={{ fontSize: '11px', color: '#aaa' }}>({pg.reviewsCount || 128})</span>
+              <span style={{ fontSize: '11px', color: '#aaa' }}>({pg.reviewsCount || (pg.id?.charCodeAt(1) % 200) + 50})</span>
             </div>
           </div>
         </div>
@@ -261,9 +281,13 @@ const PGDetails = () => {
           <h3 className="section-title-app">Photos</h3>
         </div>
         <div style={{ display: 'flex', gap: '12px', overflowX: 'auto', paddingBottom: '8px' }} className="no-scrollbar">
-          {(pg.images || [1,2,3]).map((img, i) => (
-            <div key={i} style={{ minWidth: '140px', height: '100px', borderRadius: '16px', overflow: 'hidden', flexShrink: 0 }}>
-              <img src={typeof img === 'string' ? img : `https://images.unsplash.com/photo-1522771739844-6a9f6d5f14af?auto=format&fit=crop&w=400&q=${i}`} style={{ width: '100%', height: '100%', objectFit: 'cover' }} />
+          {(pg.images || []).map((img, i) => (
+            <div 
+              key={i} 
+              onClick={() => setPhotoIndex(i)}
+              style={{ minWidth: '140px', height: '100px', borderRadius: '16px', overflow: 'hidden', flexShrink: 0, cursor: 'pointer' }}
+            >
+              <img src={img} style={{ width: '100%', height: '100%', objectFit: 'cover' }} />
             </div>
           ))}
         </div>
@@ -292,10 +316,62 @@ const PGDetails = () => {
             { icon: <MdOutlineBedroomParent />, label: 'Beds' }
           ].map((item, i) => (
             <div key={i} className="action-item">
-              <div className="action-icon" style={{ width: '45px', height: '45px', fontSize: '18px' }}>{item.icon}</div>
+              <div className="action-icon" style={{ 
+                width: '45px', height: '45px', fontSize: '18px', 
+                background: '#f8f9fa', color: '#1a1a1a', border: 'none' 
+              }}>
+                {item.icon}
+              </div>
               <span className="action-label" style={{ fontSize: '10px' }}>{item.label}</span>
             </div>
           ))}
+        </div>
+
+        {/* Resident Scores */}
+        <div className="section-header" style={{ marginTop: '32px' }}>
+          <h3 className="section-title-app">Detailed Ratings</h3>
+        </div>
+        <div className="app-card" style={{ padding: '24px', border: '1px solid #f2f2f2' }}>
+          <RatingBar label="Food Quality" value={pg.foodRating || (3.5 + (pg.id?.charCodeAt(2) % 15) / 10)} color="#F59E0B" />
+          <RatingBar label="Cleanliness" value={pg.cleanRating || (4.0 + (pg.id?.charCodeAt(3) % 10) / 10)} color="#10B981" />
+          <RatingBar label="Safety & Security" value={pg.safetyRating || (4.5 + (pg.id?.charCodeAt(4) % 5) / 10)} color="#3B82F6" />
+        </div>
+
+        {/* Reviews Section */}
+        <div className="section-header" style={{ marginTop: '32px', display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
+          <h3 className="section-title-app">Reviews & Ratings</h3>
+          <button 
+            onClick={() => setShowReview(true)}
+            style={{ background: 'none', border: 'none', color: 'var(--primary)', fontWeight: 700, fontSize: '13px' }}
+          >
+            Write Review
+          </button>
+        </div>
+
+        <div style={{ display: 'flex', flexDirection: 'column', gap: '16px' }}>
+          {(MOCK_REVIEWS || []).slice(0, 3).map((review, i) => (
+            <div key={i} className="app-card" style={{ padding: '16px', border: '1px solid #f2f2f2' }}>
+              <div style={{ display: 'flex', justifyContent: 'space-between', marginBottom: '8px' }}>
+                <div style={{ display: 'flex', alignItems: 'center', gap: '8px' }}>
+                  <div style={{ width: '32px', height: '32px', borderRadius: '50%', background: '#eee', display: 'flex', alignItems: 'center', justifyContent: 'center', fontSize: '12px', fontWeight: 800 }}>
+                    {review.user?.[0] || 'U'}
+                  </div>
+                  <div>
+                    <div style={{ fontSize: '13px', fontWeight: 700 }}>{review.user || 'Student User'}</div>
+                    <div style={{ fontSize: '10px', color: '#aaa' }}>{review.date || '2 days ago'}</div>
+                  </div>
+                </div>
+                <div style={{ display: 'flex', alignItems: 'center', gap: '2px', background: '#FFF7ED', padding: '4px 8px', borderRadius: '8px' }}>
+                  <MdStar color="#f59e0b" size={14} />
+                  <span style={{ fontSize: '12px', fontWeight: 800, color: '#c2410c' }}>{review.rating}</span>
+                </div>
+              </div>
+              <p style={{ fontSize: '13px', color: '#555', margin: 0, lineHeight: 1.5 }}>{review.comment}</p>
+            </div>
+          ))}
+          <button style={{ padding: '12px', background: '#f8f9fa', border: '1px solid #eee', borderRadius: '12px', fontSize: '13px', fontWeight: 600, color: '#666', marginTop: '8px' }}>
+            View All Reviews
+          </button>
         </div>
 
         {/* Sticky Bottom Bar */}
@@ -366,7 +442,63 @@ const PGDetails = () => {
             </div>
           </div>
         )}
+        
+        {/* Review Modal */}
+        {showReview && (
+          <ReviewModal 
+            pgName={pg.name}
+            pgId={pg.id}
+            onClose={() => setShowReview(false)}
+            onSubmit={handleReviewSubmit}
+          />
+        )}
 
+        {/* Lightbox / Photo Popup */}
+        {photoIndex !== null && (
+          <div 
+            className="modal-overlay" 
+            style={{ background: 'rgba(0,0,0,0.95)', zIndex: 3000, padding: 0 }} 
+            onClick={() => setPhotoIndex(null)}
+          >
+            {/* Close Button */}
+            <button 
+              onClick={(e) => { e.stopPropagation(); setPhotoIndex(null); }}
+              style={{ position: 'absolute', top: '20px', right: '20px', background: 'white', border: 'none', width: '40px', height: '40px', borderRadius: '50%', display: 'flex', alignItems: 'center', justifyContent: 'center', cursor: 'pointer', zIndex: 3001 }}
+            >
+              <MdClose size={24} />
+            </button>
+
+            {/* Navigation Buttons */}
+            <button 
+              onClick={(e) => { e.stopPropagation(); setPhotoIndex((photoIndex - 1 + pg.images.length) % pg.images.length); }}
+              style={{ position: 'absolute', left: '20px', top: '50%', transform: 'translateY(-50%)', background: 'rgba(255,255,255,0.2)', border: 'none', width: '50px', height: '50px', borderRadius: '50%', color: 'white', display: 'flex', alignItems: 'center', justifyContent: 'center', cursor: 'pointer', zIndex: 3001 }}
+            >
+              <MdChevronLeft size={32} />
+            </button>
+
+            <button 
+              onClick={(e) => { e.stopPropagation(); setPhotoIndex((photoIndex + 1) % pg.images.length); }}
+              style={{ position: 'absolute', right: '20px', top: '50%', transform: 'translateY(-50%)', background: 'rgba(255,255,255,0.2)', border: 'none', width: '50px', height: '50px', borderRadius: '50%', color: 'white', display: 'flex', alignItems: 'center', justifyContent: 'center', cursor: 'pointer', zIndex: 3001 }}
+            >
+              <MdChevronRight size={32} />
+            </button>
+
+            {/* Main Image */}
+            <div 
+              style={{ width: '100%', height: '100%', display: 'flex', alignItems: 'center', justifyContent: 'center', padding: '20px' }}
+              onClick={e => e.stopPropagation()}
+            >
+              <img 
+                src={pg.images[photoIndex]} 
+                style={{ maxWidth: '100%', maxHeight: '80vh', borderRadius: '12px', objectFit: 'contain', boxShadow: '0 20px 50px rgba(0,0,0,0.5)' }} 
+                alt="Hostel"
+              />
+              <div style={{ position: 'absolute', bottom: '40px', left: '50%', transform: 'translateX(-50%)', color: 'white', background: 'rgba(0,0,0,0.5)', padding: '8px 20px', borderRadius: '20px', fontSize: '14px', fontWeight: 600 }}>
+                {photoIndex + 1} / {pg.images.length}
+              </div>
+            </div>
+          </div>
+        )}
       </div>
     </StudentLayout>
   );
