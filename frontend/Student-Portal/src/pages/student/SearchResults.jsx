@@ -7,8 +7,20 @@ import { MdSearch, MdClose, MdTune } from 'react-icons/md';
 import { db } from '../../firebase/config';
 import { collection, onSnapshot, query as fsQuery, orderBy } from 'firebase/firestore';
 
+const calculateDistance = (lat1, lon1, lat2, lon2) => {
+  const R = 6371; // Earth radius in km
+  const dLat = (lat2 - lat1) * Math.PI / 180;
+  const dLon = (lon2 - lon1) * Math.PI / 180;
+  const a = 
+    Math.sin(dLat/2) * Math.sin(dLat/2) +
+    Math.cos(lat1 * Math.PI / 180) * Math.cos(lat2 * Math.PI / 180) * 
+    Math.sin(dLon/2) * Math.sin(dLon/2);
+  const c = 2 * Math.atan2(Math.sqrt(a), Math.sqrt(1-a));
+  return R * c;
+};
+
 const SearchResults = () => {
-  const [searchParams] = useSearchParams();
+  const [searchParams, setSearchParams] = useSearchParams();
   const [query, setQuery] = useState(searchParams.get('q') || '');
   const [sort, setSort] = useState(searchParams.get('sort') || 'rating');
   const [pgs, setPgs] = useState([]);
@@ -36,6 +48,20 @@ const SearchResults = () => {
 
   const results = useMemo(() => {
     let filtered = [...pgs];
+    
+    // Radius filter
+    const lat = searchParams.get('lat');
+    const lng = searchParams.get('lng');
+    const radius = searchParams.get('radius');
+
+    if (lat && lng && radius) {
+      filtered = filtered.filter(p => {
+        if (!p.coordinates) return false;
+        const dist = calculateDistance(Number(lat), Number(lng), p.coordinates.lat, p.coordinates.lng);
+        return dist <= Number(radius);
+      });
+    }
+
     if (query) filtered = filtered.filter(p => 
       p.name?.toLowerCase().includes(query.toLowerCase()) || 
       p.location?.toLowerCase().includes(query.toLowerCase()) || 
@@ -53,10 +79,14 @@ const SearchResults = () => {
     else if (sort === 'price_high') filtered.sort((a, b) => (b.rent || 0) - (a.rent || 0));
     
     return filtered;
-  }, [query, sort, filters, pgs]);
+  }, [query, sort, filters, pgs, searchParams]);
 
-  const clearFilters = () => setFilters({ type: '', city: '', minRent: '', maxRent: '', minRating: '' });
-  const hasFilters = Object.values(filters).some(Boolean);
+  const clearFilters = () => {
+    setFilters({ type: '', city: '', minRent: '', maxRent: '', minRating: '' });
+    setSearchParams({});
+    setQuery('');
+  };
+  const hasFilters = Object.values(filters).some(Boolean) || searchParams.has('lat') || query;
   const toggleFav = id => setFavorites(f => f.includes(id) ? f.filter(x => x !== id) : [...f, id]);
 
   return (
@@ -142,6 +172,7 @@ const SearchResults = () => {
       {/* Results Count */}
       <div style={{ marginBottom: '16px', fontSize: '14px', color: 'var(--text-light)' }}>
         <span style={{ color: 'var(--text-dark)', fontWeight: 700 }}>{results.length}</span> PGs found
+        {searchParams.get('lat') && <span> within <span style={{ color: 'var(--primary)', fontWeight: 600 }}>5km</span> of your location</span>}
         {query && <span> for "<span style={{ color: 'var(--primary)', fontWeight: 600 }}>{query}</span>"</span>}
       </div>
 
@@ -164,7 +195,7 @@ const SearchResults = () => {
           <div className="empty-state-icon">🔍</div>
           <h3>No PGs Found</h3>
           <p>Try adjusting your search query or filters to find more results.</p>
-          <button className="btn btn-primary btn-sm" onClick={() => { setQuery(''); clearFilters(); }}>Clear All</button>
+          <button className="btn btn-primary btn-sm" onClick={clearFilters}>Clear All</button>
         </div>
       ) : (
         <div className="grid-3">

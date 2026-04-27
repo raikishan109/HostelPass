@@ -159,9 +159,8 @@ export const AMENITY_OPTIONS = [
 ];
 
 export const CITY_OPTIONS = [
-  'Bangalore', 'Mumbai', 'Delhi', 'Hyderabad', 'Pune',
-  'Chennai', 'Kolkata', 'Ahmedabad', 'Jaipur', 'Noida',
-  'Lucknow',
+  'Lucknow', 'Delhi', 'Bangalore', 'Mumbai', 'Pune',
+  'Hyderabad', 'Chennai', 'Kolkata', 'Ahmedabad', 'Jaipur', 'Noida',
 ];
 
 export const PG_TYPES = ['Boys', 'Girls', 'Co-Ed'];

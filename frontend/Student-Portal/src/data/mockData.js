@@ -5,6 +5,7 @@ export const MOCK_PGS = [
     name: 'Sunrise Boys PG',
     location: 'Koramangala, Bangalore',
     city: 'Bangalore',
+    coordinates: { lat: 12.9352, lng: 77.6245 },
     type: 'Boys',
     roomOptions: 'Single / Double / Triple',
     rent: 8500,
@@ -27,6 +28,7 @@ export const MOCK_PGS = [
     name: 'Green Leaf Girls Hostel',
     location: 'HSR Layout, Bangalore',
     city: 'Bangalore',
+    coordinates: { lat: 12.9121, lng: 77.6446 },
     type: 'Girls',
     roomOptions: 'Double / Triple',
     rent: 9000,
@@ -49,6 +51,7 @@ export const MOCK_PGS = [
     name: 'City View Co-Living',
     location: 'Indiranagar, Bangalore',
     city: 'Bangalore',
+    coordinates: { lat: 12.9719, lng: 77.6412 },
     type: 'Co-Ed',
     roomOptions: 'Single / Double',
     rent: 12000,
@@ -71,6 +74,7 @@ export const MOCK_PGS = [
     name: 'Student Hub Hostel',
     location: 'Marathahalli, Bangalore',
     city: 'Bangalore',
+    coordinates: { lat: 12.9569, lng: 77.7011 },
     type: 'Boys',
     roomOptions: 'Triple / Quad',
     rent: 6500,
@@ -93,6 +97,7 @@ export const MOCK_PGS = [
     name: 'Royal Comfort PG',
     location: 'Electronic City, Bangalore',
     city: 'Bangalore',
+    coordinates: { lat: 12.8452, lng: 77.6632 },
     type: 'Co-Ed',
     roomOptions: 'Single / Double / Triple',
     rent: 10500,
@@ -115,6 +120,7 @@ export const MOCK_PGS = [
     name: 'Campus Corner PG',
     location: 'Whitefield, Bangalore',
     city: 'Bangalore',
+    coordinates: { lat: 12.9698, lng: 77.7500 },
     type: 'Girls',
     roomOptions: 'Double / Triple',
     rent: 7500,
@@ -165,9 +171,8 @@ export const AMENITY_OPTIONS = [
 ];
 
 export const CITY_OPTIONS = [
-  'Bangalore', 'Mumbai', 'Delhi', 'Hyderabad', 'Pune',
-  'Chennai', 'Kolkata', 'Ahmedabad', 'Jaipur', 'Noida',
-  'Lucknow',
+  'Lucknow', 'Delhi', 'Bangalore', 'Mumbai', 'Pune',
+  'Hyderabad', 'Chennai', 'Kolkata', 'Ahmedabad', 'Jaipur', 'Noida',
 ];
 
 export const PG_TYPES = ['Boys', 'Girls', 'Co-Ed'];

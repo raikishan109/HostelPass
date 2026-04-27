@@ -50,18 +50,26 @@ const LandingPage = () => {
     setIsDetecting(true);
     navigator.geolocation.getCurrentPosition(
       async (position) => {
+        const { latitude, longitude } = position.coords;
         try {
-          const { latitude, longitude } = position.coords;
-          const response = await fetch(`https://nominatim.openstreetmap.org/reverse?format=json&lat=${latitude}&lon=${longitude}&zoom=10&addressdetails=1`);
+          const response = await fetch(`https://nominatim.openstreetmap.org/reverse?format=json&lat=${latitude}&lon=${longitude}&zoom=18&addressdetails=1`);
           const data = await response.json();
           
-          const city = data.address.city || data.address.town || data.address.suburb || data.address.state || "Current Location";
-          setSearchQuery(city);
-          toast.success(`Location detected: ${city}`);
+          // Try to get a specific neighborhood or suburb, fallback to city, then display name
+          const addr = data.address;
+          const locationName = addr.suburb || addr.neighbourhood || addr.residential || addr.city_district || addr.city || addr.town || addr.village || data.display_name.split(',')[0] || "Current Location";
+          
+          setSearchQuery(locationName);
+          toast.success(`Location: ${locationName}`);
+          
+          // Navigate with lat/lng, 5km radius, and the detected location name
+          setTimeout(() => {
+            navigate(`/student/search-results?lat=${latitude}&lng=${longitude}&radius=5&q=${encodeURIComponent(locationName)}`);
+          }, 500);
         } catch (error) {
-          console.error("Error detecting location:", error);
+          console.error("Error detecting address:", error);
           setSearchQuery("Current Location");
-          toast.success("Location detected!");
+          navigate(`/student/search-results?lat=${latitude}&lng=${longitude}&radius=5`);
         } finally {
           setIsDetecting(false);
         }
@@ -69,7 +77,8 @@ const LandingPage = () => {
       () => {
         toast.error("Unable to retrieve location");
         setIsDetecting(false);
-      }
+      },
+      { enableHighAccuracy: true, timeout: 5000, maximumAge: 0 }
     );
   };
 
@@ -157,7 +166,7 @@ const LandingPage = () => {
           </form>
 
           <div style={{ display: 'flex', gap: '10px', justifyContent: 'center', flexWrap: 'wrap', marginBottom: '80px' }}>
-            {['Bangalore', 'Mumbai', 'Delhi', 'Pune', 'Lucknow'].map(city => (
+            {['Lucknow', 'Delhi', 'Bangalore', 'Mumbai', 'Pune'].map(city => (
               <button key={city} onClick={() => handleCitySearch(city)} style={{ background: 'white', border: '1px solid #eee', padding: '10px 24px', borderRadius: '30px', fontSize: '14px', fontWeight: 600, color: '#555', cursor: 'pointer' }}>{city}</button>
             ))}
           </div>
