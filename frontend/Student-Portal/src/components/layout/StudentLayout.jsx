@@ -1,6 +1,7 @@
 import React, { useState } from 'react';
 import StudentSidebar from './StudentSidebar';
 import Topbar from './Topbar';
+import MobileBottomNav from './MobileBottomNav';
 
 const StudentLayout = ({ children, title, subtitle }) => {
   const [sidebarOpen, setSidebarOpen] = useState(false);
@@ -28,6 +29,7 @@ const StudentLayout = ({ children, title, subtitle }) => {
           {children}
         </div>
       </div>
+      <MobileBottomNav />
     </div>
   );
 };

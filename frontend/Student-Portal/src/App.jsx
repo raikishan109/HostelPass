@@ -16,6 +16,8 @@ import Favorites from './pages/student/Favorites';
 import Complaints from './pages/student/Complaints';
 import StudentProfile from './pages/student/Profile';
 import MyReviews from './pages/student/MyReviews';
+import Payments from './pages/student/Payments';
+import Bookings from './pages/student/Bookings';
 import PWAInstall from './components/common/PWAInstall';
 
 const ProtectedRoute = ({ children }) => {
@@ -41,6 +43,8 @@ const AppRoutes = () => {
       <Route path="/student/complaints" element={<ProtectedRoute><Complaints /></ProtectedRoute>} />
       <Route path="/student/profile" element={<ProtectedRoute><StudentProfile /></ProtectedRoute>} />
       <Route path="/student/reviews" element={<ProtectedRoute><MyReviews /></ProtectedRoute>} />
+      <Route path="/student/payments" element={<ProtectedRoute><Payments /></ProtectedRoute>} />
+      <Route path="/student/bookings" element={<ProtectedRoute><Bookings /></ProtectedRoute>} />
 
       <Route path="*" element={<Navigate to="/" replace />} />
     </Routes>

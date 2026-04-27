@@ -24,7 +24,9 @@ import {
   MdHotel,
   MdRestaurant,
   MdArrowForward,
-  MdExitToApp
+  MdExitToApp,
+  MdSearch,
+  MdMessage
 } from 'react-icons/md';
 import { toast } from 'react-hot-toast';
 
@@ -158,138 +160,121 @@ const StudentDashboard = () => {
   }
 
   return (
-    <StudentLayout title="My Hostel" subtitle={activeBooking ? "Residence Control Center" : "Find your perfect stay"}>
-      {!activeBooking ? (
-        <div style={{ background: 'white', borderRadius: '24px', padding: '80px 24px', textAlign: 'center', border: '1px solid #f0f0f0' }}>
-          <div style={{ width: '100px', height: '100px', background: 'rgba(238,46,36,0.05)', borderRadius: '50%', display: 'flex', alignItems: 'center', justifyContent: 'center', margin: '0 auto 24px', color: 'var(--primary)' }}>
-            <MdHotel size={48} />
-          </div>
-          <h2 style={{ fontSize: '24px', fontWeight: 800, marginBottom: '12px' }}>No Active Booking</h2>
-          <p style={{ color: '#666', marginBottom: '32px' }}>Browse through our premium selections to get started.</p>
-          <button className="btn btn-primary" onClick={() => navigate('/student/search')}>Explore PGs <MdArrowForward /></button>
-        </div>
-      ) : (
-        <div className="my-hostel-container" style={{ width: '100%' }}>
-          
-          <div className="hostel-card" style={{ background: 'white', borderRadius: '24px', overflow: 'hidden', border: '1px solid #f0f0f0', boxShadow: '0 10px 40px rgba(0,0,0,0.04)' }}>
-            <div className="mobile-stack">
-              
-              <div className="pg-hero-img-container">
-                <img 
-                  src={activeBooking.hostelImage} 
-                  alt={activeBooking.hostelName}
-                  onError={(e) => { e.target.src = 'https://images.unsplash.com/photo-1522771739844-6a9f6d5f14af?auto=format&fit=crop&w=800&q=80'; }}
-                  style={{ width: '100%', height: '100%', objectFit: 'cover' }}
-                />
-                <div style={{ position: 'absolute', top: '15px', left: '15px' }}>
-                  <Badge status={activeBooking.status} />
-                </div>
-              </div>
-
-              <div className="mobile-width-100" style={{ flex: '1', padding: '24px 40px' }}>
-                <div style={{ marginBottom: '24px' }}>
-                  <h2 style={{ fontSize: '24px', fontWeight: 800, marginBottom: '6px' }}>{activeBooking.hostelName}</h2>
-                  <div style={{ display: 'flex', alignItems: 'center', gap: '6px', color: '#666', fontSize: '14px' }}>
-                    <MdLocationOn color="#EE2E24" size={18} /> {activeBooking.location}
-                  </div>
-                </div>
-
-                <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fit, minmax(180px, 1fr))', gap: '16px', marginBottom: '28px' }}>
-                  <div style={{ display: 'flex', alignItems: 'center', gap: '12px', background: '#f8f9fa', padding: '12px', borderRadius: '16px' }}>
-                    <div style={{ background: '#EE2E24', color: 'white', padding: '8px', borderRadius: '10px', display: 'flex' }}><MdHotel size={18} /></div>
-                    <div>
-                      <div style={{ fontSize: '12px', color: '#666' }}>Room Type</div>
-                      <div style={{ fontWeight: 700, fontSize: '14px' }}>{activeBooking.roomType}</div>
-                    </div>
-                  </div>
-                  <div style={{ display: 'flex', alignItems: 'center', gap: '12px', background: '#f8f9fa', padding: '12px', borderRadius: '16px' }}>
-                    <div style={{ background: '#EE2E24', color: 'white', padding: '8px', borderRadius: '10px', display: 'flex' }}><MdRestaurant size={18} /></div>
-                    <div>
-                      <div style={{ fontSize: '12px', color: '#666' }}>Food</div>
-                      <div style={{ fontWeight: 700, fontSize: '14px' }}>{activeBooking.foodAvailable ? 'Available' : 'Not Available'}</div>
-                    </div>
-                  </div>
-                </div>
-
-                <div style={{ background: '#fcfcfc', borderRadius: '20px', padding: '20px', border: '1px solid #f0f0f0', marginBottom: '24px' }}>
-                  <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fit, minmax(120px, 1fr))', gap: '20px' }}>
-                    <div>
-                      <div style={{ fontSize: '11px', color: '#999', fontWeight: 600, textTransform: 'uppercase', marginBottom: '4px' }}>Rent</div>
-                      <div style={{ fontSize: '20px', fontWeight: 900, color: '#EE2E24' }}>₹{activeBooking.rent}</div>
-                    </div>
-                    <div>
-                      <div style={{ fontSize: '11px', color: '#999', fontWeight: 600, textTransform: 'uppercase', marginBottom: '4px' }}>Payment</div>
-                      <Badge status={activeBooking.paymentStatus} />
-                    </div>
-                    <div>
-                      <div style={{ fontSize: '11px', color: '#999', fontWeight: 600, textTransform: 'uppercase', marginBottom: '4px' }}>Due Date</div>
-                      <div style={{ fontSize: '15px', fontWeight: 700 }}>{activeBooking.nextDueDate || 'Pending'}</div>
-                    </div>
-                  </div>
-                </div>
-
-                <div style={{ display: 'flex', gap: '12px', flexWrap: 'wrap' }}>
-                  <button 
-                    className="btn btn-primary" 
-                    onClick={handlePayRent} 
-                    disabled={activeBooking.paymentStatus === 'paid'}
-                    style={{ flex: '1.5 1 160px', background: activeBooking.paymentStatus === 'paid' ? '#f0f0f0' : '#EE2E24', color: activeBooking.paymentStatus === 'paid' ? '#999' : 'white' }}
-                  >
-                    <MdPayments size={18} /> {activeBooking.paymentStatus === 'paid' ? 'Paid' : 'Pay Rent'}
-                  </button>
-                  <button className="btn btn-outline" onClick={() => navigate(`/student/pg/${activeBooking.hostelId}`)} style={{ flex: '1 1 120px' }}>
-                    <MdInfo size={18} /> Details
-                  </button>
-                  
-                  {/* Cancel Option for Pending/Confirmed */}
-                  {(activeBooking.status === 'pending' || activeBooking.status === 'confirmed') && (
-                    <button className="btn" onClick={handleCancelBooking} style={{ flex: '1 1 100px', color: '#EE2E24', background: '#FFF1F0', border: '1px solid #FFA39E' }}>
-                      <MdCancel size={18} /> Cancel
-                    </button>
-                  )}
-
-                  {/* Leave Option for Checked-in */}
-                  {activeBooking.status === 'checked-in' && (
-                    <button className="btn" onClick={handleLeaveHostel} style={{ flex: '1 1 120px', color: '#4338CA', background: '#EEF2FF', border: '1px solid #C7D2FE' }}>
-                      <MdExitToApp size={18} /> Leave Hostel
-                    </button>
-                  )}
-                </div>
-              </div>
-            </div>
-          </div>
-
-          <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fit, minmax(280px, 1fr))', gap: '20px' }}>
-            <div style={{ background: 'white', padding: '24px', borderRadius: '20px', border: '1px solid #f0f0f0' }}>
-              <h4 style={{ fontWeight: 800, fontSize: '16px', marginBottom: '16px', display: 'flex', alignItems: 'center', gap: '8px' }}>
-                <div style={{ width: '40px', height: '40px', background: 'rgba(238,46,36,0.05)', borderRadius: '50%', display: 'flex', alignItems: 'center', justifyContent: 'center', color: '#EE2E24' }}>
-                  <MdHotel size={20} />
-                </div>
-                Stay Timeline
-              </h4>
-              <div style={{ display: 'flex', flexDirection: 'column', gap: '12px' }}>
-                <div style={{ display: 'flex', justifyContent: 'space-between', paddingBottom: '12px', borderBottom: '1px solid #f9f9f9' }}>
-                  <span style={{ color: '#666', fontSize: '13px' }}>Booking Date</span>
-                  <span style={{ fontWeight: 700, fontSize: '13px' }}>{activeBooking.createdAt?.toDate ? activeBooking.createdAt.toDate().toLocaleDateString('en-IN', { day: 'numeric', month: 'short' }) : 'N/A'}</span>
-                </div>
-                <div style={{ display: 'flex', justifyContent: 'space-between' }}>
-                  <span style={{ color: '#666', fontSize: '13px' }}>Move-in Date</span>
-                  <span style={{ fontWeight: 700, fontSize: '13px' }}>{activeBooking.moveInDate || 'Not set'}</span>
-                </div>
-              </div>
-            </div>
-            <div style={{ background: 'linear-gradient(135deg, #EE2E24, #FF5C54)', padding: '24px', borderRadius: '20px', color: 'white', position: 'relative', overflow: 'hidden' }}>
-              <MdPayments size={120} style={{ position: 'absolute', right: '-15px', bottom: '-15px', opacity: 0.1 }} />
-              <h4 style={{ fontWeight: 800, fontSize: '16px', marginBottom: '8px' }}>Rent Details</h4>
-              <div style={{ display: 'flex', alignItems: 'baseline', gap: '6px' }}>
-                <span style={{ fontSize: '13px', opacity: 0.8 }}>Total:</span>
-                <span style={{ fontSize: '24px', fontWeight: 900 }}>₹{activeBooking.rent}</span>
-              </div>
-            </div>
+    <StudentLayout title="Student Dashboard">
+      <div className="animate-fadeIn app-page-container">
+        
+        {/* Header Greeting */}
+        <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: '20px' }}>
+          <div>
+            <h2 style={{ fontSize: '22px', fontWeight: 900, color: '#1a1a1a', margin: 0 }}>Hello, {userData?.name?.split(' ')[0] || 'User'} 👋</h2>
+            <p style={{ fontSize: '13px', color: '#888', marginTop: '2px' }}>Student Dashboard</p>
           </div>
 
         </div>
-      )}
+
+        {/* Current Rent Card */}
+        {activeBooking ? (
+          <div className="app-gradient-card" style={{ marginBottom: '24px', boxShadow: '0 10px 25px rgba(230,0,0,0.15)' }}>
+            <div style={{ fontSize: '12px', opacity: 0.9, fontWeight: 600, textTransform: 'uppercase' }}>Current Rent</div>
+            <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'flex-end', marginTop: '4px' }}>
+              <div>
+                <span style={{ fontSize: '28px', fontWeight: 900 }}>₹{activeBooking.rent.toLocaleString()}</span>
+                <span style={{ fontSize: '14px', opacity: 0.8, fontWeight: 500 }}> / month</span>
+              </div>
+              <Link to={`/student/pg/${activeBooking.hostelId}`} style={{ background: 'rgba(255,255,255,0.2)', color: 'white', padding: '6px 14px', borderRadius: '10px', fontSize: '12px', fontWeight: 700, textDecoration: 'none' }}>View Details</Link>
+            </div>
+            
+            <div style={{ display: 'flex', gap: '20px', marginTop: '20px', paddingTop: '16px', borderTop: '1px solid rgba(255,255,255,0.15)' }}>
+              <div>
+                <div style={{ fontSize: '10px', opacity: 0.7, textTransform: 'uppercase' }}>Active Booking</div>
+                <div style={{ fontSize: '13px', fontWeight: 700 }}>{activeBooking.hostelName}</div>
+                <div style={{ fontSize: '11px', opacity: 0.8 }}>Move-in: {activeBooking.moveInDate || 'TBD'}</div>
+              </div>
+              <div style={{ marginLeft: 'auto', textAlign: 'right' }}>
+                <div style={{ fontSize: '10px', opacity: 0.7, textTransform: 'uppercase' }}>Due Date</div>
+                <div style={{ fontSize: '13px', fontWeight: 700 }}>01 May 2025</div>
+                <div style={{ fontSize: '11px', color: '#ffcfcf', fontWeight: 700 }}>5 days left</div>
+              </div>
+            </div>
+          </div>
+        ) : (
+          <div className="app-card" style={{ marginBottom: '24px', textAlign: 'center', padding: '32px 20px' }}>
+            <div style={{ width: '60px', height: '60px', background: 'var(--primary-bg)', borderRadius: '50%', display: 'flex', alignItems: 'center', justifyContent: 'center', margin: '0 auto 16px', color: 'var(--primary)' }}>
+              <MdHotel size={32} />
+            </div>
+            <h3 style={{ fontSize: '16px', fontWeight: 800 }}>No Active Booking</h3>
+            <p style={{ fontSize: '13px', color: '#888', margin: '8px 0 20px' }}>Find your perfect PG/Hostel near your college.</p>
+            <button className="btn btn-primary btn-sm" onClick={() => navigate('/student/search-results')}>Explore Now</button>
+          </div>
+        )}
+
+        {/* Quick Actions */}
+        <div className="section-header">
+          <h3 className="section-title-app">Quick Actions</h3>
+        </div>
+        <div className="quick-action-grid">
+          <div className="action-item" onClick={() => navigate('/student/search-results')}>
+            <div className="action-icon"><MdSearch /></div>
+            <span className="action-label">Find PG</span>
+          </div>
+          <div className="action-item" onClick={() => navigate('/student/bookings')}>
+            <div className="action-icon"><MdCalendarToday /></div>
+            <span className="action-label">Bookings</span>
+          </div>
+          <div className="action-item" onClick={() => navigate('/student/payments')}>
+            <div className="action-icon"><MdPayments /></div>
+            <span className="action-label">Payments</span>
+          </div>
+          <div className="action-item" onClick={() => navigate('/student/complaints')}>
+            <div className="action-icon"><MdMessage /></div>
+            <span className="action-label">Support</span>
+          </div>
+        </div>
+
+        {/* My Bookings Section */}
+        <div className="section-header">
+          <h3 className="section-title-app">My Bookings</h3>
+          <Link to="/student/bookings" className="view-all-link">View All</Link>
+        </div>
+        
+        {activeBooking ? (
+          <div className="app-card" style={{ display: 'flex', gap: '16px', marginBottom: '24px', padding: '12px' }}>
+            <div style={{ width: '80px', height: '80px', borderRadius: '12px', overflow: 'hidden' }}>
+              <img src={activeBooking.hostelImage || 'https://images.unsplash.com/photo-1522771739844-6a9f6d5f14af?auto=format&fit=crop&w=400'} style={{ width: '100%', height: '100%', objectFit: 'cover' }} />
+            </div>
+            <div style={{ flex: 1 }}>
+              <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'flex-start' }}>
+                <h4 style={{ fontSize: '15px', fontWeight: 800, margin: 0 }}>{activeBooking.hostelName}</h4>
+                <span className={`status-badge status-${activeBooking.status?.toLowerCase() || 'confirmed'}`}>{activeBooking.status || 'Confirmed'}</span>
+              </div>
+              <p style={{ fontSize: '11px', color: '#888', margin: '2px 0 8px' }}>{activeBooking.location}</p>
+              <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
+                <div style={{ fontSize: '13px', fontWeight: 800, color: 'var(--primary)' }}>₹{activeBooking.rent.toLocaleString()}<span style={{ fontSize: '10px', color: '#999', fontWeight: 400 }}> / month</span></div>
+                <div style={{ fontSize: '10px', color: '#999' }}>Move-in: <span style={{ fontWeight: 700, color: '#444' }}>{activeBooking.moveInDate || '01 May 2025'}</span></div>
+              </div>
+            </div>
+          </div>
+        ) : (
+          <div className="app-card" style={{ textAlign: 'center', color: '#999', fontSize: '13px', padding: '24px' }}>No bookings yet</div>
+        )}
+
+        {/* Rent Payments Section */}
+        <div className="section-header" style={{ marginTop: '32px' }}>
+          <h3 className="section-title-app">Rent Payments</h3>
+          <Link to="/student/payments" className="view-all-link">View All</Link>
+        </div>
+        <div className="app-card" style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
+          <div style={{ display: 'flex', alignItems: 'center', gap: '12px' }}>
+            <div style={{ background: '#f8f9fa', padding: '10px', borderRadius: '10px', fontWeight: 700, fontSize: '12px' }}>May 2025</div>
+            <span className="status-badge status-confirmed" style={{ fontSize: '9px' }}>Paid</span>
+          </div>
+          <div style={{ textAlign: 'right' }}>
+            <div style={{ fontSize: '14px', fontWeight: 800 }}>₹{activeBooking?.rent || '6,500'}</div>
+            <div style={{ fontSize: '10px', color: '#999' }}>Paid on 28 Apr 2025</div>
+          </div>
+        </div>
+
+      </div>
     </StudentLayout>
   );
 };

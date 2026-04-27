@@ -23,56 +23,48 @@ const PGCard = ({ pg, isFavorite, onToggleFavorite, linkPrefix = '/student/pg' }
   };
 
   return (
-    <div className="pg-card" onClick={() => navigate(`${linkPrefix}/${pg.id}`)} style={{
-      borderRadius: '24px', border: '1px solid #eee', boxShadow: '0 4px 20px rgba(0,0,0,0.06)', overflow: 'hidden'
+    <div className="app-card" onClick={() => navigate(`${linkPrefix}/${pg.id}`)} style={{
+      display: 'flex', gap: '16px', padding: '12px', marginBottom: '16px', cursor: 'pointer', position: 'relative',
+      border: '1px solid #f2f2f2'
     }}>
-      <div className="pg-card-image" style={{ height: '220px' }}>
-        {pg.images && pg.images.length > 0
-          ? <img 
-              src={pg.images[0]} 
-              alt={pg.name} 
-              onError={(e) => {
-                e.target.style.display = 'none';
-                e.target.parentNode.innerHTML = '<span style="font-size: 48px; opacity: 0.2">🏠</span>';
-              }}
-              style={{ width: '100%', height: '100%', objectFit: 'cover' }} 
-            />
-          : <span style={{ fontSize: '48px', opacity: 0.2 }}>🏠</span>
-        }
+      <div style={{ width: '100px', height: '100px', borderRadius: '14px', overflow: 'hidden', flexShrink: 0, position: 'relative' }}>
+        <img 
+          src={pg.images?.[0] || 'https://images.unsplash.com/photo-1522771739844-6a9f6d5f14af?auto=format&fit=crop&w=400'} 
+          alt={pg.name}
+          style={{ width: '100%', height: '100%', objectFit: 'cover' }} 
+        />
         {pg.verified && (
-          <div className="pg-card-badge">
-            <span className="badge" style={{ background: 'white', color: 'var(--verified-color)', border: '1px solid var(--verified-color)', borderRadius: '8px', fontWeight: 700 }}>
-              <MdVerified size={10} /> VERIFIED
-            </span>
+          <div style={{ position: 'absolute', top: '6px', left: '6px', background: 'white', color: '#1AB64F', borderRadius: '4px', padding: '2px 4px', fontSize: '8px', fontWeight: 900, display: 'flex', alignItems: 'center', gap: '2px' }}>
+            <MdVerified size={10} /> VERIFIED
           </div>
         )}
       </div>
 
-      <div className="pg-card-body" style={{ padding: '16px' }}>
+      <div style={{ flex: 1, display: 'flex', flexDirection: 'column', justifyContent: 'center' }}>
         <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'flex-start' }}>
-          <div>
-            <div className="pg-card-name" style={{ fontSize: '18px', fontWeight: 800 }}>{pg.name}</div>
-            <div className="pg-card-location" style={{ marginBottom: '4px' }}>
-              <MdLocationOn size={14} color="var(--primary)" /> {pg.location}
-            </div>
-            <div style={{ fontSize: '12px', color: 'var(--text-medium)', display: 'flex', alignItems: 'center', gap: '4px', marginBottom: '12px' }}>
-              <MdHotel size={14} color="#666" /> {pg.roomOptions}
-            </div>
+          <h4 style={{ fontSize: '15px', fontWeight: 800, margin: 0, color: '#1a1a1a' }}>{pg.name}</h4>
+          <button 
+            onClick={handleFav} 
+            style={{ background: 'none', border: 'none', padding: 0, cursor: 'pointer', color: isFavorite ? 'var(--primary)' : '#ddd' }}
+          >
+            {isFavorite ? <MdFavorite size={20} /> : <MdFavoriteBorder size={20} />}
+          </button>
+        </div>
+        
+        <p style={{ fontSize: '11px', color: '#888', margin: '2px 0 6px', display: 'flex', alignItems: 'center', gap: '2px' }}>
+          <MdLocationOn size={12} /> {pg.location || pg.city}
+        </p>
+
+        <div style={{ display: 'flex', alignItems: 'center', gap: '6px', marginBottom: '8px' }}>
+          <div style={{ display: 'flex', alignItems: 'center', gap: '2px' }}>
+            <MdStar size={14} color="#f59e0b" />
+            <span style={{ fontSize: '12px', fontWeight: 700, color: '#333' }}>{pg.rating || '4.5'}</span>
           </div>
-          <div className="rating-chip" style={{ background: 'var(--verified-color)', color: 'white', borderRadius: '10px', padding: '4px 10px' }}>
-            {pg.rating?.toFixed(1) || '—'} <MdStar size={14} />
-          </div>
+          <span style={{ fontSize: '11px', color: '#aaa' }}>({pg.reviewsCount || 128})</span>
         </div>
 
-        <div style={{ display: 'flex', gap: '8px', marginTop: '12px' }}>
-           <span style={{ fontSize: '12px', color: 'var(--text-light)', border: '1px solid #eee', padding: '2px 10px', borderRadius: '8px' }}>{pg.type}</span>
-           <span style={{ fontSize: '12px', color: '#c2410c', background: '#fff7ed', padding: '2px 10px', borderRadius: '8px', fontWeight: 600 }}>Mess {pg.messRating}★</span>
-        </div>
-
-        <div style={{ marginTop: '16px', display: 'flex', alignItems: 'baseline', gap: '6px' }}>
-          <span style={{ fontSize: '22px', fontWeight: 900, color: 'var(--text-dark)' }}>₹{pg.rent?.toLocaleString()}</span>
-          <span style={{ fontSize: '14px', color: 'var(--text-light)', textDecoration: 'line-through' }}>₹{(pg.rent * 1.2).toLocaleString()}</span>
-          <span style={{ fontSize: '14px', color: '#f97316', fontWeight: 700 }}>20% OFF</span>
+        <div style={{ fontSize: '15px', fontWeight: 900, color: '#222' }}>
+          ₹{pg.rent?.toLocaleString()} <span style={{ fontSize: '10px', color: '#999', fontWeight: 400 }}>/ month</span>
         </div>
       </div>
     </div>

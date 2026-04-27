@@ -14,10 +14,10 @@ const EditListing = () => {
   const { id } = useParams();
   const navigate = useNavigate();
   const { user } = useAuth();
-  
+
   const [loading, setLoading] = useState(true);
   const [isSaving, setIsSaving] = useState(false);
-  
+
   const [form, setForm] = useState({
     name: '',
     type: 'Boys',
@@ -71,10 +71,10 @@ const EditListing = () => {
   }, [id, user, navigate]);
 
   const setField = (k, v) => setForm(f => ({ ...f, [k]: v }));
-  
+
   const toggleAmenity = a => {
-    setField('amenities', form.amenities.includes(a) 
-      ? form.amenities.filter(x => x !== a) 
+    setField('amenities', form.amenities.includes(a)
+      ? form.amenities.filter(x => x !== a)
       : [...form.amenities, a]
     );
   };
@@ -123,14 +123,14 @@ const EditListing = () => {
       // Upload new images if any
       if (form.newImages && form.newImages.length > 0) {
         toast.loading(`Uploading images (0/${form.newImages.length})...`, { id: saveToast });
-        
+
         let count = 0;
         for (const imgObj of form.newImages) {
           if (!imgObj.file) continue;
-          
+
           count++;
           toast.loading(`Uploading image ${count}/${form.newImages.length}...`, { id: saveToast });
-          
+
           const downloadUrl = await uploadImageToImgBB(imgObj.file);
           finalImages.push(downloadUrl);
         }
@@ -138,7 +138,7 @@ const EditListing = () => {
 
       toast.loading('Updating property details...', { id: saveToast });
       const docRef = doc(db, 'hostels', id);
-      
+
       const updateData = {
         name: (form.name || '').trim(),
         type: form.type || 'Boys',
@@ -156,7 +156,7 @@ const EditListing = () => {
       };
 
       await updateDoc(docRef, updateData);
-      
+
       toast.success('Listing updated successfully! 🎉', { id: saveToast });
       // Small delay before redirect
       setTimeout(() => {
@@ -183,7 +183,7 @@ const EditListing = () => {
         {/* Main Form */}
         <div style={{ background: 'white', borderRadius: '24px', border: '1px solid var(--border)', padding: '32px' }} className="p-16">
           <h3 style={{ fontWeight: 800, marginBottom: '24px' }}>Property Details</h3>
-          
+
           <div className="form-group">
             <label className="form-label">PG/Hostel Name *</label>
             <input className="form-input" value={form.name} onChange={e => setField('name', e.target.value)} placeholder="e.g. Royal Executive PG" />
@@ -252,7 +252,7 @@ const EditListing = () => {
           <div style={{ background: 'white', borderRadius: '24px', border: '1px solid var(--border)', padding: '24px' }}>
             <h3 style={{ fontWeight: 800, marginBottom: '16px', fontSize: '16px' }}>Property Photos</h3>
             <p style={{ fontSize: '12px', color: '#666', marginBottom: '20px' }}>Upload up to 10 photos of your PG (rooms, mess, entrance).</p>
-            
+
             <div style={{ display: 'grid', gridTemplateColumns: 'repeat(2, 1fr)', gap: '12px', marginBottom: '20px' }}>
               {/* Existing Images */}
               {form.existingImages.map((url, i) => (
@@ -263,7 +263,7 @@ const EditListing = () => {
                   </button>
                 </div>
               ))}
-              
+
               {/* New Images */}
               {form.newImages.map((img, i) => (
                 <div key={`new-${i}`} style={{ position: 'relative', height: '100px', borderRadius: '12px', overflow: 'hidden', border: '1px solid var(--primary)', boxShadow: '0 0 0 2px var(--primary-bg)' }}>

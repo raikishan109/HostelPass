@@ -90,116 +90,120 @@ const SearchResults = () => {
   const toggleFav = id => setFavorites(f => f.includes(id) ? f.filter(x => x !== id) : [...f, id]);
 
   return (
-    <StudentLayout title="Find PGs & Hostels">
-      {/* Search + Sort Bar */}
-      <div className="search-controls" style={{ display: 'flex', gap: '12px', marginBottom: '20px', flexWrap: 'wrap' }}>
-        <div style={{ flex: '2 1 300px', display: 'flex', alignItems: 'center', gap: '10px', background: 'white', border: '2px solid var(--border)', borderRadius: '12px', padding: '10px 16px', transition: 'border-color 0.2s' }}
-          onFocus={e => e.currentTarget.style.borderColor = 'var(--primary)'}
-          onBlur={e => e.currentTarget.style.borderColor = 'var(--border)'}
-        >
-          <MdSearch color="var(--text-light)" />
-          <input
-            style={{ flex: 1, border: 'none', outline: 'none', fontSize: '14px' }}
-            placeholder="Search by name, location or city..."
+    <StudentLayout title="Explore PGs">
+      <div className="animate-fadeIn app-page-container">
+        
+        {/* Search Bar (App Style) */}
+        <div style={{ position: 'relative', marginBottom: '20px' }}>
+          <MdSearch style={{ position: 'absolute', left: '16px', top: '50%', transform: 'translateY(-50%)', color: '#999', fontSize: '20px' }} />
+          <input 
+            type="text" 
+            placeholder="Search by locality, PG name or owner" 
             value={query}
-            onChange={e => setQuery(e.target.value)}
+            onChange={(e) => setQuery(e.target.value)}
+            style={{ 
+              width: '100%', padding: '14px 16px 14px 48px', borderRadius: '16px', 
+              border: '1px solid #f0f0f0', background: 'white', fontSize: '14px',
+              boxShadow: '0 4px 12px rgba(0,0,0,0.03)', outline: 'none'
+            }}
           />
-          {query && <button onClick={() => setQuery('')} style={{ background: 'none', border: 'none', cursor: 'pointer', color: 'var(--text-light)' }}><MdClose /></button>}
         </div>
 
-        <div className="mobile-full-width" style={{ display: 'flex', gap: '12px', flex: '1 1 300px' }}>
-          <select className="form-select" style={{ flex: 1, height: '44px', margin: 0 }} value={sort} onChange={e => setSort(e.target.value)}>
-            <option value="rating">Top Rated</option>
-            <option value="mess">Best Mess</option>
-            <option value="price_low">Price: Low to High</option>
-            <option value="price_high">Price: High to Low</option>
-            <option value="newest">Newest First</option>
-          </select>
-
-          <button 
-            className="btn btn-primary" 
-            style={{ flex: 1, height: '44px', whiteSpace: 'nowrap', display: 'flex', alignItems: 'center', justifyContent: 'center', gap: '6px' }} 
-            onClick={() => setShowFilters(!showFilters)}
-          >
-            <MdTune /> Filters {hasFilters && `(${Object.values(filters).filter(Boolean).length})`}
+        {/* Category Filters (Horizontal Scroll) */}
+        <div style={{ display: 'flex', gap: '10px', overflowX: 'auto', paddingBottom: '16px', scrollbarWidth: 'none' }} className="no-scrollbar">
+          {['All', 'Boys PG', 'Girls PG', 'Hostel'].map(cat => {
+            const val = cat === 'All' ? '' : (cat === 'Hostel' ? 'Hostel' : cat.split(' ')[0]);
+            const isActive = filters.type === val;
+            return (
+              <button 
+                key={cat}
+                onClick={() => setFilter('type', val)}
+                style={{
+                  padding: '8px 20px', borderRadius: '12px', border: '1px solid',
+                  borderColor: isActive ? 'var(--primary)' : '#f0f0f0',
+                  background: isActive ? 'var(--primary)' : 'white',
+                  color: isActive ? 'white' : '#666',
+                  fontSize: '13px', fontWeight: 700, whiteSpace: 'nowrap', cursor: 'pointer',
+                  transition: 'all 0.2s'
+                }}
+              >
+                {cat}
+              </button>
+            );
+          })}
+          <button className="btn-icon" style={{ background: '#f8f9fa', borderRadius: '12px', minWidth: '40px', border: '1px solid #eee' }} onClick={() => setShowFilters(true)}>
+            <MdTune size={20} color="#333" />
           </button>
         </div>
-      </div>
 
-      {/* Filters Panel */}
-      {showFilters && (
-        <div style={{ background: 'white', borderRadius: '16px', padding: '20px', marginBottom: '20px', border: '1px solid var(--border)', display: 'grid', gridTemplateColumns: 'repeat(auto-fit, minmax(180px, 1fr))', gap: '16px', alignItems: 'end' }}>
-          <div className="form-group" style={{ marginBottom: 0 }}>
-            <label className="form-label">Type</label>
-            <select className="form-select" value={filters.type} onChange={e => setFilter('type', e.target.value)}>
-              <option value="">All Types</option>
-              {PG_TYPES.map(t => <option key={t}>{t}</option>)}
-            </select>
-          </div>
-          <div className="form-group" style={{ marginBottom: 0 }}>
-            <label className="form-label">City</label>
-            <select className="form-select" value={filters.city} onChange={e => setFilter('city', e.target.value)}>
-              <option value="">All Cities</option>
-              {CITY_OPTIONS.map(c => <option key={c}>{c}</option>)}
-            </select>
-          </div>
-          <div className="form-group" style={{ marginBottom: 0 }}>
-            <label className="form-label">Min Rent (₹)</label>
-            <input className="form-input" type="number" placeholder="e.g. 5000" value={filters.minRent} onChange={e => setFilter('minRent', e.target.value)} />
-          </div>
-          <div className="form-group" style={{ marginBottom: 0 }}>
-            <label className="form-label">Max Rent (₹)</label>
-            <input className="form-input" type="number" placeholder="e.g. 15000" value={filters.maxRent} onChange={e => setFilter('maxRent', e.target.value)} />
-          </div>
-          <div className="form-group" style={{ marginBottom: 0 }}>
-            <label className="form-label">Min Rating</label>
-            <select className="form-select" value={filters.minRating} onChange={e => setFilter('minRating', e.target.value)}>
-              <option value="">Any Rating</option>
-              <option value="3">3+</option>
-              <option value="3.5">3.5+</option>
-              <option value="4">4+</option>
-              <option value="4.5">4.5+</option>
-            </select>
+        {/* Results Info */}
+        <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: '16px' }}>
+          <div style={{ fontSize: '13px', color: '#888', fontWeight: 600 }}>
+             {results.length} results found
+             {searchParams.get('radius') && <span style={{ color: 'var(--primary)' }}> within 5km</span>}
           </div>
           {hasFilters && (
-            <div style={{ gridColumn: '1/-1', display: 'flex', justifyContent: 'flex-end' }}>
-              <button className="btn btn-ghost btn-sm" onClick={clearFilters}><MdClose /> Clear Filters</button>
+            <button onClick={clearFilters} style={{ background: 'none', border: 'none', color: 'var(--primary)', fontSize: '12px', fontWeight: 700, cursor: 'pointer' }}>
+              Clear All
+            </button>
+          )}
+        </div>
+
+        {/* Results List */}
+        <div style={{ paddingBottom: '40px' }}>
+          {loading ? (
+            <div style={{ textAlign: 'center', padding: '40px' }}>Loading PGs...</div>
+          ) : results.length > 0 ? (
+            results.map(p => (
+              <PGCard 
+                key={p.id} 
+                pg={p} 
+                isFavorite={favorites.includes(p.id)} 
+                onToggleFavorite={toggleFav} 
+              />
+            ))
+          ) : (
+            <div className="app-card" style={{ textAlign: 'center', padding: '60px 20px' }}>
+              <div style={{ fontSize: '48px', marginBottom: '16px' }}>🔍</div>
+              <h3 style={{ fontSize: '18px', fontWeight: 800 }}>No results found</h3>
+              <p style={{ fontSize: '13px', color: '#888', marginTop: '8px' }}>Try adjusting your filters or search query.</p>
+              <button className="btn btn-primary" style={{ marginTop: '20px' }} onClick={clearFilters}>Reset All Filters</button>
             </div>
           )}
         </div>
-      )}
-
-      {/* Results Count */}
-      <div style={{ marginBottom: '16px', fontSize: '14px', color: 'var(--text-light)' }}>
-        <span style={{ color: 'var(--text-dark)', fontWeight: 700 }}>{results.length}</span> PGs found
-        {searchParams.get('lat') && <span> within <span style={{ color: 'var(--primary)', fontWeight: 600 }}>5km</span> of your location</span>}
-        {query && <span> for "<span style={{ color: 'var(--primary)', fontWeight: 600 }}>{query}</span>"</span>}
       </div>
 
-      {/* Quick Filter Chips */}
-      <div className="filter-chips" style={{ marginBottom: '20px' }}>
-        {['All', 'Verified Only', 'With Mess', 'Boys', 'Girls', 'Co-Ed'].map(chip => (
-          <button key={chip} className={`filter-chip ${chip === 'All' && !hasFilters ? 'active' : ''}`}
-            onClick={() => {
-              if (chip === 'Verified Only') setFilter('verified', true);
-              else if (['Boys', 'Girls', 'Co-Ed'].includes(chip)) setFilter('type', filters.type === chip ? '' : chip);
-              else clearFilters();
-            }}
-          >{chip}</button>
-        ))}
-      </div>
-
-      {/* PG Grid */}
-      {results.length === 0 ? (
-        <div className="empty-state">
-          <div className="empty-state-icon">🔍</div>
-          <h3>No PGs Found</h3>
-          <p>Try adjusting your search query or filters to find more results.</p>
-          <button className="btn btn-primary btn-sm" onClick={clearFilters}>Clear All</button>
-        </div>
-      ) : (
-        <div className="grid-3">
-          {results.map(pg => <PGCard key={pg.id} pg={pg} isFavorite={favorites.includes(pg.id)} onToggleFavorite={toggleFav} />)}
+      {/* Filter Modal */}
+      {showFilters && (
+        <div className="modal-overlay" onClick={() => setShowFilters(false)} style={{ alignItems: 'flex-end', padding: 0 }}>
+          <div className="modal animate-slideUp" onClick={e => e.stopPropagation()} style={{ borderBottomLeftRadius: 0, borderBottomRightRadius: 0, borderRadius: '32px 32px 0 0', maxWidth: '600px' }}>
+            <div className="modal-header" style={{ padding: '20px 24px' }}>
+              <h3 className="modal-title" style={{ fontSize: '20px' }}>Filters</h3>
+              <button className="modal-close" onClick={() => setShowFilters(false)}><MdClose /></button>
+            </div>
+            <div className="modal-body" style={{ padding: '24px' }}>
+              <div className="form-group">
+                <label className="form-label">City</label>
+                <select className="form-select" value={filters.city} onChange={e => setFilter('city', e.target.value)}>
+                  <option value="">All Cities</option>
+                  {CITY_OPTIONS.map(c => <option key={c} value={c}>{c}</option>)}
+                </select>
+              </div>
+              <div className="form-group" style={{ marginTop: '20px' }}>
+                <label className="form-label">Sort By</label>
+                <select className="form-select" value={sort} onChange={e => setSort(e.target.value)}>
+                  <option value="rating">Top Rated</option>
+                  <option value="mess">Best Mess</option>
+                  <option value="price_low">Price: Low to High</option>
+                  <option value="price_high">Price: High to Low</option>
+                </select>
+              </div>
+            </div>
+            <div className="modal-footer" style={{ padding: '20px 24px' }}>
+              <button className="btn btn-outline w-full" onClick={clearFilters}>Reset All</button>
+              <button className="btn btn-primary w-full" onClick={() => setShowFilters(false)}>Show Results</button>
+            </div>
+          </div>
         </div>
       )}
     </StudentLayout>
