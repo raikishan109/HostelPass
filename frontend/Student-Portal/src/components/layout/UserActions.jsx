@@ -7,13 +7,12 @@ const UserActions = () => {
   const { user, userRole, userData } = useAuth();
   const navigate = useNavigate();
   const [showNotifications, setShowNotifications] = useState(false);
-
-  if (!user) return null;
-
   const [notifs, setNotifs] = useState([
     { id: 1, text: 'Your review for Sunrise PG was approved! ⭐', time: '2h ago' },
     { id: 2, text: 'New PG added in Koramangala matching your search.', time: '5h ago' },
   ]);
+
+  if (!user) return null;
 
   const initials = (userData?.name || user?.displayName || 'U').charAt(0).toUpperCase();
 
