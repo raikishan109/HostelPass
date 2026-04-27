@@ -8,6 +8,7 @@ import { db, storage } from '../../firebase/config';
 import { collection, addDoc, serverTimestamp } from 'firebase/firestore';
 import { ref, uploadBytes, getDownloadURL } from 'firebase/storage';
 import { useAuth } from '../../context/AuthContext';
+import { uploadImageToImgBB } from '../../utils/imageUpload';
 const STEPS = ['Basic Info', 'Pricing', 'Amenities', 'Description'];
 
 const AddListing = () => {
@@ -42,12 +43,13 @@ const AddListing = () => {
     try {
       const imageUrls = [];
       
-      // Upload images to Firebase Storage
+      // Upload images to ImgBB (Alternative to Firebase Storage)
       if (form.images && form.images.length > 0) {
+        let count = 0;
         for (const imgObj of form.images) {
-          const storageRef = ref(storage, `hostels/${user.uid}/${Date.now()}-${imgObj.file.name}`);
-          const snapshot = await uploadBytes(storageRef, imgObj.file);
-          const downloadUrl = await getDownloadURL(snapshot.ref);
+          count++;
+          toast.loading(`Uploading image ${count}/${form.images.length}...`, { id: uploadToast });
+          const downloadUrl = await uploadImageToImgBB(imgObj.file);
           imageUrls.push(downloadUrl);
         }
       }

@@ -8,6 +8,7 @@ import { db, storage } from '../../firebase/config';
 import { doc, getDoc, updateDoc, serverTimestamp } from 'firebase/firestore';
 import { ref, uploadBytes, getDownloadURL } from 'firebase/storage';
 import { useAuth } from '../../context/AuthContext';
+import { uploadImageToImgBB } from '../../utils/imageUpload';
 
 const EditListing = () => {
   const { id } = useParams();
@@ -130,9 +131,7 @@ const EditListing = () => {
           count++;
           toast.loading(`Uploading image ${count}/${form.newImages.length}...`, { id: saveToast });
           
-          const storageRef = ref(storage, `hostels/${user.uid}/${Date.now()}-${imgObj.file.name}`);
-          const snapshot = await uploadBytes(storageRef, imgObj.file);
-          const downloadUrl = await getDownloadURL(snapshot.ref);
+          const downloadUrl = await uploadImageToImgBB(imgObj.file);
           finalImages.push(downloadUrl);
         }
       }
