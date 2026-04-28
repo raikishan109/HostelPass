@@ -7,10 +7,11 @@ const UserActions = () => {
   const { user, userRole, userData } = useAuth();
   const navigate = useNavigate();
   const [showNotifications, setShowNotifications] = useState(false);
-  const [notifs, setNotifs] = useState([
-    { id: 1, text: 'Your review for Sunrise PG was approved! ⭐', time: '2h ago' },
-    { id: 2, text: 'New PG added in Koramangala matching your search.', time: '5h ago' },
-  ]);
+  const [notifs, setNotifs] = useState(() => {
+    const saved = localStorage.getItem('hostelpass_notifs');
+    if (saved) return JSON.parse(saved);
+    return []; 
+  });
 
   if (!user) return null;
 
@@ -18,6 +19,7 @@ const UserActions = () => {
 
   const handleClearAll = () => {
     setNotifs([]);
+    localStorage.setItem('hostelpass_notifs', JSON.stringify([]));
   };
 
   return (

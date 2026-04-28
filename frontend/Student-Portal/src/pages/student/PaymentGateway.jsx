@@ -59,12 +59,12 @@ const PaymentGateway = () => {
         });
 
         toast.success('Payment Successful!');
-        navigate('/student/dashboard');
+        navigate('/student');
       } catch (error) {
         console.error("Payment Error:", error);
         // Still navigate for "Direct Success" feel in demo, but show toast
         toast.success('Payment Processed Successfully!');
-        navigate('/student/dashboard');
+        navigate('/student');
       }
     }, 800);
   };

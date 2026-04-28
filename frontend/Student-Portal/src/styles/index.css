@@ -137,6 +137,46 @@ ul, ol { list-style: none; }
 .quick-action-grid {
   display: grid; grid-template-columns: repeat(4, 1fr); gap: 12px; margin-bottom: 24px;
 }
+
+.bookings-grid {
+  display: grid;
+  grid-template-columns: 1fr;
+  gap: 20px;
+}
+
+@media (min-width: 1024px) {
+  .bookings-grid {
+    grid-template-columns: repeat(4, 1fr);
+  }
+  .booking-card-responsive {
+    flex-direction: column !important;
+    align-items: flex-start !important;
+  }
+  .booking-card-responsive .booking-img-container {
+    width: 100% !important;
+    height: 180px !important;
+  }
+  .bookings-grid .status-badge {
+    font-size: 12px !important;
+    padding: 4px 10px !important;
+    border-radius: 6px !important;
+  }
+}
+
+@media (max-width: 480px) {
+  .booking-card-responsive {
+    gap: 16px !important;
+    padding: 16px !important;
+  }
+  .booking-card-responsive .booking-img-container {
+    width: 80px !important;
+    height: 80px !important;
+  }
+  .booking-card-actions {
+    flex-direction: column;
+    gap: 8px !important;
+  }
+}
 .action-item {
   display: flex; flex-direction: column; align-items: center; gap: 8px;
 }
@@ -157,9 +197,11 @@ ul, ol { list-style: none; }
 .status-badge {
   padding: 4px 10px; border-radius: 8px; font-size: 10px; font-weight: 800; text-transform: uppercase;
 }
-.status-pending { background: #fff7ed; color: #ea580c; }
-.status-confirmed { background: #ecfdf5; color: #059669; }
-.status-cancelled { background: #fef2f2; color: #dc2626; }
+.status-pending { background: #F59E0B; color: white; }
+.status-confirmed { background: #10B981; color: white; }
+.status-cancelled { background: #EF4444; color: white; }
+.status-paid { background: #10B981; color: white; }
+.status-checked-in { background: #3B82F6; color: white; }
 
 .logo-img {
   background: transparent !important;

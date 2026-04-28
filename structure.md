@@ -54,6 +54,7 @@ Hostel-Pass/
 │       │   │   │   ├── Complaints.jsx
 │       │   │   │   ├── MyReviews.jsx
 │       │   │   │   ├── Favorites.jsx
+│       │   │   │   ├── Support.jsx
 │       │   │   │   └── Profile.jsx
 │       │   │   ├── LandingPage.jsx
 │       │   │   ├── StudentLoginPage.jsx

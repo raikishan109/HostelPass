@@ -131,11 +131,11 @@ const StudentDashboard = () => {
   const getStatusColor = (status) => {
     switch (status?.toLowerCase()) {
       case 'confirmed':
-      case 'paid': return { bg: '#E7F7EF', text: '#0D9488' };
-      case 'pending': return { bg: '#FFFBEB', text: '#B45309' };
-      case 'checked-in': return { bg: '#EFF6FF', text: '#1D4ED8' };
-      case 'cancelled': return { bg: '#FEF2F2', text: '#DC2626' };
-      default: return { bg: '#F3F4F6', text: '#374151' };
+      case 'paid': return { bg: '#10B981', text: 'white' };
+      case 'pending': return { bg: '#F59E0B', text: 'white' };
+      case 'checked-in': return { bg: '#3B82F6', text: 'white' };
+      case 'cancelled': return { bg: '#EF4444', text: 'white' };
+      default: return { bg: '#6B7280', text: 'white' };
     }
   };
 
@@ -294,7 +294,7 @@ const StudentDashboard = () => {
           </span>
         </div>
         <div className="quick-actions-grid" style={{ display: 'grid', gridTemplateColumns: 'repeat(4, 1fr)', gap: '12px' }}>
-          <div className="action-item" onClick={() => navigate('/student/search')}>
+          <div className="action-item" onClick={() => navigate('/student/search-results')}>
             <div className="action-icon" style={{ background: '#ffffff', color: '#1a1a1a', border: '1px solid #eaeaea', boxShadow: '0 4px 12px rgba(0,0,0,0.03)' }}><LuSearch size={22} strokeWidth={2.5} /></div>
             <span className="action-label" style={{ fontWeight: 600, color: '#333' }}>Find PG</span>
           </div>

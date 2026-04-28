@@ -21,6 +21,7 @@ const StudentProfile = lazy(() => import('./pages/student/Profile'));
 const MyReviews = lazy(() => import('./pages/student/MyReviews'));
 const Payments = lazy(() => import('./pages/student/Payments'));
 const Bookings = lazy(() => import('./pages/student/Bookings'));
+const Support = lazy(() => import('./pages/student/Support'));
 const PaymentGateway = lazy(() => import('./pages/student/PaymentGateway'));
 
 // Global Loading Spinner for Suspense
@@ -69,6 +70,7 @@ const AppRoutes = () => {
       <Route path="/student/reviews" element={<ProtectedRoute><MyReviews /></ProtectedRoute>} />
       <Route path="/student/payments" element={<ProtectedRoute><Payments /></ProtectedRoute>} />
       <Route path="/student/bookings" element={<ProtectedRoute><Bookings /></ProtectedRoute>} />
+      <Route path="/student/support" element={<ProtectedRoute><Support /></ProtectedRoute>} />
       <Route path="/student/pay" element={<ProtectedRoute><PaymentGateway /></ProtectedRoute>} />
 
       <Route path="*" element={<Navigate to="/" replace />} />

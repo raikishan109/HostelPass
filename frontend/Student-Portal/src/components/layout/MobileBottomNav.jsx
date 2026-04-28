@@ -1,6 +1,6 @@
 import React from 'react';
 import { NavLink, useLocation } from 'react-router-dom';
-import { MdHome, MdSearch, MdPayment, MdMessage, MdPerson, MdBookmark } from 'react-icons/md';
+import { MdHome, MdSearch, MdPayment, MdMessage, MdPerson, MdBookmark, MdHeadsetMic } from 'react-icons/md';
 
 const MobileBottomNav = () => {
   const location = useLocation();
@@ -9,7 +9,7 @@ const MobileBottomNav = () => {
     { path: '/student', icon: <MdHome />, label: 'Home' },
     { path: '/student/search-results', icon: <MdSearch />, label: 'Explore' },
     { path: '/student/favorites', icon: <MdBookmark />, label: 'Saved' },
-    { path: '/student/complaints', icon: <MdMessage />, label: 'Support' },
+    { path: '/student/support', icon: <MdHeadsetMic />, label: 'Support' },
     { path: '/student/profile', icon: <MdPerson />, label: 'Profile' },
   ];
 

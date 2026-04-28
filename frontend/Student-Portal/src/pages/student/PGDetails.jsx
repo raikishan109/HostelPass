@@ -174,7 +174,7 @@ const PGDetails = () => {
 
       toast.success('Booking Request Sent!');
       setShowBookingModal(false);
-      navigate('/student/dashboard');
+      navigate('/student');
     } catch (error) {
       console.error("Booking error:", error);
       toast.error('Failed to process booking');
